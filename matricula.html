@@ -64,6 +64,11 @@
                         <label>CPF (do Aluno):</label>
                         <input type="text" id="cpf" placeholder="000.000.000-00" required maxlength="14">
                     </div>
+
+                    <div class="input-group">
+                        <label>WhatsApp:</label>
+                        <input type="tel" id="telefone" placeholder="(94) 99999-9999" required>
+                    </div>
                     
                     <div class="input-group full-width">
                         <label>Endereço Completo:</label>
@@ -72,7 +77,7 @@
 
                     <div class="input-group full-width">
                         <label>E-mail:</label>
-                        <input type="email" id="email" placeholder="exemplo@email.com">
+                        <input type="email" id="email" placeholder="exemplo@email.com" required>
                     </div>
                 </div>
                 </div>
@@ -90,19 +95,19 @@
                 <div class="form-grid" id="blocoResponsavel">
                     <div class="input-group full-width">
                         <label>Nome do Responsável Financeiro:</label>
-                        <input type="text" id="nomeResponsavel" placeholder="Nome do pagador">
+                        <input type="text" id="nomeResponsavel" placeholder="Nome do pagador" required>
                     </div>
                     <div class="input-group">
                         <label>CPF do Responsável:</label>
-                        <input type="text" id="cpfResponsavel" placeholder="000.000.000-00" maxlength="14">
+                        <input type="text" id="cpfResponsavel" placeholder="000.000.000-00" maxlength="14" required>
                     </div>
                     <div class="input-group">
                         <label>WhatsApp:</label>
-                        <input type="tel" id="whatsappCobranca" placeholder="(94) 99999-9999">
+                        <input type="tel" id="whatsappCobranca" placeholder="(94) 99999-9999" required>
                     </div>
                     <div class="input-group">
                         <label>Dia de Vencimento:</label>
-                        <select id="diaVencimento">
+                        <select id="diaVencimento" required>
                             <option value="05">Dia 05</option>
                             <option value="10">Dia 10</option>
                         </select>
@@ -134,7 +139,7 @@
 
                     <div class="input-group">
                         <label>Nível Musical:</label>
-                        <select id="nivel">
+                        <select id="nivel" required>
                             <option value="iniciante">Iniciante (Nunca toquei)</option>
                             <option value="basico">Básico (Já tive aulas / Até 6 meses)</option>
                             <option value="intermediario">Intermediário (Já toco / 1 a 3 anos)</option>
@@ -144,7 +149,7 @@
 
                     <div class="input-group">
                         <label>Possui Instrumento Próprio?</label>
-                        <select id="instrumentoProprio">
+                        <select id="instrumentoProprio" required>
                             <option value="nao">Não</option>
                             <option value="sim">Sim</option>
                         </select>
@@ -152,7 +157,7 @@
 
                     <div class="input-group full-width">
                         <label>Qual o objetivo da aula?</label>
-                        <input type="text" id="objetivo" placeholder="Ex: Hobby, Desenvolvimento Cognitivo, Terapêutico/Saúde, Profissionalização" list="objetivos-list">
+                        <input type="text" id="objetivo" placeholder="Ex: Hobby, Desenvolvimento Cognitivo, Terapêutico/Saúde, Profissionalização" list="objetivos-list" required>
                         <datalist id="objetivos-list">
                             <option value="Hobby">
                             <option value="Desenvolvimento Cognitivo">
@@ -199,31 +204,47 @@
                 </div>
 
                 <div class="form-section form-step">
-                <h3><i class="fa-solid fa-calendar-check"></i> 5. Aula Experimental</h3>
+                <h3><i class="fa-solid fa-hand-holding-dollar"></i> 5. Escolha seu Plano</h3>
                 
                 <div class="input-group full-width">
-                    <label>Qual sua disponibilidade para a aula experimental?</label>
-                    <div style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <div>
-                            <label style="font-weight: 600; color: var(--gold); margin-bottom: 5px; display:block;">Dias:</label>
-                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                                <label class="chip-option"><input type="checkbox" name="diasExp" value="Segunda"> <span>Seg</span></label>
-                                <label class="chip-option"><input type="checkbox" name="diasExp" value="Terça"> <span>Ter</span></label>
-                                <label class="chip-option"><input type="checkbox" name="diasExp" value="Quarta"> <span>Qua</span></label>
-                                <label class="chip-option"><input type="checkbox" name="diasExp" value="Quinta"> <span>Qui</span></label>
-                                <label class="chip-option"><input type="checkbox" name="diasExp" value="Sexta"> <span>Sex</span></label>
-                                <label class="chip-option"><input type="checkbox" name="diasExp" value="Sábado"> <span>Sáb</span></label>
+                    <label>Selecione a modalidade de ensino:</label>
+                    <div class="plans-container">
+                        <label class="plan-card">
+                            <input type="radio" name="plano" value="Turma" required>
+                            <div class="plan-content">
+                                <span class="plan-title">Aula em Turma</span>
+                                <span class="plan-price">R$ 189,90 <small>/mês</small></span>
+                                <span class="plan-desc">Aprendizado em grupo</span>
                             </div>
-                        </div>
-                        <div>
-                            <label style="font-weight: 600; color: var(--gold); margin-bottom: 5px; display:block;">Turnos:</label>
-                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                                <label class="chip-option"><input type="checkbox" name="turnosExp" value="Manhã"> <span>Manhã</span></label>
-                                <label class="chip-option"><input type="checkbox" name="turnosExp" value="Tarde"> <span>Tarde</span></label>
-                                <label class="chip-option"><input type="checkbox" name="turnosExp" value="Noite"> <span>Noite</span></label>
+                        </label>
+
+                        <label class="plan-card">
+                            <input type="radio" name="plano" value="Individual">
+                            <div class="plan-content">
+                                <span class="plan-title">Aula Individual</span>
+                                <span class="plan-price">R$ 250,00 <small>/mês</small></span>
+                                <span class="plan-desc">Foco exclusivo</span>
                             </div>
-                        </div>
+                        </label>
+
+                        <label class="plan-card">
+                            <input type="radio" name="plano" value="Ingles">
+                            <div class="plan-content">
+                                <span class="plan-title">Inglês com Música</span>
+                                <span class="plan-price">R$ 250,00 <small>/mês</small></span>
+                                <span class="plan-desc">Aula em Grupo</span>
+                            </div>
+                        </label>
                     </div>
+                </div>
+
+                <!-- Resumo Financeiro Automático -->
+                <div id="resumoFinal" style="background: #fffbf0; padding: 20px; border: 1px solid var(--gold); border-radius: 10px; margin-top: 20px; display:none;">
+                    <h4 style="color: var(--gold); margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Resumo da Matrícula</h4>
+                    <p><strong>Aluno:</strong> <span id="resumoNome"></span></p>
+                    <p><strong>Curso:</strong> <span id="resumoCurso"></span></p>
+                    <p><strong>Plano Selecionado:</strong> <span id="resumoPlano">Aguardando seleção...</span></p>
+                    <p style="font-size: 1.2rem; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px;"><strong>Total Mensal:</strong> <span id="resumoValor" style="color: green; font-weight: 800;">R$ 0,00</span></p>
                 </div>
 
                 <div class="input-group full-width" style="margin-top: 10px;">

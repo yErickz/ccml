@@ -612,3 +612,54 @@ footer {
 .progress-bar {
     background-color: var(--gold); height: 100%; width: 20%; transition: width 0.4s ease;
 }
+
+/* --- Seleção de Planos (Matrícula) --- */
+.plans-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.plan-card {
+    position: relative;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    padding: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+    background: white;
+    display: block; /* Garante comportamento de bloco */
+}
+
+.plan-card:hover {
+    border-color: #ddd;
+    background: #f9f9f9;
+}
+
+.plan-card input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Estilo quando selecionado (usando :has para navegadores modernos) */
+.plan-card:has(input:checked) {
+    border-color: var(--gold);
+    background: #fffbf0;
+    box-shadow: 0 5px 15px rgba(197, 160, 89, 0.2);
+}
+
+/* Estilo quando desabilitado */
+.plan-card:has(input:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f0f0f0;
+    border-color: #eee;
+}
+
+.plan-content { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.plan-title { font-weight: 700; font-size: 1rem; margin-bottom: 5px; color: var(--dark); }
+.plan-price { font-size: 1.4rem; font-weight: 800; color: var(--gold); margin-bottom: 5px; }
+.plan-price small { font-size: 0.8rem; font-weight: 400; color: #777; }
+.plan-desc { font-size: 0.85rem; color: #666; }

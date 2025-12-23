@@ -2,6 +2,16 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.0.14] - 2025-12-23 - "Planos & UX"
+### Adicionado
+- **Matrícula:** Nova etapa de "Escolha de Plano" substituindo a Aula Experimental.
+- **Lógica:** Seleção automática e bloqueio de plano quando o curso "Inglês com Música" é escolhido.
+- **UX:** Máscara automática para campos de telefone/WhatsApp `(XX) XXXXX-XXXX`.
+### Alterado
+- **Planos:** Ajuste de valor do curso "Inglês com Música" para R$ 250,00 (Aula em Grupo).
+### Removido
+- **Matrícula:** Removida seção de agendamento de aula experimental.
+
 ## [1.0.12] - 2025-12-23 - "Lead Capture & Disponibilidade"
 ### Adicionado
 - **Lead Capture:** Salvamento automático dos dados de contato (passo 1) para recuperação de matrículas incompletas.

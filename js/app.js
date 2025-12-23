@@ -115,6 +115,24 @@ if (cpfRespInput) {
     });
 }
 
+// --- 1.4 Máscara de Telefone (WhatsApp) ---
+const phoneInputs = ['telefone', 'whatsappCobranca'];
+phoneInputs.forEach(id => {
+    const input = document.getElementById(id);
+    if (input) {
+        input.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, "");
+            if (value.length > 11) value = value.slice(0, 11); // Limita a 11 dígitos
+            
+            // Formata (XX) XXXXX-XXXX
+            value = value.replace(/^(\d{2})(\d)/g, "($1) $2");
+            value = value.replace(/(\d)(\d{4})$/, "$1-$2");
+            
+            e.target.value = value;
+        });
+    }
+});
+
 // --- 1.3 Controle do Campo "Outro Curso" ---
 const cursoSelect = document.getElementById('curso');
 const outroCursoInput = document.getElementById('outroCurso');
@@ -128,6 +146,34 @@ if (cursoSelect && outroCursoInput) {
             outroCursoInput.style.display = 'none';
             outroCursoInput.required = false;
             outroCursoInput.value = '';
+        }
+
+        // Controle Automático de Planos
+        const planRadios = document.querySelectorAll('input[name="plano"]');
+        if (planRadios.length > 0) {
+            if (e.target.value === 'Inglês com Música') {
+                // Trava no plano de Inglês
+                planRadios.forEach(r => {
+                    if (r.value === 'Ingles') {
+                        r.checked = true;
+                        r.disabled = false;
+                    } else {
+                        r.disabled = true;
+                        r.checked = false;
+                    }
+                });
+            } else {
+                // Libera Turma/Individual e bloqueia Inglês
+                planRadios.forEach(r => {
+                    if (r.value === 'Ingles') {
+                        r.disabled = true;
+                        r.checked = false;
+                    } else {
+                        r.disabled = false;
+                    }
+                });
+            }
+            updateSummary(); // Atualiza o resumo visualmente
         }
     });
 }
@@ -197,8 +243,15 @@ window.handleEnrollment = async (e) => {
     // Captura as preferências de horário (Checkboxes)
     const diasPref = Array.from(document.querySelectorAll('input[name="diasPref"]:checked')).map(el => el.value);
     const turnosPref = Array.from(document.querySelectorAll('input[name="turnosPref"]:checked')).map(el => el.value);
-    const diasExp = Array.from(document.querySelectorAll('input[name="diasExp"]:checked')).map(el => el.value);
-    const turnosExp = Array.from(document.querySelectorAll('input[name="turnosExp"]:checked')).map(el => el.value);
+
+    // Validação Final: Plano Obrigatório
+    const planoEl = document.querySelector('input[name="plano"]:checked');
+    if (!planoEl) {
+        showError("Por favor, selecione um plano de ensino para concluir a matrícula.");
+        btn.innerText = originalText;
+        btn.disabled = false;
+        return;
+    }
 
     try {
         const dados = {
@@ -208,6 +261,7 @@ window.handleEnrollment = async (e) => {
             idade: document.getElementById('idade').value,
             cpf: cpfValue,
             endereco: document.getElementById('endereco').value,
+            telefone: document.getElementById('telefone').value,
             email: document.getElementById('email').value,
             
             // 2. Financeiro
@@ -223,8 +277,7 @@ window.handleEnrollment = async (e) => {
             objetivo: document.getElementById('objetivo').value,
             disponibilidade_dias: diasPref,
             disponibilidade_turnos: turnosPref,
-            experimental_dias: diasExp,
-            experimental_turnos: turnosExp,
+            plano_escolhido: planoEl.value,
 
             // 4. Segurança
             necessidades_especiais: document.getElementById('necessidades').value,
@@ -369,7 +422,7 @@ window.toggleMenu = () => {
 
 // --- 5. Rodapé Dinâmico (Carrega em todas as páginas) ---
 const footerContainer = document.getElementById('footer-container');
-const APP_VERSION = "1.0.12";
+const APP_VERSION = "1.0.14";
 if (footerContainer) {
     footerContainer.innerHTML = `
     <footer>
@@ -443,13 +496,19 @@ window.toggleResponsavel = () => {
         document.getElementById('nomeResponsavel').value = nomeAluno;
         document.getElementById('cpfResponsavel').value = cpfAluno;
         document.getElementById('whatsappCobranca').value = zapAluno;
-        // Opcional: Bloquear edição para garantir consistência
-        // document.getElementById('nomeResponsavel').readOnly = true;
+        
+        // Bloqueia edição para não precisar preencher
+        document.getElementById('nomeResponsavel').readOnly = true;
+        document.getElementById('cpfResponsavel').readOnly = true;
+        document.getElementById('whatsappCobranca').readOnly = true;
     } else {
         document.getElementById('nomeResponsavel').value = "";
         document.getElementById('cpfResponsavel').value = "";
         document.getElementById('whatsappCobranca').value = "";
-        // document.getElementById('nomeResponsavel').readOnly = false;
+        
+        document.getElementById('nomeResponsavel').readOnly = false;
+        document.getElementById('cpfResponsavel').readOnly = false;
+        document.getElementById('whatsappCobranca').readOnly = false;
     }
 };
 
@@ -488,6 +547,11 @@ window.showTab = (n) => {
     // Atualiza Barra de Progresso
     const progress = ((n + 1) / x.length) * 100;
     document.getElementById("progressBar").style.width = progress + "%";
+
+    // Se for a última etapa (índice 4), atualiza o resumo
+    if (n === 4) {
+        updateSummary();
+    }
 }
 
 window.nextPrev = (n) => {
@@ -525,6 +589,25 @@ function validateFormStep() {
         const cpfVal = document.getElementById('cpf').value;
         if (!validarCPF(cpfVal)) {
             showError("CPF inválido na etapa de identificação.");
+            valid = false;
+        }
+    }
+    
+    // Validação de CPF do Responsável (Etapa 2 - índice 1)
+    if (currentTab === 1 && valid) {
+        const cpfResp = document.getElementById('cpfResponsavel').value;
+        if (!validarCPF(cpfResp)) {
+            showError("CPF do Responsável inválido.");
+            valid = false;
+        }
+    }
+
+    // Validação de Disponibilidade (Etapa 3 - índice 2)
+    if (currentTab === 2 && valid) {
+        const dias = document.querySelectorAll('input[name="diasPref"]:checked');
+        const turnos = document.querySelectorAll('input[name="turnosPref"]:checked');
+        if (dias.length === 0 || turnos.length === 0) {
+            showError("Por favor, selecione pelo menos um dia e um turno de preferência.");
             valid = false;
         }
     }
@@ -573,6 +656,7 @@ async function saveLead() {
         idade: document.getElementById('idade').value,
         cpf: document.getElementById('cpf').value,
         endereco: document.getElementById('endereco').value,
+        telefone: document.getElementById('telefone').value,
         email: document.getElementById('email').value,
         status: "incompleto", // Marcador para saber que desistiu no meio
         data_registro: new Date().toISOString()
@@ -592,3 +676,36 @@ async function saveLead() {
         console.error("Erro ao salvar lead:", e);
     }
 }
+
+// Função para atualizar o Resumo Final
+window.updateSummary = () => {
+    const resumoDiv = document.getElementById('resumoFinal');
+    if (!resumoDiv) return;
+
+    const nome = document.getElementById('nomeAluno').value || "Aluno";
+    let curso = document.getElementById('curso').value;
+    if (curso === 'Outro') curso = document.getElementById('outroCurso').value;
+    
+    const planoEl = document.querySelector('input[name="plano"]:checked');
+    let plano = "Nenhum plano selecionado";
+    let valor = "R$ 0,00";
+
+    if (planoEl) {
+        const val = planoEl.value;
+        if (val === 'Turma') { plano = "Aula em Turma"; valor = "R$ 189,90"; }
+        if (val === 'Individual') { plano = "Aula Individual"; valor = "R$ 250,00"; }
+        if (val === 'Ingles') { plano = "Inglês com Música"; valor = "R$ 250,00"; }
+    }
+
+    document.getElementById('resumoNome').innerText = nome;
+    document.getElementById('resumoCurso').innerText = curso;
+    document.getElementById('resumoPlano').innerText = plano;
+    document.getElementById('resumoValor').innerText = valor;
+    
+    resumoDiv.style.display = 'block';
+};
+
+// Adiciona listener para mudança manual nos planos também
+document.addEventListener('change', (e) => {
+    if (e.target.name === 'plano') updateSummary();
+});
