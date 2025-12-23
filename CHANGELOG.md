@@ -8,6 +8,8 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 - **Responsividade:** Tabelas agora possuem rolagem horizontal em telas pequenas (`.table-responsive`).
 - **Estilo:** Ajustes de CSS para melhor visualização em smartphones.
 - **Rodapé:** Exibição dinâmica da versão do sistema.
+### Corrigido
+- **Layout:** Removido rodapé estático duplicado na página inicial (`index.html`).
 
 ## [1.0.3] - 2025-12-23 - "Refatoração Estrutural"
 ### Refatorado
