@@ -6,6 +6,8 @@
     <title>Matrícula Online - CCML</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Biblioteca EmailJS para envio de e-mails -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -14,7 +16,15 @@
             <h1>Ficha de Matrícula</h1>
             <p class="subtitle">Preencha os dados abaixo para agilizar seu atendimento na secretaria.</p>
             
-            <form onsubmit="sendToWhatsapp(event)">
+            <!-- Mensagem de Sucesso (Oculta inicialmente) -->
+            <div id="successMessage" style="display:none; text-align: center; padding: 20px;">
+                <i class="fa-solid fa-circle-check" style="color: var(--gold); font-size: 3rem; margin-bottom: 20px;"></i>
+                <h3 style="margin-bottom: 10px;">Matrícula Enviada!</h3>
+                <p style="color: #666; margin-bottom: 20px;">Recebemos seus dados com sucesso. Nossa equipe entrará em contato em breve.</p>
+                <a href="index.html" class="btn-main">Voltar ao Início</a>
+            </div>
+
+            <form id="enrollmentForm" onsubmit="handleEnrollment(event)">
                 <div class="form-grid">
                     <div class="input-group full-width">
                         <label>Nome Completo do Aluno</label>
@@ -28,7 +38,7 @@
 
                     <div class="input-group">
                         <label>WhatsApp para Contato</label>
-                        <input type="tel" id="whatsapp" required placeholder="(94) 99999-9999">
+                        <input type="tel" id="whatsapp" required placeholder="(94) 99999-9999" maxlength="15">
                     </div>
 
                     <div class="input-group full-width">
@@ -62,11 +72,8 @@
                 </div>
 
                 <button type="submit" class="btn-submit">
-                    <i class="fa-brands fa-whatsapp"></i> Enviar Pré-Matrícula
+                    Enviar Matrícula
                 </button>
-                <p style="text-align: center; font-size: 0.8rem; color: #888; margin-top: 15px;">
-                    Ao clicar, você será redirecionado para o WhatsApp da secretaria com seus dados preenchidos.
-                </p>
             </form>
         </div>
     </div>

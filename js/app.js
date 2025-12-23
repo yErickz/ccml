@@ -1,5 +1,5 @@
 // A primeira linha importa a conexão que criamos no outro arquivo
-import { saveEnrollment } from './db.js';
+import { saveEnrollment, getEnrollments } from './db.js';
 import { loginWithGoogle } from './auth.js';
 
 console.log("O site carregou e já está conectado ao Firebase!");
@@ -14,12 +14,29 @@ function init() {
     loadSharedComponents();
     initScrollAnimations();
     checkProgressMode();
+    
+    // Inicializar EmailJS (Substitua pela sua Public Key do painel)
+    if(window.emailjs) emailjs.init("SUA_PUBLIC_KEY_AQUI");
 
     // Permitir login com Enter na área do professor
     const passInput = document.getElementById('teacherPass');
     if (passInput) {
         passInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') checkTeacherLogin();
+        });
+    }
+
+    // Máscara de WhatsApp (Formatação Automática)
+    const whatsappInput = document.getElementById('whatsapp');
+    if (whatsappInput) {
+        whatsappInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
+            if (value.length > 11) value = value.slice(0, 11); // Limita a 11 dígitos
+            
+            if (value.length > 2) value = value.replace(/^(\d{2})(\d)/, '($1) $2'); // Adiciona DDD
+            if (value.length > 7) value = value.replace(/(\d{5})(\d)/, '$1-$2'); // Adiciona hífen
+            
+            e.target.value = value;
         });
     }
 }
@@ -32,7 +49,7 @@ if (document.readyState === 'loading') {
 }
 
 /* --- Funções da Página de Matrícula --- */
-async function sendToWhatsapp(e) {
+async function handleEnrollment(e) {
     if(e) e.preventDefault();
     
     const nome = document.getElementById('nome').value;
@@ -41,6 +58,20 @@ async function sendToWhatsapp(e) {
     const curso = document.getElementById('curso').value;
     const nivel = document.getElementById('nivel').value;
     const obs = document.getElementById('obs').value;
+
+    // --- Validação de Segurança (Anti-Malfeitores) ---
+    // 1. Verifica se o nome tem pelo menos 3 letras e não é só espaço
+    if (nome.trim().length < 3) {
+        alert("Por favor, digite o nome completo do aluno.");
+        return;
+    }
+
+    // 2. Verifica se o telefone tem o tamanho correto (10 ou 11 dígitos)
+    const cleanPhone = whatsapp.replace(/\D/g, '');
+    if (cleanPhone.length < 10 || cleanPhone.length > 11) {
+        alert("Por favor, digite um número de WhatsApp válido com DDD.");
+        return;
+    }
 
     // 1. Criar objeto com os dados para o Banco
     const matriculaData = {
@@ -56,23 +87,31 @@ async function sendToWhatsapp(e) {
     // 2. Tentar salvar no Firebase
     try {
         await saveEnrollment(matriculaData);
-        alert("✅ Seus dados foram salvos no nosso sistema com sucesso!");
+
+        // 3. Enviar E-mail de Aviso (EmailJS)
+        if(window.emailjs) {
+            const templateParams = {
+                nome: nome,
+                curso: curso,
+                whatsapp: whatsapp,
+                nivel: nivel,
+                obs: obs
+            };
+            // Substitua pelos IDs do seu painel EmailJS
+            emailjs.send("SEU_SERVICE_ID", "SEU_TEMPLATE_ID", templateParams);
+        }
+        
+        // Esconder formulário e mostrar mensagem de sucesso
+        const form = document.getElementById('enrollmentForm');
+        const successMsg = document.getElementById('successMessage');
+        
+        if(form) form.style.display = 'none';
+        if(successMsg) successMsg.style.display = 'block';
+
     } catch (error) {
-        alert("Houve um erro ao salvar no sistema, mas vamos tentar abrir o WhatsApp.");
+        alert("Houve um erro ao enviar sua matrícula. Por favor, tente novamente.");
+        console.error(error);
     }
-
-    const text = `*NOVA PRÉ-MATRÍCULA ONLINE* 🎵\n\n` +
-                 `*Aluno:* ${nome}\n` +
-                 `*Nascimento:* ${nascimento}\n` +
-                 `*Contato:* ${whatsapp}\n` +
-                 `*Interesse:* ${curso}\n` +
-                 `*Nível:* ${nivel}\n` +
-                 `*Obs:* ${obs}\n\n` +
-                 `--------------------------------\n` +
-                 `Gostaria de prosseguir com a matrícula!`;
-
-    const url = `https://wa.me/5594991972745?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
 }
 
 /* --- Funções do Chatbot (Valores & Dúvidas) --- */
@@ -279,6 +318,7 @@ async function handleGoogleLogin() {
         
         loginScreen.style.display = 'none';
         dashboard.style.display = 'block';
+        loadDashboardData(); // <--- Carrega a tabela
         initScrollAnimations();
     } catch (error) {
         errorMsg.style.display = 'block';
@@ -295,11 +335,40 @@ function checkTeacherLogin() {
     if (pass === '1234') {
         loginScreen.style.display = 'none';
         dashboard.style.display = 'block';
+        loadDashboardData(); // <--- Carrega a tabela
         initScrollAnimations();
     } else {
         errorMsg.style.display = 'block';
         errorMsg.textContent = "Senha incorreta!";
     }
+}
+
+async function loadDashboardData() {
+    const list = document.getElementById('enrollmentList');
+    const loading = document.getElementById('loadingMsg');
+    
+    if (!list) return;
+
+    const enrollments = await getEnrollments();
+    if(loading) loading.style.display = 'none';
+
+    if (enrollments.length === 0) {
+        list.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Nenhuma matrícula encontrada.</td></tr>';
+        return;
+    }
+
+    list.innerHTML = enrollments.map(aluno => {
+        const dataFormatada = aluno.data_criacao ? new Date(aluno.data_criacao).toLocaleDateString('pt-BR') : '-';
+        return `
+            <tr>
+                <td>${dataFormatada}</td>
+                <td style="font-weight:bold;">${aluno.nome}</td>
+                <td>${aluno.curso}</td>
+                <td><a href="https://wa.me/55${aluno.whatsapp.replace(/\D/g, '')}" target="_blank" style="color:var(--gold); text-decoration:none;"><i class="fa-brands fa-whatsapp"></i> ${aluno.whatsapp}</a></td>
+                <td>${aluno.nivel}</td>
+            </tr>
+        `;
+    }).join('');
 }
 
 function generateFeedback() {
@@ -405,7 +474,7 @@ function addStudent() {
 // Como é um módulo, as funções não são globais por padrão.
 // Precisamos anexá-las ao objeto window para que o onclick="" do HTML funcione.
 
-window.sendToWhatsapp = sendToWhatsapp;
+window.handleEnrollment = handleEnrollment;
 window.toggleChat = toggleChat;
 window.selectPlan = selectPlan;
 window.handleKeyPress = handleKeyPress;
