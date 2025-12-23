@@ -11,6 +11,16 @@
 </head>
 <body>
 
+    <nav>
+        <div class="logo">CCML</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Início</a></li>
+            <li><a href="matricula.html" style="color: var(--gold);">Matrícula</a></li>
+            <li><a href="valores_ccml.html">Valores</a></li>
+            <li><a href="painel_professor.html" class="btn-nav">Área do Professor</a></li>
+        </ul>
+    </nav>
+
     <div class="main-container">
         <div class="form-box animate-on-scroll fade-up">
             <h1>Ficha de Matrícula</h1>
@@ -34,6 +44,16 @@
                     <div class="input-group">
                         <label>Data de Nascimento</label>
                         <input type="date" id="nascimento">
+                    </div>
+
+                    <!-- Novos Campos para Adolescentes/Menores -->
+                    <div class="input-group">
+                        <label>Nome do Responsável (se menor)</label>
+                        <input type="text" id="responsavel" placeholder="Pai, Mãe ou Tutor">
+                    </div>
+                    <div class="input-group">
+                        <label>Grau de Parentesco</label>
+                        <input type="text" id="parentesco" placeholder="Ex: Mãe">
                     </div>
 
                     <div class="input-group">

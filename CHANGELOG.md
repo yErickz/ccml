@@ -2,6 +2,13 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.0.2] - 2025-12-23
+### Adicionado
+- **Painel do Professor:** Dashboard com "Analytics Visual" (gráficos de alunos e cursos) e lista de solicitações de matrícula.
+- **Matrícula:** Suporte para cadastro de responsáveis por alunos menores de idade.
+- **Navegação:** Menu principal unificado em todas as páginas.
+- **Core:** Implementação do `js/app.js` gerenciando interatividade e conexão com Firebase.
+
 ## [1.0.1] - 2025-12-23
 ### Corrigido
 - **Cache:** Implementado "Cache Busting" (`?v=1.0.1`) nos arquivos HTML para forçar o navegador a baixar a versão mais recente do CSS e JS após o deploy.
