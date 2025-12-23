@@ -61,7 +61,7 @@
                     </div>
 
                     <div class="input-group">
-                        <label>CPF (do Aluno ou Responsável):</label>
+                        <label>CPF (do Aluno):</label>
                         <input type="text" id="cpf" placeholder="000.000.000-00" required maxlength="14">
                     </div>
                     
@@ -97,7 +97,7 @@
                         <input type="text" id="cpfResponsavel" placeholder="000.000.000-00" maxlength="14">
                     </div>
                     <div class="input-group">
-                        <label>WhatsApp de Cobrança:</label>
+                        <label>WhatsApp:</label>
                         <input type="tel" id="whatsappCobranca" placeholder="(94) 99999-9999">
                     </div>
                     <div class="input-group">
@@ -105,8 +105,6 @@
                         <select id="diaVencimento">
                             <option value="05">Dia 05</option>
                             <option value="10">Dia 10</option>
-                            <option value="15">Dia 15</option>
-                            <option value="20">Dia 20</option>
                         </select>
                     </div>
                 </div>
@@ -126,19 +124,21 @@
                             <option value="Violino">Violino</option>
                             <option value="Bateria">Bateria</option>
                             <option value="Canto/Técnica Vocal">Canto / Técnica Vocal</option>
-                            <option value="Saxofone">Saxofone</option>
+                            <option value="Flauta Doce">Flauta Doce</option>
+                            <option value="Inglês com Música">Inglês com Música</option>
                             <option value="Musicalização Infantil">Musicalização Infantil</option>
                             <option value="Outro">Outro</option>
                         </select>
+                        <input type="text" id="outroCurso" placeholder="Qual instrumento?" style="display:none; margin-top: 5px;">
                     </div>
 
                     <div class="input-group">
                         <label>Nível Musical:</label>
                         <select id="nivel">
                             <option value="iniciante">Iniciante (Nunca toquei)</option>
-                            <option value="basico">Básico</option>
-                            <option value="intermediario">Intermediário</option>
-                            <option value="avancado">Avançado</option>
+                            <option value="basico">Básico (Já tive aulas / Até 6 meses)</option>
+                            <option value="intermediario">Intermediário (Já toco / 1 a 3 anos)</option>
+                            <option value="avancado">Avançado (Domínio técnico / +3 anos)</option>
                         </select>
                     </div>
 
@@ -152,59 +152,77 @@
 
                     <div class="input-group full-width">
                         <label>Qual o objetivo da aula?</label>
-                        <input type="text" id="objetivo" placeholder="Ex: Hobby, Desenvolvimento Cognitivo, Terapêutico, Profissionalização" list="objetivos-list">
+                        <input type="text" id="objetivo" placeholder="Ex: Hobby, Desenvolvimento Cognitivo, Terapêutico/Saúde, Profissionalização" list="objetivos-list">
                         <datalist id="objetivos-list">
                             <option value="Hobby">
                             <option value="Desenvolvimento Cognitivo">
-                            <option value="Terapêutico">
+                            <option value="Terapêutico/saúde">
                             <option value="Profissionalização">
                         </datalist>
                     </div>
 
-                    <div class="input-group">
-                        <label>Professor Vinculado:</label>
-                        <input type="text" id="professor" placeholder="Nome do Professor">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Dia da Aula (Fixo):</label>
-                        <select id="diaAula">
-                            <option value="" disabled selected>Selecione...</option>
-                            <option value="segunda">Segunda-feira</option>
-                            <option value="terca">Terça-feira</option>
-                            <option value="quarta">Quarta-feira</option>
-                            <option value="quinta">Quinta-feira</option>
-                            <option value="sexta">Sexta-feira</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Horário (Fixo):</label>
-                        <input type="time" id="horarioAula">
+                    <div class="input-group full-width">
+                        <label>Disponibilidade de Horário (Marque suas preferências):</label>
+                        <div style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <label style="font-weight: 600; color: var(--gold); margin-bottom: 5px; display:block;">Dias:</label>
+                                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                    <label class="chip-option"><input type="checkbox" name="diasPref" value="Segunda"> <span>Seg</span></label>
+                                    <label class="chip-option"><input type="checkbox" name="diasPref" value="Terça"> <span>Ter</span></label>
+                                    <label class="chip-option"><input type="checkbox" name="diasPref" value="Quarta"> <span>Qua</span></label>
+                                    <label class="chip-option"><input type="checkbox" name="diasPref" value="Quinta"> <span>Qui</span></label>
+                                    <label class="chip-option"><input type="checkbox" name="diasPref" value="Sexta"> <span>Sex</span></label>
+                                    <label class="chip-option"><input type="checkbox" name="diasPref" value="Sábado"> <span>Sáb</span></label>
+                                </div>
+                            </div>
+                            <div>
+                                <label style="font-weight: 600; color: var(--gold); margin-bottom: 5px; display:block;">Turnos:</label>
+                                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                    <label class="chip-option"><input type="checkbox" name="turnosPref" value="Manhã"> <span>Manhã</span></label>
+                                    <label class="chip-option"><input type="checkbox" name="turnosPref" value="Tarde"> <span>Tarde</span></label>
+                                    <label class="chip-option"><input type="checkbox" name="turnosPref" value="Noite"> <span>Noite</span></label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 </div>
 
                 <!-- 4. BLOCO SEGURANÇA JURÍDICA -->
                 <div class="form-section form-step">
-                <h3><i class="fa-solid fa-heart-pulse"></i> 4. Saúde e Diagnósticos</h3>
+                <h3><i class="fa-solid fa-heart-pulse"></i> 4. Saúde e Bem-estar</h3>
                 
                 <div class="input-group full-width">
-                    <label>Possui alguma necessidade especial ou diagnóstico? (TEA, TDAH, etc):</label>
-                    <textarea id="necessidades" rows="2" placeholder="Descreva aqui se houver..."></textarea>
+                    <label>Para oferecermos a melhor experiência de aprendizado, há algo sobre a saúde ou desenvolvimento que gostaria de compartilhar?</label>
+                    <textarea id="necessidades" rows="3" placeholder="Este é um espaço seguro. Conte-nos se o aluno tem alguma alergia, sensibilidade ou condição específica (ex: TDAH, TEA) para que possamos acolhê-lo da melhor forma."></textarea>
                 </div>
                 </div>
 
                 <div class="form-section form-step">
                 <h3><i class="fa-solid fa-calendar-check"></i> 5. Aula Experimental</h3>
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>Data Agendada:</label>
-                        <input type="date" id="dataExperimental">
-                    </div>
-                    <div class="input-group">
-                        <label>Horário:</label>
-                        <input type="time" id="horarioExperimental">
+                
+                <div class="input-group full-width">
+                    <label>Qual sua disponibilidade para a aula experimental?</label>
+                    <div style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <label style="font-weight: 600; color: var(--gold); margin-bottom: 5px; display:block;">Dias:</label>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <label class="chip-option"><input type="checkbox" name="diasExp" value="Segunda"> <span>Seg</span></label>
+                                <label class="chip-option"><input type="checkbox" name="diasExp" value="Terça"> <span>Ter</span></label>
+                                <label class="chip-option"><input type="checkbox" name="diasExp" value="Quarta"> <span>Qua</span></label>
+                                <label class="chip-option"><input type="checkbox" name="diasExp" value="Quinta"> <span>Qui</span></label>
+                                <label class="chip-option"><input type="checkbox" name="diasExp" value="Sexta"> <span>Sex</span></label>
+                                <label class="chip-option"><input type="checkbox" name="diasExp" value="Sábado"> <span>Sáb</span></label>
+                            </div>
+                        </div>
+                        <div>
+                            <label style="font-weight: 600; color: var(--gold); margin-bottom: 5px; display:block;">Turnos:</label>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <label class="chip-option"><input type="checkbox" name="turnosExp" value="Manhã"> <span>Manhã</span></label>
+                                <label class="chip-option"><input type="checkbox" name="turnosExp" value="Tarde"> <span>Tarde</span></label>
+                                <label class="chip-option"><input type="checkbox" name="turnosExp" value="Noite"> <span>Noite</span></label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

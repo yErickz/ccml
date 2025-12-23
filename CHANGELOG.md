@@ -2,6 +2,25 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.0.12] - 2025-12-23 - "Lead Capture & Disponibilidade"
+### Adicionado
+- **Lead Capture:** Salvamento automático dos dados de contato (passo 1) para recuperação de matrículas incompletas.
+- **Cursos:** Adicionado "Inglês com Música" à lista de opções.
+- **Disponibilidade:** Novo sistema de seleção de preferência de horários (Dias e Turnos) substituindo agendamento fixo.
+- **Aula Experimental:** Agendamento alterado para sistema de preferência (Dias/Turnos) para facilitar encaixe.
+### Alterado
+- **UX/UI:** Checkboxes de disponibilidade estilizados como "chips" (botões) para melhor usabilidade mobile.
+- **Texto:** Seção de saúde reescrita com tom mais acolhedor e empático ("Saúde e Bem-estar").
+
+## [1.0.11] - 2025-12-23 - "Detalhamento de Níveis"
+### Alterado
+- **Matrícula:** Descrições dos níveis musicais detalhadas com tempo de experiência estimado (ex: Básico = Até 6 meses).
+
+## [1.0.10] - 2025-12-23 - "Ajustes de Curso"
+### Alterado
+- **Matrícula:** Substituído "Saxofone" por "Flauta Doce" na lista de cursos.
+- **Funcionalidade:** Adicionado campo de texto para especificar o curso quando selecionado "Outro".
+
 ## [1.0.9-exp] - 2025-12-23 - "Matrícula Experimental"
 ### Adicionado
 - **Matrícula:** Reformulação completa com sistema de "Passo a Passo" (Wizard).

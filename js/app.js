@@ -1,5 +1,5 @@
 import { db, auth, provider } from "./firebase-config.js";
-import { collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+import { collection, addDoc, getDocs, query, orderBy, limit, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
 
 // --- 1. Animações de Scroll ---
@@ -13,6 +13,9 @@ const observer = new IntersectionObserver((entries) => {
 }, observerOptions);
 
 document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+// Variável para rastrear o ID do lead (matrícula incompleta)
+let currentLeadId = null;
 
 // --- 1.1 Configuração de Inputs (Data) ---
 const dateInput = document.getElementById('dataNascimento');
@@ -112,6 +115,23 @@ if (cpfRespInput) {
     });
 }
 
+// --- 1.3 Controle do Campo "Outro Curso" ---
+const cursoSelect = document.getElementById('curso');
+const outroCursoInput = document.getElementById('outroCurso');
+
+if (cursoSelect && outroCursoInput) {
+    cursoSelect.addEventListener('change', (e) => {
+        if (e.target.value === 'Outro') {
+            outroCursoInput.style.display = 'block';
+            outroCursoInput.required = true;
+        } else {
+            outroCursoInput.style.display = 'none';
+            outroCursoInput.required = false;
+            outroCursoInput.value = '';
+        }
+    });
+}
+
 // --- 2. Chatbot IA (Simulado) ---
 window.toggleChat = () => {
     const modal = document.getElementById('aiModal');
@@ -169,6 +189,17 @@ window.handleEnrollment = async (e) => {
         return;
     }
 
+    let cursoSelecionado = document.getElementById('curso').value;
+    if (cursoSelecionado === 'Outro') {
+        cursoSelecionado = document.getElementById('outroCurso').value;
+    }
+
+    // Captura as preferências de horário (Checkboxes)
+    const diasPref = Array.from(document.querySelectorAll('input[name="diasPref"]:checked')).map(el => el.value);
+    const turnosPref = Array.from(document.querySelectorAll('input[name="turnosPref"]:checked')).map(el => el.value);
+    const diasExp = Array.from(document.querySelectorAll('input[name="diasExp"]:checked')).map(el => el.value);
+    const turnosExp = Array.from(document.querySelectorAll('input[name="turnosExp"]:checked')).map(el => el.value);
+
     try {
         const dados = {
             // 1. Identificação
@@ -186,24 +217,31 @@ window.handleEnrollment = async (e) => {
             dia_vencimento: document.getElementById('diaVencimento').value,
 
             // 3. Pedagógico
-            curso: document.getElementById('curso').value,
+            curso: cursoSelecionado,
             nivel: document.getElementById('nivel').value,
             instrumento_proprio: document.getElementById('instrumentoProprio').value,
             objetivo: document.getElementById('objetivo').value,
-            professor: document.getElementById('professor').value,
-            dia_aula: document.getElementById('diaAula').value,
-            horario: document.getElementById('horarioAula').value,
-            aula_experimental_data: document.getElementById('dataExperimental').value,
-            aula_experimental_horario: document.getElementById('horarioExperimental').value,
+            disponibilidade_dias: diasPref,
+            disponibilidade_turnos: turnosPref,
+            experimental_dias: diasExp,
+            experimental_turnos: turnosExp,
 
             // 4. Segurança
             necessidades_especiais: document.getElementById('necessidades').value,
             autorizacao_imagem: document.getElementById('autorizacaoImagem').checked,
             
+            status: "completo", // Marca como finalizado
             data_registro: new Date().toISOString()
         };
 
-        await addDoc(collection(db, "matriculas"), dados);
+        // Se já temos um ID de lead (salvo na etapa 1), atualizamos ele. Senão, cria novo.
+        if (currentLeadId) {
+            const docRef = doc(db, "matriculas", currentLeadId);
+            await updateDoc(docRef, dados);
+            console.log("Matrícula finalizada (atualizada):", currentLeadId);
+        } else {
+            await addDoc(collection(db, "matriculas"), dados);
+        }
 
         document.getElementById('formMatricula').style.display = 'none';
         document.getElementById('successMessage').style.display = 'block';
@@ -331,7 +369,7 @@ window.toggleMenu = () => {
 
 // --- 5. Rodapé Dinâmico (Carrega em todas as páginas) ---
 const footerContainer = document.getElementById('footer-container');
-const APP_VERSION = "1.0.9-exp";
+const APP_VERSION = "1.0.12";
 if (footerContainer) {
     footerContainer.innerHTML = `
     <footer>
@@ -457,6 +495,11 @@ window.nextPrev = (n) => {
     // Se estiver avançando, valida os campos da etapa atual
     if (n == 1 && !validateFormStep()) return false;
 
+    // --- CAPTURA DE LEAD (Salvar passo 1) ---
+    if (n == 1 && currentTab == 0) {
+        saveLead();
+    }
+
     // Oculta a aba atual
     x[currentTab].style.display = "none";
     currentTab = currentTab + n;
@@ -520,4 +563,32 @@ function validarCPF(cpf) {
     if (rev != parseInt(cpf.charAt(10))) return false;
     
     return true;
+}
+
+// Função para salvar dados parciais (Lead)
+async function saveLead() {
+    const dadosLead = {
+        nome: document.getElementById('nomeAluno').value,
+        nascimento: document.getElementById('dataNascimento').value,
+        idade: document.getElementById('idade').value,
+        cpf: document.getElementById('cpf').value,
+        endereco: document.getElementById('endereco').value,
+        email: document.getElementById('email').value,
+        status: "incompleto", // Marcador para saber que desistiu no meio
+        data_registro: new Date().toISOString()
+    };
+
+    try {
+        if (!currentLeadId) {
+            const docRef = await addDoc(collection(db, "matriculas"), dadosLead);
+            currentLeadId = docRef.id;
+            console.log("Lead capturado: ", currentLeadId);
+        } else {
+            const docRef = doc(db, "matriculas", currentLeadId);
+            await updateDoc(docRef, dadosLead);
+            console.log("Lead atualizado: ", currentLeadId);
+        }
+    } catch (e) {
+        console.error("Erro ao salvar lead:", e);
+    }
 }

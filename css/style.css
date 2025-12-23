@@ -219,6 +219,22 @@ input:focus, select:focus, textarea:focus {
     outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.1);
 }
 
+/* Checkbox padrão com cor do tema */
+input[type="checkbox"] { accent-color: var(--gold); cursor: pointer; width: 18px; height: 18px; }
+
+/* Checkbox estilo "Chip" (Botão Selecionável) */
+.chip-option { cursor: pointer; user-select: none; }
+.chip-option input { display: none; } /* Esconde o checkbox real */
+.chip-option span {
+    display: inline-block; padding: 8px 16px; background: #f0f0f0; border: 1px solid #ddd;
+    border-radius: 50px; transition: all 0.2s; font-size: 0.9rem; color: #555; font-weight: 500;
+}
+.chip-option:hover span { background: #e0e0e0; }
+.chip-option input:checked + span {
+    background: var(--gold); color: var(--dark); border-color: var(--gold); font-weight: 700;
+    box-shadow: 0 2px 5px rgba(197, 160, 89, 0.3); transform: translateY(-1px);
+}
+
 .btn-submit {
     width: 100%; padding: 15px; background-color: var(--gold); color: var(--dark);
     border: none; border-radius: 8px; font-weight: 700; font-size: 1.1rem;
