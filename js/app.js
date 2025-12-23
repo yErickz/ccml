@@ -1,5 +1,7 @@
 // A primeira linha importa a conexão que criamos no outro arquivo
-import { app } from '../firebase-config.js';
+import { app } from './firebase-config.js';
+import { saveEnrollment } from './db.js';
+import { loginWithGoogle } from './auth.js';
 
 console.log("O site carregou e já está conectado ao Firebase!");
 
@@ -12,6 +14,7 @@ let chatOpen = false;
 function init() {
     loadSharedComponents();
     initScrollAnimations();
+    checkProgressMode();
 
     // Permitir login com Enter na área do professor
     const passInput = document.getElementById('teacherPass');
@@ -30,7 +33,7 @@ if (document.readyState === 'loading') {
 }
 
 /* --- Funções da Página de Matrícula --- */
-function sendToWhatsapp(e) {
+async function sendToWhatsapp(e) {
     if(e) e.preventDefault();
     
     const nome = document.getElementById('nome').value;
@@ -39,6 +42,25 @@ function sendToWhatsapp(e) {
     const curso = document.getElementById('curso').value;
     const nivel = document.getElementById('nivel').value;
     const obs = document.getElementById('obs').value;
+
+    // 1. Criar objeto com os dados para o Banco
+    const matriculaData = {
+        nome,
+        nascimento,
+        whatsapp,
+        curso,
+        nivel,
+        obs,
+        data_criacao: new Date().toISOString()
+    };
+
+    // 2. Tentar salvar no Firebase
+    try {
+        await saveEnrollment(matriculaData);
+        alert("✅ Seus dados foram salvos no nosso sistema com sucesso!");
+    } catch (error) {
+        alert("Houve um erro ao salvar no sistema, mas vamos tentar abrir o WhatsApp.");
+    }
 
     const text = `*NOVA PRÉ-MATRÍCULA ONLINE* 🎵\n\n` +
                  `*Aluno:* ${nome}\n` +
@@ -247,6 +269,24 @@ function initScrollAnimations() {
 }
 
 /* --- Painel do Professor --- */
+async function handleGoogleLogin() {
+    const errorMsg = document.getElementById('loginError');
+    const loginScreen = document.getElementById('loginScreen');
+    const dashboard = document.getElementById('teacherDashboard');
+
+    try {
+        const user = await loginWithGoogle();
+        console.log("Professor logado:", user.displayName);
+        
+        loginScreen.style.display = 'none';
+        dashboard.style.display = 'block';
+        initScrollAnimations();
+    } catch (error) {
+        errorMsg.style.display = 'block';
+        errorMsg.textContent = "Erro ao conectar com Google. Tente novamente.";
+    }
+}
+
 function checkTeacherLogin() {
     const pass = document.getElementById('teacherPass').value;
     const errorMsg = document.getElementById('loginError');
@@ -259,6 +299,7 @@ function checkTeacherLogin() {
         initScrollAnimations();
     } else {
         errorMsg.style.display = 'block';
+        errorMsg.textContent = "Senha incorreta!";
     }
 }
 
@@ -279,6 +320,62 @@ function generateFeedback() {
 
     navigator.clipboard.writeText(text);
     alert("Mensagem copiada! Agora cole no WhatsApp.");
+}
+
+/* --- Funções da Página de Progresso --- */
+function generateShareLink() {
+    const name = document.getElementById('studentName').value;
+    if(!name) { alert("Por favor, digite seu nome."); return; }
+
+    const checks = document.querySelectorAll('.skill-check:checked');
+    const skills = Array.from(checks).map(c => c.value);
+
+    if(skills.length === 0) { alert("Marque pelo menos uma conquista!"); return; }
+
+    // Criar URL com parâmetros
+    const params = new URLSearchParams();
+    params.set('name', name);
+    params.set('skills', JSON.stringify(skills));
+    params.set('date', new Date().toLocaleDateString('pt-BR'));
+
+    const baseUrl = window.location.href.split('?')[0];
+    const shareUrl = `${baseUrl}?${params.toString()}`;
+
+    document.getElementById('shareUrl').value = shareUrl;
+    document.getElementById('shareResult').style.display = 'block';
+}
+
+function copyLink() {
+    const copyText = document.getElementById("shareUrl");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // Para mobile
+    navigator.clipboard.writeText(copyText.value);
+    alert("Link copiado!");
+}
+
+function checkProgressMode() {
+    // Verifica se há parâmetros na URL (Modo Visualização)
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get('name');
+    const skills = params.get('skills');
+    const date = params.get('date');
+
+    if(name && skills) {
+        const editMode = document.getElementById('editMode');
+        const viewMode = document.getElementById('viewMode');
+        
+        if(editMode && viewMode) {
+            editMode.style.display = 'none';
+            viewMode.style.display = 'block';
+            
+            document.getElementById('viewName').textContent = name;
+            document.getElementById('viewDate').textContent = date || 'Data desconhecida';
+            
+            const skillsList = JSON.parse(skills);
+            const ul = document.getElementById('viewSkills');
+            ul.innerHTML = skillsList.map(s => `<li><i class="fa-solid fa-check" style="color:var(--gold); margin-right:10px;"></i> ${s}</li>`).join('');
+        }
+    }
 }
 
 /* --- Funcionalidade de Agenda --- */
@@ -314,7 +411,10 @@ window.toggleChat = toggleChat;
 window.selectPlan = selectPlan;
 window.handleKeyPress = handleKeyPress;
 window.sendMessage = sendMessage;
+window.handleGoogleLogin = handleGoogleLogin;
 window.checkTeacherLogin = checkTeacherLogin;
 window.generateFeedback = generateFeedback;
 window.toggleAddStudent = toggleAddStudent;
 window.addStudent = addStudent;
+window.generateShareLink = generateShareLink;
+window.copyLink = copyLink;

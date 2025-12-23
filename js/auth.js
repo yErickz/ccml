@@ -1,7 +1,13 @@
 // Arquivo exclusivo para cuidar de Login/Cadastro
-// Futuramente, você importará funções de autenticação do Firebase aqui
+import { auth, provider } from './firebase-config.js';
+import { signInWithPopup } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
 
-export function loginTeacher(password) {
-    // Exemplo de lógica que pode ser expandida com Firebase Auth
-    return password === '1234';
+export async function loginWithGoogle() {
+    try {
+        const result = await signInWithPopup(auth, provider);
+        return result.user; // Retorna os dados do usuário (nome, email, foto)
+    } catch (error) {
+        console.error("Erro no login:", error);
+        throw error;
+    }
 }

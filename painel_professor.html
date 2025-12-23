@@ -21,7 +21,13 @@
             <p style="margin-bottom: 25px; color: #666; font-size: 0.9rem;">Acesso restrito à equipe pedagógica</p>
             
             <input type="password" id="teacherPass" placeholder="Digite a senha de acesso..." class="login-input">
-            <button onclick="checkTeacherLogin()" class="btn-main" style="width: 100%; margin-top: 15px;">Entrar</button>
+            <button onclick="checkTeacherLogin()" class="btn-main" style="width: 100%; margin-top: 5px; margin-bottom: 15px;">Entrar</button>
+            
+            <div style="display: flex; align-items: center; margin: 10px 0; color: #999; font-size: 0.8rem;"><span style="flex:1; height:1px; background:#eee;"></span><span style="padding: 0 10px;">OU</span><span style="flex:1; height:1px; background:#eee;"></span></div>
+
+            <button onclick="handleGoogleLogin()" class="btn-main" style="width: 100%; margin-top: 5px; background-color: #4285F4; color: white;">
+                <i class="fa-brands fa-google" style="margin-right: 8px;"></i> Entrar com Google
+            </button>
             <a href="index.html" style="display: block; margin-top: 20px; color: #999; font-size: 0.9rem; transition: 0.3s;"><i class="fa-solid fa-arrow-left"></i> Voltar ao Início</a>
             
             <p id="loginError" style="color: red; font-size: 0.8rem; margin-top: 10px; display: none;">Senha incorreta!</p>
