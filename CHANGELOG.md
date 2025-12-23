@@ -2,6 +2,11 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.0.7] - 2025-12-23 - "Atualização de Matrícula"
+### Alterado
+- **Matrícula:** Formulário atualizado para incluir campos administrativos (CPF, Dia da Aula, Horário, Valor).
+- **Backend:** Ajuste no script de salvamento para corresponder aos novos campos do formulário.
+
 ## [1.0.6] - 2025-12-23 - "Remoção de Hosting"
 ### Removido
 - **Configuração:** Arquivos `firebase.json` e `.firebaserc` excluídos, pois o Firebase Hosting não será mais utilizado.

@@ -56,20 +56,20 @@ window.handleEnrollment = async (e) => {
 
     try {
         const dados = {
-            nome: document.getElementById('nome').value,
-            nascimento: document.getElementById('nascimento').value,
-            whatsapp: document.getElementById('whatsapp').value,
+            nome: document.getElementById('nomeAluno').value,
+            nascimento: document.getElementById('dataNascimento').value,
+            cpf: document.getElementById('cpf').value,
+            telefone: document.getElementById('telefone').value,
             curso: document.getElementById('curso').value,
-            nivel: document.getElementById('nivel').value,
-            responsavel: document.getElementById('responsavel')?.value || "N/A",
-            parentesco: document.getElementById('parentesco')?.value || "N/A",
-            obs: document.getElementById('obs').value,
+            diaAula: document.getElementById('diaAula').value,
+            horario: document.getElementById('horarioAula').value,
+            valor: document.getElementById('valorMensalidade').value,
             data_registro: new Date().toISOString()
         };
 
         await addDoc(collection(db, "matriculas"), dados);
 
-        document.getElementById('enrollmentForm').style.display = 'none';
+        document.getElementById('formMatricula').style.display = 'none';
         document.getElementById('successMessage').style.display = 'block';
         
         // Opcional: Enviar email via EmailJS se configurado
@@ -195,7 +195,7 @@ window.toggleMenu = () => {
 
 // --- 5. Rodapé Dinâmico (Carrega em todas as páginas) ---
 const footerContainer = document.getElementById('footer-container');
-const APP_VERSION = "1.0.4";
+const APP_VERSION = "1.0.7";
 if (footerContainer) {
     footerContainer.innerHTML = `
     <footer>
