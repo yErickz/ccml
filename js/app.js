@@ -186,3 +186,50 @@ window.selectPlan = (planName) => {
     alert(`Ótima escolha! O plano "${planName}" é excelente. Redirecionando para o WhatsApp da secretaria...`);
     window.open(`https://wa.me/5594999999999?text=Olá, tenho interesse no plano ${planName}`, '_blank');
 };
+
+// --- Menu Mobile ---
+window.toggleMenu = () => {
+    const nav = document.querySelector('.nav-links');
+    nav.classList.toggle('active');
+};
+
+// --- 5. Rodapé Dinâmico (Carrega em todas as páginas) ---
+const footerContainer = document.getElementById('footer-container');
+if (footerContainer) {
+    footerContainer.innerHTML = `
+    <footer>
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>CCML</h3>
+                    <p>Centro de Cultura Musical e Linguística. Transformando vidas através da arte e do conhecimento.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Links Rápidos</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="matricula.html">Matrícula</a></li>
+                        <li><a href="valores_ccml.html">Valores</a></li>
+                        <li><a href="painel_professor.html">Área do Professor</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contato</h4>
+                    <ul class="footer-links">
+                        <li><i class="fa-brands fa-whatsapp" style="color: var(--gold); margin-right: 10px;"></i> (94) 99999-9999</li>
+                        <li><i class="fa-solid fa-envelope" style="color: var(--gold); margin-right: 10px;"></i> contato@ccml.com.br</li>
+                        <li><i class="fa-solid fa-location-dot" style="color: var(--gold); margin-right: 10px;"></i> Rua da Música, 123 - Centro</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 CCML. Todos os direitos reservados.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>`;
+}

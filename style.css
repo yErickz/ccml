@@ -66,6 +66,16 @@ nav.fixed-nav {
     gap: 30px;
 }
 
+/* Botão Menu Mobile (Hambúrguer) */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--gold);
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
 .nav-links a {
     color: var(--white);
     font-size: 0.9rem;
@@ -222,6 +232,10 @@ table {
     border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px;
 }
 th, td { padding: 20px 15px; text-align: center; border-bottom: 1px solid #eee; vertical-align: middle; }
+
+/* Wrapper para tabelas responsivas */
+.table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; }
+
 th {
     font-family: 'Montserrat', sans-serif; background-color: var(--secondary);
     color: var(--gold); font-weight: 700; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px;
@@ -445,7 +459,22 @@ footer {
 /* --- Responsividade --- */
 @media (max-width: 768px) {
     .hero h1 { font-size: 2.5rem; }
-    .nav-links { display: none; }
+    
+    /* Menu Mobile */
+    .mobile-menu-btn { display: block; }
+    .nav-links {
+        display: none; /* Oculto por padrão */
+        position: absolute;
+        top: 70px; left: 0; width: 100%;
+        background-color: var(--dark);
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        gap: 20px;
+        border-bottom: 2px solid var(--gold);
+    }
+    .nav-links.active { display: flex; animation: fadeIn 0.3s; }
+    
     .stats-strip { gap: 20px; }
     .form-grid { grid-template-columns: 1fr; }
     .full-width { grid-column: span 1; }
