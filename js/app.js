@@ -1,5 +1,5 @@
 // A primeira linha importa a conexão que criamos no outro arquivo
-import { app } from './firebase-config.js';
+import { app } from '../firebase-config.js';
 
 console.log("O site carregou e já está conectado ao Firebase!");
 
