@@ -8,8 +8,8 @@ console.log("O site carregou e já está conectado ao Firebase!");
 // Variáveis Globais
 let chatOpen = false;
 
-// Carregar Header e Footer ao iniciar
-document.addEventListener("DOMContentLoaded", () => {
+// Função de inicialização
+function init() {
     loadSharedComponents();
     initScrollAnimations();
 
@@ -20,7 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (e.key === 'Enter') checkTeacherLogin();
         });
     }
-});
+}
+
+// Garantir que o código rode mesmo se o evento já passou (comum em módulos)
+if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", init);
+} else {
+    init();
+}
 
 /* --- Funções da Página de Matrícula --- */
 function sendToWhatsapp(e) {
@@ -119,9 +126,37 @@ function getLocalBotResponse(text) {
                "Qual modalidade te interessa mais?";
     }
 
-    // ... (Lógica do Chatbot continua a mesma) ...
-    // Simplificado para brevidade, mas a lógica completa deve estar aqui
+    // Detalhes dos Planos
+    if (lowerText.includes('turma')) return "A aula em <strong>Turma</strong> (R$ 189,90) é excelente para socializar e aprender em grupo. As turmas são reduzidas para garantir a qualidade!";
     
+    if (lowerText.includes('individual')) return "A aula <strong>Individual</strong> (R$ 250,00) oferece foco total no seu desenvolvimento, com o professor dedicado 100% a você.";
+    
+    if (lowerText.includes('inglês') || lowerText.includes('ingles')) return "O curso de <strong>Inglês Instrumental</strong> (R$ 219,90) é único! Você aprende a ler partituras e termos técnicos em inglês, essencial para músicos globais. 🌍";
+    
+    if (lowerText.includes('matrícula') || lowerText.includes('matricula')) return "Boa notícia: <strong>Não cobramos taxa de matrícula!</strong> 🎉 Você paga apenas a primeira mensalidade para começar.";
+
+    // Instrumentos
+    if (lowerText.includes('violão') || lowerText.includes('guitarra')) return "O Violão é um dos nossos cursos mais populares! 🎸 Ensinamos desde acordes básicos até fingerstyle avançado.";
+    if (lowerText.includes('piano') || lowerText.includes('teclado')) return "Piano e Teclado são ótimos para base musical. 🎹 Temos instrumentos no local para as aulas!";
+    if (lowerText.includes('bateria')) return "Quer fazer barulho (com ritmo)? 🥁 Nossas aulas de Bateria trabalham coordenação e estilos variados.";
+    if (lowerText.includes('violino') || lowerText.includes('cello') || lowerText.includes('viola')) return "As cordas friccionadas trazem elegância e emoção. 🎻 Temos professores especialistas em Violino, Viola e Violoncelo.";
+    if (lowerText.includes('canto') || lowerText.includes('voz') || lowerText.includes('vocal')) return "Solte a voz! 🎤 Nas aulas de Canto, trabalhamos respiração, afinação e interpretação.";
+    if (lowerText.includes('sax') || lowerText.includes('flauta') || lowerText.includes('clarinete') || lowerText.includes('trompete')) return "Os sopros têm uma energia incrível! 🎷 Ensinamos Saxofone, Flauta, Clarinete e Trompete.";
+
+    // Localização e Contato
+    if (lowerText.includes('onde') || lowerText.includes('fica') || lowerText.includes('endereço') || lowerText.includes('local')) {
+        return "Estamos localizados no coração da cidade! 📍 Em breve estaremos no novo espaço no <strong>Residencial Unique</strong>. Venha nos visitar!";
+    }
+
+    if (lowerText.includes('whatsapp') || lowerText.includes('telefone') || lowerText.includes('contato') || lowerText.includes('falar com')) {
+        return "Você pode falar direto com nossa secretaria pelo WhatsApp: <br><br>📱 <strong>(94) 99197-2745</strong>";
+    }
+
+    // Agradecimentos
+    if (lowerText.includes('obrigado') || lowerText.includes('valeu') || lowerText.includes('grato')) {
+        return "Por nada! A música é para todos. 🎶 Se tiver mais dúvidas, é só chamar!";
+    }
+
     // Default
     return "Hmm, interessante pergunta! 🤔 Para detalhes mais específicos ou agendamentos, recomendo falar com nossa secretaria humana no WhatsApp: <br><br> 👉 <strong>(94) 99197-2745</strong>. <br><br>Posso ajudar com mais alguma coisa sobre os cursos?";
 }
@@ -150,8 +185,51 @@ function loadSharedComponents() {
     document.body.prepend(nav);
 
     const footer = document.createElement('footer');
-    // ... (Conteúdo do footer omitido para brevidade, manter igual ao original) ...
-    footer.innerHTML = `<div class="footer-content"><p>&copy; 2026 Centro Cultural Maestro Levi.</p></div>`; 
+    footer.innerHTML = `
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>CCML</h3>
+                    <p>Aulas presenciais e online para todas as idades. Venha conhecer o CCML — mais visível, mais som, mais arte.</p>
+                    <p>
+                        <strong>Contato:</strong><br>
+                        <a href="tel:+5594991972745" style="color:var(--gold);text-decoration:none;">(94) 99197-2745</a><br>
+                        <a href="mailto:contato@ccml.com.br" style="color:var(--gold);text-decoration:none;">contato@ccml.com.br</a>
+                    </p>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Links Rápidos</h4>
+                    <ul class="footer-links">
+                        <li><a href="matricula.html">Matrículas</a></li>
+                        <li><a href="valores_ccml.html">Investimento</a></li>
+                        <li><a href="progresso.html">Acompanhar Progresso</a></li>
+                        <li><a href="painel_professor.html">Área do Professor</a></li>
+                        <li><a href="#">Eventos</a></li>
+                        <li><a href="#">Sobre</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Receba Novidades</h4>
+                    <p>Siga-nos nas redes para ver apresentações e novidades.</p>
+                    <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Obrigado! Você foi inscrito.');">
+                        <input type="email" class="newsletter-input" placeholder="Seu melhor e-mail" required>
+                        <button type="submit" class="btn-newsletter">Inscrever</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Centro Cultural Maestro Levi. Todos os direitos reservados.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    `;
     document.body.appendChild(footer);
 }
 
@@ -185,7 +263,21 @@ function checkTeacherLogin() {
 }
 
 function generateFeedback() {
-    // ... (Lógica original) ...
+    const name = document.getElementById('fbName').value;
+    const topic = document.getElementById('fbTopic').value;
+    const rating = document.getElementById('fbRating').value;
+    const homework = document.getElementById('fbHomework').value;
+
+    if(!name) { alert("Preencha o nome do aluno!"); return; }
+
+    const text = `🎵 *Feedback da Aula - CCML*\n\n` +
+                 `👤 *Aluno:* ${name}\n` +
+                 `🎼 *Tema:* ${topic}\n` +
+                 `📊 *Desempenho:* ${rating}\n` +
+                 `🏠 *Para Casa:* ${homework}\n\n` +
+                 `Até a próxima aula! 👋`;
+
+    navigator.clipboard.writeText(text);
     alert("Mensagem copiada! Agora cole no WhatsApp.");
 }
 
@@ -196,7 +288,20 @@ function toggleAddStudent() {
 }
 
 function addStudent() {
-    // ... (Lógica original) ...
+    const time = document.getElementById('newTime').value;
+    const name = document.getElementById('newStudent').value;
+    const list = document.querySelector('.agenda-list');
+
+    if(!time || !name) { alert("Preencha horário e nome!"); return; }
+
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="time">${time}</span><span class="student">${name}</span>`;
+    
+    const freeSlot = list.querySelector('.free-slot');
+    if(freeSlot) list.insertBefore(li, freeSlot);
+    else list.appendChild(li);
+    
+    document.getElementById('newStudent').value = '';
     toggleAddStudent();
 }
 
