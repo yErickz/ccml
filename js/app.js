@@ -14,6 +14,104 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
 
+// --- 1.1 Configuração de Inputs (Data) ---
+const dateInput = document.getElementById('dataNascimento');
+if (dateInput) {
+    const today = new Date().toISOString().split("T")[0];
+    dateInput.max = today; // Impede datas futuras no calendário
+    dateInput.min = "1900-01-01"; // Impede anos muito antigos
+
+    // Validação visual e bloqueio imediato ao alterar
+    dateInput.addEventListener('change', (e) => {
+        const value = e.target.value;
+
+        // Verifica se o navegador detectou uma data inválida (ex: 30 de Fevereiro)
+        if (!value && e.target.validity.badInput) {
+            e.target.style.borderColor = "red";
+            e.target.style.backgroundColor = "#ffebee";
+            if (typeof showError === 'function') showError("Data inválida. Verifique se o dia e o mês existem.");
+            e.target.value = "";
+            return;
+        }
+
+        if (!value) return; // Campo limpo ou incompleto
+
+        if (value > today) {
+            e.target.style.borderColor = "red";
+            e.target.style.backgroundColor = "#ffebee";
+            // Usa o modal de erro se disponível, senão alerta padrão
+            if (typeof showError === 'function') showError("A data de nascimento não pode ser no futuro.");
+            else alert("A data de nascimento não pode ser no futuro.");
+            e.target.value = ""; // Limpa o valor inválido
+        } else if (value < "1900-01-01") {
+            e.target.style.borderColor = "red";
+            e.target.style.backgroundColor = "#ffebee";
+            if (typeof showError === 'function') showError("Data muito antiga. Verifique o ano de nascimento.");
+            e.target.value = "";
+        } else {
+            e.target.style.borderColor = "green";
+            e.target.style.backgroundColor = "#e8f5e9";
+        }
+
+        // Lógica de Menor de Idade
+        const age = calculateAge(value);
+        
+        // Preencher campo de idade visualmente
+        const idadeInput = document.getElementById('idade');
+        if (idadeInput) idadeInput.value = age + " anos";
+
+        const checkResp = document.getElementById('checkMesmoResponsavel');
+        if (age < 18) {
+            checkResp.checked = false;
+            checkResp.disabled = true;
+            toggleResponsavel(); // Força mostrar campos vazios
+        } else {
+            checkResp.disabled = false;
+        }
+    });
+}
+
+// --- 1.2 Máscara e Validação de CPF ---
+const cpfInput = document.getElementById('cpf');
+if (cpfInput) {
+    cpfInput.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, "");
+        if (value.length > 11) value = value.slice(0, 11);
+        value = value.replace(/(\d{3})(\d)/, "$1.$2");
+        value = value.replace(/(\d{3})(\d)/, "$1.$2");
+        value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        e.target.value = value;
+
+        // Validação visual imediata ao completar o CPF
+        if (value.length === 14) {
+            if (validarCPF(value)) {
+                e.target.style.borderColor = "green";
+                e.target.style.backgroundColor = "#e8f5e9";
+            } else {
+                e.target.style.borderColor = "red";
+                e.target.style.backgroundColor = "#ffebee";
+                if (typeof showError === 'function') showError("CPF inválido. Verifique os números digitados.");
+            }
+        } else {
+            e.target.style.borderColor = "";
+            e.target.style.backgroundColor = "";
+        }
+    });
+}
+
+// Máscara para CPF do Responsável (Reutilizando lógica)
+const cpfRespInput = document.getElementById('cpfResponsavel');
+if (cpfRespInput) {
+    cpfRespInput.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, "");
+        if (value.length > 11) value = value.slice(0, 11);
+        value = value.replace(/(\d{3})(\d)/, "$1.$2");
+        value = value.replace(/(\d{3})(\d)/, "$1.$2");
+        value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        e.target.value = value;
+    });
+}
+
 // --- 2. Chatbot IA (Simulado) ---
 window.toggleChat = () => {
     const modal = document.getElementById('aiModal');
@@ -54,16 +152,54 @@ window.handleEnrollment = async (e) => {
     btn.innerText = "Enviando...";
     btn.disabled = true;
 
+    const cpfValue = document.getElementById('cpf').value;
+    if (!validarCPF(cpfValue)) {
+        showError("O CPF informado parece inválido. Por favor, verifique os números e tente novamente.");
+        btn.innerText = originalText;
+        btn.disabled = false;
+        return;
+    }
+
+    // Validação CPF Responsável (se preenchido)
+    const cpfRespValue = document.getElementById('cpfResponsavel').value;
+    if (cpfRespValue && !validarCPF(cpfRespValue)) {
+        showError("O CPF do Responsável Financeiro é inválido.");
+        btn.innerText = originalText;
+        btn.disabled = false;
+        return;
+    }
+
     try {
         const dados = {
+            // 1. Identificação
             nome: document.getElementById('nomeAluno').value,
             nascimento: document.getElementById('dataNascimento').value,
-            cpf: document.getElementById('cpf').value,
-            telefone: document.getElementById('telefone').value,
+            idade: document.getElementById('idade').value,
+            cpf: cpfValue,
+            endereco: document.getElementById('endereco').value,
+            email: document.getElementById('email').value,
+            
+            // 2. Financeiro
+            responsavel_financeiro: document.getElementById('nomeResponsavel').value,
+            cpf_responsavel: document.getElementById('cpfResponsavel').value,
+            whatsapp_cobranca: document.getElementById('whatsappCobranca').value,
+            dia_vencimento: document.getElementById('diaVencimento').value,
+
+            // 3. Pedagógico
             curso: document.getElementById('curso').value,
-            diaAula: document.getElementById('diaAula').value,
+            nivel: document.getElementById('nivel').value,
+            instrumento_proprio: document.getElementById('instrumentoProprio').value,
+            objetivo: document.getElementById('objetivo').value,
+            professor: document.getElementById('professor').value,
+            dia_aula: document.getElementById('diaAula').value,
             horario: document.getElementById('horarioAula').value,
-            valor: document.getElementById('valorMensalidade').value,
+            aula_experimental_data: document.getElementById('dataExperimental').value,
+            aula_experimental_horario: document.getElementById('horarioExperimental').value,
+
+            // 4. Segurança
+            necessidades_especiais: document.getElementById('necessidades').value,
+            autorizacao_imagem: document.getElementById('autorizacaoImagem').checked,
+            
             data_registro: new Date().toISOString()
         };
 
@@ -233,4 +369,155 @@ if (footerContainer) {
             </div>
         </div>
     </footer>`;
+}
+
+// --- 6. Funções do Modal de Erro ---
+window.showError = (msg) => {
+    const modal = document.getElementById('errorModal');
+    if (modal) {
+        document.getElementById('errorText').innerText = msg;
+        modal.classList.add('show');
+    } else {
+        alert(msg); // Fallback caso o modal não exista na página
+    }
+};
+
+window.closeErrorModal = () => {
+    const modal = document.getElementById('errorModal');
+    if (modal) modal.classList.remove('show');
+};
+
+// --- 7. Funções Auxiliares de Matrícula ---
+window.calculateAge = (dobString) => {
+    const dob = new Date(dobString);
+    const diff_ms = Date.now() - dob.getTime();
+    const age_dt = new Date(diff_ms);
+    return Math.abs(age_dt.getUTCFullYear() - 1970);
+};
+
+window.toggleResponsavel = () => {
+    const isStudentResp = document.getElementById('checkMesmoResponsavel').checked;
+    const nomeAluno = document.getElementById('nomeAluno').value;
+    const cpfAluno = document.getElementById('cpf').value;
+    const zapAluno = document.getElementById('telefone').value; // Assumindo que telefone do aluno serve
+
+    if (isStudentResp) {
+        document.getElementById('nomeResponsavel').value = nomeAluno;
+        document.getElementById('cpfResponsavel').value = cpfAluno;
+        document.getElementById('whatsappCobranca').value = zapAluno;
+        // Opcional: Bloquear edição para garantir consistência
+        // document.getElementById('nomeResponsavel').readOnly = true;
+    } else {
+        document.getElementById('nomeResponsavel').value = "";
+        document.getElementById('cpfResponsavel').value = "";
+        document.getElementById('whatsappCobranca').value = "";
+        // document.getElementById('nomeResponsavel').readOnly = false;
+    }
+};
+
+// --- 8. Lógica do Wizard (Passo a Passo) ---
+let currentTab = 0; // Começa na primeira etapa (índice 0)
+
+window.showTab = (n) => {
+    const x = document.getElementsByClassName("form-step");
+    if (x.length === 0) return; // Proteção caso não esteja na página de matrícula
+
+    // Esconde todas as abas
+    for (let i = 0; i < x.length; i++) {
+        x[i].style.display = "none";
+        x[i].classList.remove("active");
+    }
+    // Mostra a atual
+    x[n].style.display = "block";
+    x[n].classList.add("active");
+
+    // Controle dos botões
+    if (n == 0) {
+        document.getElementById("prevBtn").style.display = "none";
+    } else {
+        document.getElementById("prevBtn").style.display = "inline";
+    }
+
+    if (n == (x.length - 1)) {
+        document.getElementById("nextBtn").style.display = "none";
+        document.getElementById("submitBtn").style.display = "inline";
+    } else {
+        document.getElementById("nextBtn").style.display = "inline";
+        document.getElementById("submitBtn").style.display = "none";
+        document.getElementById("nextBtn").innerHTML = "Avançar";
+    }
+
+    // Atualiza Barra de Progresso
+    const progress = ((n + 1) / x.length) * 100;
+    document.getElementById("progressBar").style.width = progress + "%";
+}
+
+window.nextPrev = (n) => {
+    const x = document.getElementsByClassName("form-step");
+    // Se estiver avançando, valida os campos da etapa atual
+    if (n == 1 && !validateFormStep()) return false;
+
+    // Oculta a aba atual
+    x[currentTab].style.display = "none";
+    currentTab = currentTab + n;
+
+    showTab(currentTab);
+}
+
+function validateFormStep() {
+    const x = document.getElementsByClassName("form-step");
+    const inputs = x[currentTab].querySelectorAll("input[required], select[required]");
+    let valid = true;
+
+    for (let i = 0; i < inputs.length; i++) {
+        if (!inputs[i].checkValidity()) {
+            inputs[i].reportValidity(); // Mostra o balãozinho nativo do navegador
+            valid = false;
+            break; // Para no primeiro erro
+        }
+    }
+    
+    // Validação extra de CPF se estiver na etapa 1
+    if (currentTab === 0 && valid) {
+        const cpfVal = document.getElementById('cpf').value;
+        if (!validarCPF(cpfVal)) {
+            showError("CPF inválido na etapa de identificação.");
+            valid = false;
+        }
+    }
+
+    return valid;
+}
+
+// Inicializa o Wizard se estiver na página
+document.addEventListener("DOMContentLoaded", () => {
+    if(document.getElementsByClassName("form-step").length > 0) {
+        showTab(currentTab);
+    }
+});
+
+// Função auxiliar de validação de CPF
+function validarCPF(cpf) {
+    cpf = cpf.replace(/[^\d]+/g, '');
+    if (cpf == '') return false;
+    // Elimina CPFs invalidos conhecidos (ex: 111.111.111-11)
+    if (cpf.length != 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+    
+    // Valida 1o digito
+    let add = 0;
+    for (let i = 0; i < 9; i++)
+        add += parseInt(cpf.charAt(i)) * (10 - i);
+    let rev = 11 - (add % 11);
+    if (rev == 10 || rev == 11) rev = 0;
+    if (rev != parseInt(cpf.charAt(9))) return false;
+    
+    // Valida 2o digito
+    add = 0;
+    for (let i = 0; i < 10; i++)
+        add += parseInt(cpf.charAt(i)) * (11 - i);
+    rev = 11 - (add % 11);
+    if (rev == 10 || rev == 11) rev = 0;
+    if (rev != parseInt(cpf.charAt(10))) return false;
+    
+    return true;
 }
