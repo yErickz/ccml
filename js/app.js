@@ -1,5 +1,4 @@
 // A primeira linha importa a conexão que criamos no outro arquivo
-import { app } from './firebase-config.js';
 import { saveEnrollment } from './db.js';
 import { loginWithGoogle } from './auth.js';
 
