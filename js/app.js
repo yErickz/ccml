@@ -195,6 +195,7 @@ window.toggleMenu = () => {
 
 // --- 5. Rodapé Dinâmico (Carrega em todas as páginas) ---
 const footerContainer = document.getElementById('footer-container');
+const APP_VERSION = "1.0.4";
 if (footerContainer) {
     footerContainer.innerHTML = `
     <footer>
@@ -223,7 +224,7 @@ if (footerContainer) {
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 CCML. Todos os direitos reservados.</p>
+                <p>&copy; 2025 CCML. Todos os direitos reservados. <span style="opacity: 0.7; font-size: 0.85em;">v${APP_VERSION}</span></p>
                 <div class="social-icons">
                     <a href="#"><i class="fa-brands fa-instagram"></i></a>
                     <a href="#"><i class="fa-brands fa-facebook"></i></a>

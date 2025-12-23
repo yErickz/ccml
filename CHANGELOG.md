@@ -2,23 +2,30 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
-## [1.0.3] - 2025-12-23
+## [1.0.4] - 2025-12-23 - "Mobile & Responsividade"
+### Adicionado
+- **Mobile:** Menu hambúrguer implementado para navegação em dispositivos móveis.
+- **Responsividade:** Tabelas agora possuem rolagem horizontal em telas pequenas (`.table-responsive`).
+- **Estilo:** Ajustes de CSS para melhor visualização em smartphones.
+- **Rodapé:** Exibição dinâmica da versão do sistema.
+
+## [1.0.3] - 2025-12-23 - "Refatoração Estrutural"
 ### Refatorado
 - **Estrutura:** Criação de `js/firebase-config.js` para centralizar credenciais e separar lógica de frontend/backend.
 - **Página Inicial:** `index.html` atualizado para Landing Page institucional; login removido e centralizado no Painel do Professor.
 
-## [1.0.2] - 2025-12-23
+## [1.0.2] - 2025-12-23 - "Dashboard & Matrícula"
 ### Adicionado
 - **Painel do Professor:** Dashboard com "Analytics Visual" (gráficos de alunos e cursos) e lista de solicitações de matrícula.
 - **Matrícula:** Suporte para cadastro de responsáveis por alunos menores de idade.
 - **Navegação:** Menu principal unificado em todas as páginas.
 - **Core:** Implementação do `js/app.js` gerenciando interatividade e conexão com Firebase.
 
-## [1.0.1] - 2025-12-23
+## [1.0.1] - 2025-12-23 - "Correção de Cache"
 ### Corrigido
 - **Cache:** Implementado "Cache Busting" (`?v=1.0.1`) nos arquivos HTML para forçar o navegador a baixar a versão mais recente do CSS e JS após o deploy.
 
-## [1.0.0] - 2025-12-23
+## [1.0.0] - 2025-12-23 - "Lançamento Oficial"
 ### Adicionado
 - **Identificação de Versão:** Adicionada constante `APP_VERSION` no `app.js` e exibição no rodapé.
 - **Segurança:** Validação no formulário de matrícula (nome mínimo de 3 letras, telefone válido).
