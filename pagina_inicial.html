@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCML - Centro Cultural Maestro Levi</title>
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Sua Jornada Musical Começa Aqui</h1>
+            <p>Descubra o equilíbrio perfeito entre técnica, emoção e criatividade no centro cultural mais completo da região.</p>
+            <a href="matricula.html" class="btn-main" style="margin-top: 30px; font-size: 1.3rem; padding: 20px 50px;">Matricule-se</a>
+        </div>
+    </header>
+
+    <div class="stats-strip">
+        <div class="stat-item animate-on-scroll fade-up">
+            <div class="stat-number">5+</div>
+            <div class="stat-label">Anos de História</div>
+        </div>
+        <div class="stat-item animate-on-scroll fade-up delay-200">
+            <div class="stat-number">800+</div>
+            <div class="stat-label">Alunos Formados</div>
+        </div>
+        <div class="stat-item animate-on-scroll fade-up delay-400">
+            <div class="stat-number">6</div>
+            <div class="stat-label">Professores Experts</div>
+        </div>
+    </div>
+
+    <section id="matriculas" class="ai-section animate-on-scroll scale-up">
+        <div class="ai-container">
+            <h2>Matrículas Abertas</h2>
+            <p class="subtitle">Garanta sua vaga e comece a transformar sua paixão em música hoje mesmo.</p>
+            
+            <div style="margin-top: 40px;">
+                <a href="matricula.html" class="btn-main" style="font-size: 1.2rem; padding: 20px 40px;">
+                    <i class="fa-solid fa-file-signature"></i> Preencher Ficha de Matrícula
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Chat Floating Button -->
+    <button class="ai-fab" onclick="toggleChat()">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Fale com o Maestro IA
+    </button>
+
+    <!-- AI Chat Modal -->
+    <div id="aiModal" class="ai-modal">
+        <div class="ai-header">
+            <span>Maestro Virtual CCML</span>
+            <button class="ai-close" onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="chat-container" id="chatContainer">
+            <div class="message bot">
+                Olá! Sou a IA do CCML. 🎵<br>Posso te ajudar a escolher um instrumento ou tirar dúvidas sobre os cursos. O que gostaria de saber?
+            </div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Digite sua dúvida..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- Script Principal -->
+    <script src="script.js"></script>
+</body>
+</html>

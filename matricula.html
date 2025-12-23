@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrícula Online - CCML</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="form-box animate-on-scroll fade-up">
+            <h1>Ficha de Matrícula</h1>
+            <p class="subtitle">Preencha os dados abaixo para agilizar seu atendimento na secretaria.</p>
+            
+            <form onsubmit="sendToWhatsapp(event)">
+                <div class="form-grid">
+                    <div class="input-group full-width">
+                        <label>Nome Completo do Aluno</label>
+                        <input type="text" id="nome" required placeholder="Ex: João Silva">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Data de Nascimento</label>
+                        <input type="date" id="nascimento">
+                    </div>
+
+                    <div class="input-group">
+                        <label>WhatsApp para Contato</label>
+                        <input type="tel" id="whatsapp" required placeholder="(94) 99999-9999">
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Curso de Interesse</label>
+                        <select id="curso" required>
+                            <option value="" disabled selected>Selecione um instrumento...</option>
+                            <option value="Piano/Teclado">Piano / Teclado</option>
+                            <option value="Violão">Violão</option>
+                            <option value="Violino">Violino</option>
+                            <option value="Bateria">Bateria</option>
+                            <option value="Canto/Técnica Vocal">Canto / Técnica Vocal</option>
+                            <option value="Saxofone">Saxofone</option>
+                            <option value="Musicalização Infantil">Musicalização Infantil</option>
+                            <option value="Outro">Outro (Especificar na msg)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Já possui conhecimento musical?</label>
+                        <select id="nivel">
+                            <option value="Iniciante (Nunca toquei)">Iniciante (Nunca toquei)</option>
+                            <option value="Básico (Já toquei um pouco)">Básico (Já toquei um pouco)</option>
+                            <option value="Intermediário/Avançado">Intermediário / Avançado</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Observações ou Dúvidas (Opcional)</label>
+                        <textarea id="obs" rows="3" placeholder="Ex: Tenho disponibilidade apenas pela manhã..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fa-brands fa-whatsapp"></i> Enviar Pré-Matrícula
+                </button>
+                <p style="text-align: center; font-size: 0.8rem; color: #888; margin-top: 15px;">
+                    Ao clicar, você será redirecionado para o WhatsApp da secretaria com seus dados preenchidos.
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script Principal -->
+    <script src="script.js"></script>
+</body>
+</html>

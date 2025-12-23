@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investimento - CCML</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Ícones Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div class="main-container" style="margin-top: 20px;">
+
+    <h2>Planos de Investimento</h2>
+    <p class="subtitle">Escolha a modalidade ideal para o seu aprendizado musical. Todos os nossos planos são mensais e sem taxa de matrícula.</p>
+    
+    <table class="animate-on-scroll fade-up">
+        <thead>
+            <tr>
+                <th style="text-align: left; padding-left: 30px;">Modalidade</th>
+                <th>Mensalidade</th>
+                <th>Detalhes</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="modalidade-col" style="padding-left: 30px;">
+                    <i class="fa-solid fa-users" style="color: var(--primary); margin-right: 10px;"></i>
+                    Aula em Turma
+                </td>
+                <td class="price-highlight">R$ 189,90</td>
+                <td class="benefits-text">Interação com outros alunos.<br>Ideal para quem gosta de aprender em grupo.</td>
+                <td><button class="btn-action" onclick="selectPlan('Aula em Turma')">Escolher</button></td>
+            </tr>
+            <tr>
+                <td class="modalidade-col" style="padding-left: 30px;">
+                    <i class="fa-solid fa-user" style="color: var(--primary); margin-right: 10px;"></i>
+                    Aula Individual
+                </td>
+                <td class="price-highlight">R$ 250,00</td>
+                <td class="benefits-text">Atenção exclusiva do professor.<br>Ritmo personalizado e foco total.</td>
+                <td><button class="btn-action" onclick="selectPlan('Aula Individual')">Escolher</button></td>
+            </tr>
+            <tr>
+                <td class="modalidade-col" style="padding-left: 30px;">
+                    <i class="fa-solid fa-language" style="color: var(--primary); margin-right: 10px;"></i>
+                    Inglês Instrumental
+                </td>
+                <td class="price-highlight">R$ 219,90</td>
+                <td class="benefits-text">Aprenda música e inglês simultaneamente.<br>Vocabulário técnico e prática.</td>
+                <td><button class="btn-action" onclick="selectPlan('Inglês Instrumental')">Escolher</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="info-card animate-on-scroll slide-left delay-200">
+        <h4><i class="fa-solid fa-circle-info"></i> Informações Importantes:</h4>
+        <ul>
+            <li><strong>Duração:</strong> Todas as aulas têm duração de 60 minutos (1 hora).</li>
+            <li><strong>Frequência:</strong> 1 aula por semana.</li>
+            <li><strong>Material:</strong> Material didático digital incluso.</li>
+            <li><strong>Reposição:</strong> Consulte nossa política de reposição de aulas na secretaria.</li>
+        </ul>
+    </div>
+
+    <!-- Link para voltar ao Início -->
+    <div style="text-align: center; margin-bottom: 20px;">
+        <a href="pagina_inicial.html" class="btn-back-footer">
+            <i class="fa-solid fa-arrow-left"></i> Voltar ao Início
+        </a>
+    </div>
+
+</div>
+
+<!-- AI Chat Floating Button -->
+<button class="ai-fab" onclick="toggleChat()">
+    <i class="fa-solid fa-wand-magic-sparkles"></i> Dúvidas sobre Valores?
+</button>
+
+<!-- AI Chat Modal -->
+<div id="aiModal" class="ai-modal">
+    <div class="ai-header">
+        <span>Maestro Virtual - Financeiro</span>
+        <button style="background:none; border:none; color:white; cursor:pointer;" onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="chat-container" id="chatContainer">
+        <div class="message bot">
+            Olá! Estou aqui para tirar suas dúvidas sobre os valores e formas de pagamento. Qual plano te interessou mais? 💰🎵
+        </div>
+    </div>
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Digite sua dúvida..." onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<!-- Script Principal -->
+<script src="script.js"></script>
+
+</body>
+</html>

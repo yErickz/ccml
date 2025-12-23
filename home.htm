@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informativo CCML - Aulas de Música</title>
+    <!-- Fontes Google (Identidade CCML) -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Ícones Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #C5A059; /* Dourado Premium */
+            --secondary: #1a1a1a; /* Preto Elegante */
+            --terracotta: #D65A31; /* Terracotta / Telha - Toque Cultural */
+            --accent: #2c3e50; /* Azul Escuro */
+            --bg: #ffffff;
+            --text: #333;
+            --light-gray: #f9f9f9;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: var(--text);
+            line-height: 1.4;
+            font-size: 13px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            border-top: 6px solid var(--primary);
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .brand h1 {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            color: var(--primary);
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .brand p {
+            font-family: 'Montserrat', sans-serif;
+            margin: 5px 0 0 0;
+            color: var(--secondary);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .contact-header {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        /* Link de telefone interativo */
+        .phone-link {
+            text-decoration: none;
+            color: #555;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .phone-link:hover {
+            color: var(--primary);
+            transform: scale(1.05);
+        }
+        
+        .contact-header strong {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--secondary);
+            font-size: 1rem;
+        }
+
+        /* Frase de Efeito */
+        .quote-box {
+            background-color: #fffbf0; /* Fundo creme suave */
+            color: var(--secondary);
+            padding: 15px;
+            text-align: center;
+            font-style: italic;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 25px;
+            font-size: 1rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Layout Grid System */
+        .grid-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .col-half {
+            flex: 1;
+        }
+
+        /* Section Styling */
+        h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+            margin: 0 0 15px 0;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* Ícone do título em Terracotta */
+        h3 i {
+            color: var(--terracotta);
+            margin-right: 5px;
+        }
+
+        .box {
+            background: var(--light-gray);
+            padding: 15px;
+            border-radius: 8px;
+            height: 100%;
+            border: 1px solid #eee;
+        }
+
+        /* Listas de Instrumentos */
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        li {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #444;
+            transition: transform 0.2s; /* Animação suave */
+            cursor: default;
+        }
+
+        /* Efeito ao passar o mouse nos instrumentos */
+        li:hover {
+            transform: translateX(5px);
+            color: var(--terracotta); /* Mudança sutil no hover também */
+        }
+
+        li i {
+            color: var(--terracotta); /* Ícones da lista em Terracotta */
+            width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 0.8rem;
+        }
+
+        /* Grid de Destaques */
+        .highlight-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .highlight-item {
+            background: white;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .highlight-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .highlight-item i {
+            font-size: 1.8rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .highlight-item strong {
+            font-family: 'Montserrat', sans-serif;
+            display: block;
+            color: var(--primary);
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+        
+        .highlight-item span {
+            font-size: 0.8rem;
+            color: #666;
+            line-height: 1.2;
+            display: block;
+        }
+
+        /* Tabela de Preços */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Botão de Ação na Tabela */
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .btn-action:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-action:active {
+            transform: translateY(0);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--secondary);
+            color: var(--primary); /* Texto dourado no fundo preto */
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+
+        .price-highlight {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--secondary);
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .modalidade-col {
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #777;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .btn-print {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 15px;
+            font-size: 0.8rem;
+            transition: background 0.3s;
+        }
+        
+        .btn-print:hover {
+            background-color: var(--secondary);
+        }
+
+        /* --- STYLES FOR AI CHAT --- */
+        .ai-fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--secondary);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-fab:hover {
+            transform: scale(1.05);
+            background-color: var(--primary);
+            color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .ai-modal {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000;
+            flex-direction: column;
+            border: 1px solid #eee;
+            overflow: hidden;
+        }
+
+        .ai-header {
+            background-color: var(--secondary);
+            color: var(--primary);
+            padding: 15px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .chat-container {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .message.bot {
+            background-color: #fff;
+            border: 1px solid #eee;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        .message.user {
+            background-color: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .input-area {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            background-color: white;
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .input-area button {
+            background-color: var(--secondary);
+            color: var(--primary);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .input-area button:hover {
+            background-color: var(--primary);
+            color: var(--secondary);
+        }
+
+        .typing-indicator {
+            font-style: italic;
+            color: #888;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            display: none;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; max-width: 100%; padding: 0 10px; border: none; }
+            .btn-print, .ai-fab, .ai-modal { display: none !important; } /* Hide AI on print */
+            .box { background-color: #f9f9f9 !important; -webkit-print-color-adjust: exact; }
+            th { background-color: #1a1a1a !important; color: #C5A059 !important; -webkit-print-color-adjust: exact; }
+            .quote-box { background-color: #fffbf0 !important; -webkit-print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainContent">
+    <header>
+        <div class="brand">
+            <h1>CCML</h1>
+            <p>Centro Cultural Maestro Levi</p>
+        </div>
+        <div class="contact-header">
+            <strong>Maestro Levi</strong><br>
+            <a href="https://wa.me/5594991972745" target="_blank" class="phone-link">
+                <i class="fa-brands fa-whatsapp" style="color: var(--primary);"></i> (94) 99197-2745
+            </a><br>
+            <a href="https://wa.me/5594992008201" target="_blank" class="phone-link">
+                <i class="fa-brands fa-whatsapp" style="color: var(--primary);"></i> (94) 99200-8201
+            </a>
+        </div>
+    </header>
+
+    <div class="quote-box">
+        "A música é a arte de manifestar os diversos afetos da nossa alma. Descubra o músico que há em você!"
+    </div>
+
+    <div class="grid-row">
+        <!-- Coluna 1: Cordas e Teclas -->
+        <div class="col-half box">
+            <h3><i class="fa-solid fa-guitar"></i> Cordas & Teclas</h3>
+            <ul>
+                <li><i class="fa-solid fa-music"></i> Piano / Teclado</li>
+                <li><i class="fa-solid fa-guitar"></i> Violão</li>
+                <li><i class="fa-solid fa-music"></i> Violino</li>
+                <li><i class="fa-solid fa-music"></i> Viola de Arco</li>
+                <li><i class="fa-solid fa-music"></i> Violoncelo</li>
+                <li><i class="fa-solid fa-music"></i> Ukulele</li>
+            </ul>
+        </div>
+
+        <!-- Coluna 2: Sopros e Voz -->
+        <div class="col-half box">
+            <h3><i class="fa-solid fa-wind"></i> Sopros & Voz</h3>
+            <ul>
+                <li><i class="fa-solid fa-wind"></i> Saxofone</li>
+                <li><i class="fa-solid fa-wind"></i> Flauta Transversal</li>
+                <li><i class="fa-solid fa-music"></i> Clarinete</li>
+                <li><i class="fa-solid fa-bullhorn"></i> Trompete</li>
+                <li><i class="fa-solid fa-microphone"></i> Técnica Vocal</li>
+                <li><i class="fa-solid fa-users"></i> Canto Coral</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Destaques Especiais -->
+    <h3><i class="fa-solid fa-star"></i> Cursos Especiais</h3>
+    <div class="highlight-grid">
+        <div class="highlight-item">
+            <i class="fa-solid fa-language"></i>
+            <strong>Inglês Instrumental</strong>
+            <span>Foco em terminologia musical e leitura</span>
+        </div>
+        <div class="highlight-item">
+            <i class="fa-solid fa-book-open"></i>
+            <strong>Teoria Musical</strong>
+            <span>Leitura de partitura e harmonia</span>
+        </div>
+        <div class="highlight-item">
+            <i class="fa-solid fa-icons"></i>
+            <strong>Musicalização</strong>
+            <span>Para crianças (Iniciação)</span>
+        </div>
+    </div>
+
+    <!-- Tabela de Valores -->
+    <h3><i class="fa-solid fa-sack-dollar"></i> Planos e Investimento</h3>
+    <p style="font-size: 0.9rem; margin-bottom: 10px; text-align: center; color: #555;">Todos os planos incluem: <strong>1 aula semanal de 60 minutos</strong>.</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th style="text-align: left; padding-left: 20px;">Modalidade</th>
+                <th>Mensalidade</th>
+                <th>Benefícios</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="modalidade-col" style="padding-left: 20px;">Aula em Turma</td>
+                <td class="price-highlight">R$ 189,90</td>
+                <td>Aprendizado em grupo</td>
+                <td><button class="btn-action" onclick="selectPlan('Aula em Turma')">Tenho Interesse</button></td>
+            </tr>
+            <tr>
+                <td class="modalidade-col" style="padding-left: 20px;">Aula Individual</td>
+                <td class="price-highlight">R$ 250,00</td>
+                <td>Foco personalizado</td>
+                <td><button class="btn-action" onclick="selectPlan('Aula Individual')">Tenho Interesse</button></td>
+            </tr>
+            <tr>
+                <td class="modalidade-col" style="padding-left: 20px;">Inglês Instrumental</td>
+                <td class="price-highlight">R$ 219,90</td>
+                <td>Material incluso</td>
+                <td><button class="btn-action" onclick="selectPlan('Inglês Instrumental')">Tenho Interesse</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <footer>
+        <p>📍 Em breve no <strong>Residencial Unique</strong> | &copy; 2026 NutriLevi - Nutricionista Nagen Levi</p>
+    </footer>
+</div>
+
+<!-- AI Chat Floating Button -->
+<button class="ai-fab" onclick="toggleChat()">
+    <i class="fa-solid fa-wand-magic-sparkles"></i> Fale com o Maestro IA
+</button>
+
+<!-- AI Chat Modal -->
+<div id="aiModal" class="ai-modal">
+    <div class="ai-header">
+        <span>Maestro Virtual CCML</span>
+        <button class="ai-close" onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="chat-container" id="chatContainer">
+        <div class="message bot">
+            Olá! Sou a IA do CCML. 🎵<br>Posso te ajudar a escolher um instrumento ou tirar dúvidas sobre os cursos. O que gostaria de saber?
+        </div>
+    </div>
+    <div class="typing-indicator" id="typingIndicator">Maestro escrevendo...</div>
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Digite sua dúvida..." onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<!-- Script de Interface (Standard JS) -->
+<script>
+    let chatOpen = false;
+
+    function toggleChat() {
+        const modal = document.getElementById('aiModal');
+        chatOpen = !chatOpen;
+        modal.style.display = chatOpen ? 'flex' : 'none';
+        if(chatOpen) document.getElementById('userInput').focus();
+    }
+
+    // Função para selecionar plano e abrir o chat automaticamente
+    function selectPlan(planName) {
+        const modal = document.getElementById('aiModal');
+        
+        // Se o chat estiver fechado, abre
+        if (!chatOpen) {
+            toggleChat();
+        }
+
+        // Preenche o input e envia
+        const input = document.getElementById('userInput');
+        input.value = `Olá! Tenho interesse na modalidade: ${planName}. Como funciona a matrícula?`;
+        
+        // Pequeno delay para dar tempo da UI renderizar se estava fechada
+        setTimeout(() => {
+            sendMessage();
+        }, 300);
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('userInput');
+        const container = document.getElementById('chatContainer');
+        const userText = input.value.trim();
+        const indicator = document.getElementById('typingIndicator');
+
+        if (!userText) return;
+
+        // Adiciona Mensagem do Usuário
+        const userDiv = document.createElement('div');
+        userDiv.className = 'message user';
+        userDiv.textContent = userText;
+        container.appendChild(userDiv);
+        input.value = '';
+        container.scrollTop = container.scrollHeight;
+
+        indicator.style.display = 'block';
+
+        // Tenta chamar a função da IA (definida no módulo abaixo)
+        if (window.askMaestro) {
+            try {
+                await window.askMaestro(userText, container);
+            } catch (error) {
+                console.error("Erro na IA:", error);
+                showBotMessage(container, "Desculpe, a orquestra desafinou! Tente novamente em instantes.");
+            }
+        } else {
+            showBotMessage(container, "O Maestro está afinando os instrumentos (carregando...). Tente novamente em alguns segundos.");
+        }
+
+        indicator.style.display = 'none';
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function showBotMessage(container, text) {
+        const botDiv = document.createElement('div');
+        botDiv.className = 'message bot';
+        botDiv.innerHTML = text.replace(/\n/g, '<br>');
+        container.appendChild(botDiv);
+    }
+</script>
+
+<!-- Script de IA (Module) -->
+<script type="module">
+    import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+    const apiKey = ""; // API Key injected by environment
+
+    // Expõe a função para o escopo global
+    window.askMaestro = async function(userText, container) {
+        try {
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-preview-09-2025" });
+
+            const systemPrompt = "Você é o Maestro Virtual, um assistente inteligente do CCML (Centro Cultural Maestro Levi). Sua missão é ajudar interessados a escolher cursos de música, tirar dúvidas sobre instrumentos e teoria musical. Seja curto, amigável, use emojis musicais e sempre convide o usuário para agendar uma aula experimental no final. Cursos: Piano, Teclado, Violão, Violino, Viola de Arco, Violoncelo, Ukulele, Saxofone, Flauta, Clarinete, Trompete, Técnica Vocal, Canto Coral, Musicalização Infantil e Inglês Instrumental. Valores: Turma R$ 189,90, Individual R$ 250,00, Inglês R$ 219,90.";
+            
+            const prompt = `${systemPrompt}\n\nUsuário: ${userText}\nMaestro:`;
+
+            // Chamada à API com retentativa simples
+            let result;
+            let attempts = 0;
+            while(attempts < 3) {
+                try {
+                    result = await model.generateContent(prompt);
+                    break;
+                } catch(e) {
+                    attempts++;
+                    await new Promise(r => setTimeout(r, 1000 * attempts));
+                }
+            }
+
+            const response = await result.response;
+            const text = response.text();
+
+            // Adiciona a resposta usando a função auxiliar global (se acessível) ou criando elemento direto
+            const botDiv = document.createElement('div');
+            botDiv.className = 'message bot';
+            botDiv.innerHTML = text.replace(/\n/g, '<br>');
+            container.appendChild(botDiv);
+            
+        } catch (error) {
+            throw error; // Repassa o erro para o script de UI tratar
+        }
+    }
+</script>
+
+</body>
+</html>

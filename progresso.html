@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Progresso - CCML</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="main-container" style="margin-top: 40px;">
+        
+        <!-- Modo Edição (Aluno) -->
+        <div id="editMode" class="animate-on-scroll fade-up">
+            <h2><i class="fa-solid fa-trophy" style="color: var(--gold);"></i> Meu Diário de Bordo</h2>
+            <p class="subtitle">Marque suas conquistas e gere um link para mostrar sua evolução musical.</p>
+
+            <div class="form-box">
+                <div class="input-group">
+                    <label>Nome do Músico</label>
+                    <input type="text" id="studentName" placeholder="Seu nome aqui...">
+                </div>
+
+                <h4 style="margin: 20px 0 10px; color: var(--gold);">Conquistas Desbloqueadas:</h4>
+                
+                <div class="skills-grid">
+                    <label class="skill-item"><input type="checkbox" class="skill-check" value="Primeira Aula"> <span>🎵 Primeira Aula</span></label>
+                    <label class="skill-item"><input type="checkbox" class="skill-check" value="Leitura de Pauta"> <span>🎼 Leitura de Pauta</span></label>
+                    <label class="skill-item"><input type="checkbox" class="skill-check" value="Acordes Maiores"> <span>🎹 Acordes Maiores</span></label>
+                    <label class="skill-item"><input type="checkbox" class="skill-check" value="Escalas Básicas"> <span>📏 Escalas Básicas</span></label>
+                    <label class="skill-item"><input type="checkbox" class="skill-check" value="Primeira Música Completa"> <span>🎸 Primeira Música</span></label>
+                    <label class="skill-item"><input type="checkbox" class="skill-check" value="Ritmo e Compasso"> <span>🥁 Ritmo e Compasso</span></label>
+                    <label class="skill-item"><input type="checkbox" class="skill-check" value="Técnica Vocal I"> <span>🎤 Técnica Vocal I</span></label>
+                    <label class="skill-item"><input type="checkbox" class="skill-check" value="Apresentação em Público"> <span>🌟 Apresentação</span></label>
+                </div>
+
+                <button onclick="generateShareLink()" class="btn-main" style="width: 100%; margin-top: 30px;">
+                    <i class="fa-solid fa-share-nodes"></i> Gerar Link de Compartilhamento
+                </button>
+
+                <div id="shareResult" style="display: none; margin-top: 20px; background: #f4f4f4; padding: 15px; border-radius: 8px;">
+                    <p style="font-size: 0.9rem; margin-bottom: 5px;">Copie este link e envie para amigos:</p>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="shareUrl" readonly style="font-size: 0.8rem;">
+                        <button onclick="copyLink()" class="btn-nav"><i class="fa-solid fa-copy"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modo Visualização (Visitante) -->
+        <div id="viewMode" style="display: none;" class="animate-on-scroll scale-up">
+            <div class="certificate-box">
+                <div class="cert-header">
+                    <i class="fa-solid fa-music fa-3x" style="color: var(--gold); margin-bottom: 15px;"></i>
+                    <h1>Progresso Musical</h1>
+                    <p>Aluno(a): <strong id="viewName" style="font-size: 1.4rem; color: var(--dark);"></strong></p>
+                    <p style="font-size: 0.8rem; color: #777;">Atualizado em: <span id="viewDate"></span></p>
+                </div>
+                
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                
+                <h3 style="text-align: center; margin-bottom: 20px;">Habilidades Conquistadas</h3>
+                <ul id="viewSkills" class="achievements-list">
+                    <!-- Itens serão inseridos via JS -->
+                </ul>
+
+                <div style="text-align: center; margin-top: 40px;">
+                    <a href="matricula.html" class="btn-main">Quero estudar no CCML também!</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

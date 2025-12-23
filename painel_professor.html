@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Professor - CCML</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Tela de Login (Simulada) -->
+    <div id="loginScreen" class="login-overlay">
+        <div class="login-box animate-on-scroll fade-up">
+            <div style="margin-bottom: 25px;">
+                <h1 class="logo" style="color: var(--gold); font-size: 2.5rem; margin-bottom: 5px;">CCML</h1>
+                <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: var(--dark);">Centro Cultural Maestro Levi</p>
+            </div>
+            
+            <h2 style="font-size: 1.4rem; margin-bottom: 10px;">Área do Professor</h2>
+            <p style="margin-bottom: 25px; color: #666; font-size: 0.9rem;">Acesso restrito à equipe pedagógica</p>
+            
+            <input type="password" id="teacherPass" placeholder="Digite a senha de acesso..." class="login-input">
+            <button onclick="checkTeacherLogin()" class="btn-main" style="width: 100%; margin-top: 15px;">Entrar</button>
+            <a href="pagina_inicial.html" style="display: block; margin-top: 20px; color: #999; font-size: 0.9rem; transition: 0.3s;"><i class="fa-solid fa-arrow-left"></i> Voltar ao Início</a>
+            
+            <p id="loginError" style="color: red; font-size: 0.8rem; margin-top: 10px; display: none;">Senha incorreta!</p>
+        </div>
+    </div>
+
+    <!-- Conteúdo do Painel (Oculto inicialmente) -->
+    <div id="teacherDashboard" style="display: none;">
+        <div class="main-container" style="margin-top: 40px;">
+            <div class="dashboard-header">
+                <h1>Olá, Maestro! 🎼</h1>
+                <p>Bem-vindo ao seu painel de controle.</p>
+            </div>
+
+            <div class="dashboard-grid">
+                
+                <!-- Ferramenta 1: Gerador de Feedback -->
+                <div class="dash-card animate-on-scroll fade-up">
+                    <h3><i class="fa-brands fa-whatsapp" style="color: var(--gold);"></i> Feedback Rápido</h3>
+                    <p style="font-size: 0.8rem; color: #777; margin-bottom: 15px;">Gere uma mensagem padronizada para enviar aos pais/alunos.</p>
+                    
+                    <div class="input-group">
+                        <label>Nome do Aluno</label>
+                        <input type="text" id="fbName" placeholder="Ex: Maria">
+                    </div>
+                    <div class="input-group">
+                        <label>Tema da Aula</label>
+                        <input type="text" id="fbTopic" placeholder="Ex: Escala de Dó Maior">
+                    </div>
+                    <div class="input-group">
+                        <label>Desempenho</label>
+                        <select id="fbRating">
+                            <option value="Excelente! 🌟">Excelente! 🌟</option>
+                            <option value="Muito Bom! 👏">Muito Bom! 👏</option>
+                            <option value="Precisa Praticar Mais 🎹">Precisa Praticar Mais 🎹</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Tarefa de Casa</label>
+                        <input type="text" id="fbHomework" placeholder="Ex: Treinar página 12">
+                    </div>
+
+                    <button onclick="generateFeedback()" class="btn-nav" style="width: 100%; margin-top: 10px;">
+                        <i class="fa-regular fa-copy"></i> Copiar Mensagem
+                    </button>
+                </div>
+
+                <!-- Ferramenta 2: Agenda Visual (Estática) -->
+                <div class="dash-card animate-on-scroll fade-up delay-200">
+                    <h3><i class="fa-regular fa-calendar" style="color: var(--gold);"></i> Agenda do Dia</h3>
+                    <ul class="agenda-list">
+                        <li>
+                            <span class="time">09:00</span>
+                            <span class="student">João Silva (Piano)</span>
+                        </li>
+                        <li>
+                            <span class="time">10:00</span>
+                            <span class="student">Turma Infantil (Musicalização)</span>
+                        </li>
+                        <li>
+                            <span class="time">14:00</span>
+                            <span class="student">Ana Clara (Violão)</span>
+                        </li>
+                        <li class="free-slot">
+                            <span class="time">15:00</span>
+                            <span>Horário Livre</span>
+                        </li>
+                    </ul>
+                    
+                    <div id="addStudentForm" style="display: none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+                        <input type="time" id="newTime" class="login-input" style="padding: 8px; margin-bottom: 5px;">
+                        <input type="text" id="newStudent" placeholder="Nome do Aluno" class="login-input" style="padding: 8px; margin-bottom: 10px;">
+                        <button onclick="addStudent()" class="btn-nav" style="width: 100%; background: var(--gold); color: white !important;">Confirmar</button>
+                    </div>
+
+                    <button onclick="toggleAddStudent()" class="btn-main" style="width: 100%; margin-top: 20px; font-size: 0.8rem;">+ Adicionar Aluno</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
