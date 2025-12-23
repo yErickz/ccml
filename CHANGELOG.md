@@ -2,6 +2,14 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.0.6] - 2025-12-23 - "Remoção de Hosting"
+### Removido
+- **Configuração:** Arquivos `firebase.json` e `.firebaserc` excluídos, pois o Firebase Hosting não será mais utilizado.
+
+## [1.0.5] - 2025-12-23 - "Organização de Arquivos"
+### Refatorado
+- **Estrutura:** Arquivo `style.css` movido para a pasta `css/` para melhor organização do projeto.
+
 ## [1.0.4] - 2025-12-23 - "Mobile & Responsividade"
 ### Adicionado
 - **Mobile:** Menu hambúrguer implementado para navegação em dispositivos móveis.
