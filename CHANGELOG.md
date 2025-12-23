@@ -2,6 +2,11 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.0.3] - 2025-12-23
+### Refatorado
+- **Estrutura:** Criação de `js/firebase-config.js` para centralizar credenciais e separar lógica de frontend/backend.
+- **Página Inicial:** `index.html` atualizado para Landing Page institucional; login removido e centralizado no Painel do Professor.
+
 ## [1.0.2] - 2025-12-23
 ### Adicionado
 - **Painel do Professor:** Dashboard com "Analytics Visual" (gráficos de alunos e cursos) e lista de solicitações de matrícula.
