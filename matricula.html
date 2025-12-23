@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matrícula Online - CCML</title>
-    <link rel="stylesheet" href="css/style.css?v=1.0.1">
+    <link rel="stylesheet" href="css/style.css?v=1.0.14">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Biblioteca EmailJS para envio de e-mails -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -24,8 +24,11 @@
 
     <div class="main-container">
         <div class="form-box animate-on-scroll fade-up">
-            <h2>Nova Matrícula - CCML</h2>
-            <p class="subtitle">Preencha os dados abaixo para cadastrar um novo aluno no sistema.</p>
+            <div class="form-header">
+                <i class="fa-solid fa-music" style="font-size: 2.5rem; color: var(--gold); margin-bottom: 15px;"></i>
+                <h2>Ficha de Matrícula</h2>
+                <p>Preencha os dados abaixo para iniciar sua jornada musical no CCML.</p>
+            </div>
             
             <!-- Mensagem de Sucesso (Oculta inicialmente) -->
             <div id="successMessage" style="display:none; text-align: center; padding: 20px;">
@@ -131,10 +134,14 @@
                             <option value="Canto/Técnica Vocal">Canto / Técnica Vocal</option>
                             <option value="Flauta Doce">Flauta Doce</option>
                             <option value="Inglês com Música">Inglês com Música</option>
-                            <option value="Musicalização Infantil">Musicalização Infantil</option>
+                            <option value="musicalizacao">Musicalização Infantil</option>
                             <option value="Outro">Outro</option>
                         </select>
                         <input type="text" id="outroCurso" placeholder="Qual instrumento?" style="display:none; margin-top: 5px;">
+                        <div id="avisoMusicalizacao" style="display:none; background: #fffbf0; border: 1px solid var(--gold); padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 0.9rem; color: #555;">
+                            <i class="fa-solid fa-circle-info" style="color: var(--gold); margin-right: 8px;"></i>
+                            Para crianças de 6 anos ou menos, o curso é direcionado para Musicalização Infantil, focando no desenvolvimento cognitivo e motor.
+                        </div>
                     </div>
 
                     <div class="input-group">
@@ -280,6 +287,6 @@
     </div>
 
     <!-- Script Principal -->
-    <script type="module" src="js/app.js?v=1.0.1"></script>
+    <script type="module" src="js/app.js?v=1.0.14"></script>
 </body>
 </html>

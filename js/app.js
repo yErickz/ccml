@@ -1,6 +1,9 @@
 import { db, auth, provider } from "./firebase-config.js";
-import { collection, addDoc, getDocs, query, orderBy, limit, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+import { collection, addDoc, getDocs, query, orderBy, limit, doc, updateDoc, where } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+
+// --- 0. CONFIGURAÇÃO DE DESENVOLVIMENTO ---
+const DEV_MODE = true; // ⚠️ TRUE = Pula validações para testar. FALSE = Modo normal.
 
 // --- 1. Animações de Scroll ---
 const observerOptions = { threshold: 0.1 };
@@ -71,6 +74,29 @@ if (dateInput) {
         } else {
             checkResp.disabled = false;
         }
+
+        // --- LÓGICA DE MUSICALIZAÇÃO INFANTIL ---
+        const cursoSelectJS = document.getElementById('curso');
+        const avisoMusicalizacao = document.getElementById('avisoMusicalizacao');
+
+        if (cursoSelectJS && avisoMusicalizacao) {
+            if (age <= 6) {
+                cursoSelectJS.value = 'musicalizacao';
+                cursoSelectJS.style.pointerEvents = 'none';
+                cursoSelectJS.style.backgroundColor = '#f0f0f0';
+                avisoMusicalizacao.style.display = 'block';
+                // Dispara o evento change para que a lógica de planos (Inglês com Música) seja reavaliada
+                cursoSelectJS.dispatchEvent(new Event('change')); 
+            } else {
+                // Se a idade for maior que 6 e o curso travado era musicalização, reseta para o usuário escolher.
+                if (cursoSelectJS.value === 'musicalizacao' && cursoSelectJS.style.pointerEvents === 'none') {
+                    cursoSelectJS.value = ''; 
+                }
+                cursoSelectJS.style.pointerEvents = 'auto';
+                cursoSelectJS.style.backgroundColor = 'white';
+                avisoMusicalizacao.style.display = 'none';
+            }
+        }
     });
 }
 
@@ -129,6 +155,18 @@ phoneInputs.forEach(id => {
             value = value.replace(/(\d)(\d{4})$/, "$1-$2");
             
             e.target.value = value;
+        });
+    }
+});
+
+// --- 1.5 Formatação Automática de Nomes ---
+const nameInputsToFormat = ['nomeAluno', 'nomeResponsavel'];
+nameInputsToFormat.forEach(id => {
+    const input = document.getElementById(id);
+    if (input) {
+        // Usando 'change' para formatar quando o usuário sai do campo
+        input.addEventListener('change', (e) => {
+            e.target.value = formatName(e.target.value);
         });
     }
 });
@@ -219,7 +257,7 @@ window.handleEnrollment = async (e) => {
     btn.disabled = true;
 
     const cpfValue = document.getElementById('cpf').value;
-    if (!validarCPF(cpfValue)) {
+    if (!DEV_MODE && !validarCPF(cpfValue)) {
         showError("O CPF informado parece inválido. Por favor, verifique os números e tente novamente.");
         btn.innerText = originalText;
         btn.disabled = false;
@@ -228,7 +266,7 @@ window.handleEnrollment = async (e) => {
 
     // Validação CPF Responsável (se preenchido)
     const cpfRespValue = document.getElementById('cpfResponsavel').value;
-    if (cpfRespValue && !validarCPF(cpfRespValue)) {
+    if (!DEV_MODE && cpfRespValue && !validarCPF(cpfRespValue)) {
         showError("O CPF do Responsável Financeiro é inválido.");
         btn.innerText = originalText;
         btn.disabled = false;
@@ -246,7 +284,7 @@ window.handleEnrollment = async (e) => {
 
     // Validação Final: Plano Obrigatório
     const planoEl = document.querySelector('input[name="plano"]:checked');
-    if (!planoEl) {
+    if (!DEV_MODE && !planoEl) {
         showError("Por favor, selecione um plano de ensino para concluir a matrícula.");
         btn.innerText = originalText;
         btn.disabled = false;
@@ -277,7 +315,7 @@ window.handleEnrollment = async (e) => {
             objetivo: document.getElementById('objetivo').value,
             disponibilidade_dias: diasPref,
             disponibilidade_turnos: turnosPref,
-            plano_escolhido: planoEl.value,
+            plano_escolhido: planoEl ? planoEl.value : "DEV_MODE_TEST",
 
             // 4. Segurança
             necessidades_especiais: document.getElementById('necessidades').value,
@@ -296,6 +334,8 @@ window.handleEnrollment = async (e) => {
             await addDoc(collection(db, "matriculas"), dados);
         }
 
+        localStorage.removeItem('matriculaProgress'); // Limpa o progresso salvo
+        playSuccessSound();
         document.getElementById('formMatricula').style.display = 'none';
         document.getElementById('successMessage').style.display = 'block';
         
@@ -554,14 +594,41 @@ window.showTab = (n) => {
     }
 }
 
-window.nextPrev = (n) => {
+window.nextPrev = async (n) => {
     const x = document.getElementsByClassName("form-step");
     // Se estiver avançando, valida os campos da etapa atual
-    if (n == 1 && !validateFormStep()) return false;
+    if (n == 1 && !DEV_MODE && !validateFormStep()) {
+        playErrorSound();
+        x[currentTab].classList.add('shake');
+        setTimeout(() => x[currentTab].classList.remove('shake'), 500);
+        return false;
+    }
 
     // --- CAPTURA DE LEAD (Salvar passo 1) ---
-    if (n == 1 && currentTab == 0) {
-        saveLead();
+    if (n == 1 && currentTab == 0 && !DEV_MODE) {
+        const btnNext = document.getElementById("nextBtn");
+        const originalText = btnNext.innerText;
+        
+        // Feedback visual e bloqueio
+        btnNext.innerHTML = '<span class="spinner"></span> Verificando...';
+        btnNext.disabled = true;
+
+        try {
+            const cpf = document.getElementById('cpf').value;
+            const isDuplicate = await checkDuplicateEnrollment(cpf);
+            
+            if (isDuplicate) {
+                showError("Este CPF já possui uma matrícula registrada ou em andamento.");
+                playErrorSound();
+                x[currentTab].classList.add('shake');
+                setTimeout(() => x[currentTab].classList.remove('shake'), 500);
+                return false; // Impede o avanço
+            }
+            await saveLead();
+        } finally {
+            btnNext.innerHTML = "Avançar"; // Restaura o texto original
+            btnNext.disabled = false;
+        }
     }
 
     // Oculta a aba atual
@@ -572,6 +639,8 @@ window.nextPrev = (n) => {
 }
 
 function validateFormStep() {
+    if (DEV_MODE) return true; // ⚠️ Pula validação se estiver em modo DEV
+
     const x = document.getElementsByClassName("form-step");
     const inputs = x[currentTab].querySelectorAll("input[required], select[required]");
     let valid = true;
@@ -617,8 +686,16 @@ function validateFormStep() {
 
 // Inicializa o Wizard se estiver na página
 document.addEventListener("DOMContentLoaded", () => {
-    if(document.getElementsByClassName("form-step").length > 0) {
+    if (document.getElementsByClassName("form-step").length > 0) {
+        loadFormProgress(); // Restaura dados salvos
         showTab(currentTab);
+        
+        // Adiciona listeners para salvar progresso automaticamente
+        const form = document.getElementById('formMatricula');
+        if (form) {
+            form.addEventListener('input', saveFormProgress);
+            form.addEventListener('change', saveFormProgress);
+        }
     }
 });
 
@@ -709,3 +786,194 @@ window.updateSummary = () => {
 document.addEventListener('change', (e) => {
     if (e.target.name === 'plano') updateSummary();
 });
+
+// Função para verificar duplicidade no banco
+async function checkDuplicateEnrollment(cpf) {
+    // Remove formatação para busca se necessário, mas aqui buscamos exato como salvo
+    const q = query(collection(db, "matriculas"), where("cpf", "==", cpf));
+    const querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+        // Se encontrou registro, verifica se não é o próprio lead atual (caso esteja editando)
+        for (const doc of querySnapshot.docs) {
+            if (doc.id !== currentLeadId) {
+                return true; // Encontrou OUTRO registro com mesmo CPF
+            }
+        }
+    }
+    return false;
+}
+
+// Função para formatar nomes (Capitaliza a primeira letra de cada palavra)
+function formatName(name) {
+    if (!name) return "";
+    const exceptions = ["da", "de", "do", "dos", "e"];
+    return name
+        .toLowerCase()
+        .split(' ')
+        .map((word, index) => {
+            if (index > 0 && exceptions.includes(word)) {
+                return word;
+            }
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .join(' ');
+}
+
+// --- 10. Monitoramento de Conectividade (Offline/Online) ---
+function initOfflineDetector() {
+    const handleStatusChange = () => {
+        if (!navigator.onLine) {
+            showOfflineBanner();
+        } else {
+            hideOfflineBanner();
+        }
+    };
+
+    window.addEventListener('online', handleStatusChange);
+    window.addEventListener('offline', handleStatusChange);
+    
+    // Verifica estado inicial
+    if (!navigator.onLine) showOfflineBanner();
+}
+
+function showOfflineBanner() {
+    let banner = document.getElementById('offline-banner');
+    if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'offline-banner';
+        banner.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100%;
+            background-color: #2c3e50; color: #fff; text-align: center;
+            padding: 12px; z-index: 99999; font-family: 'Montserrat', sans-serif; font-size: 0.9rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease-in-out;
+            border-bottom: 3px solid #C5A059;
+        `;
+        banner.innerHTML = '<i class="fa-solid fa-cloud-arrow-down" style="color: #ffcc00; margin-right: 8px;"></i> <strong>Você está offline.</strong> Não se preocupe, seu progresso está sendo salvo neste dispositivo.';
+        document.body.appendChild(banner);
+    }
+    banner.style.transform = 'translateY(0)';
+}
+
+function hideOfflineBanner() {
+    const banner = document.getElementById('offline-banner');
+    if (banner) {
+        banner.style.backgroundColor = '#27ae60'; // Verde sucesso
+        banner.style.borderBottomColor = '#2ecc71';
+        banner.innerHTML = '<i class="fa-solid fa-wifi" style="margin-right: 8px;"></i> Conexão restabelecida! Você já pode enviar sua matrícula.';
+        setTimeout(() => {
+            banner.style.transform = 'translateY(-100%)'; // Desliza para cima
+            setTimeout(() => banner.remove(), 300);
+        }, 4000);
+    }
+}
+
+// Inicializa o detector
+initOfflineDetector();
+
+// Função para tocar som de erro (Beep curto)
+function playErrorSound() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return; // Navegador não suporta
+
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sawtooth'; // Timbre mais "áspero" para erro
+        osc.frequency.setValueAtTime(220, ctx.currentTime); // Frequência grave (A3)
+        osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.1); // Cai a frequência (efeito "uóóón")
+
+        gain.gain.setValueAtTime(0.1, ctx.currentTime); // Volume baixo
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15); // Fade out
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.2);
+    } catch (e) {
+        // Ignora erros de áudio (ex: interação do usuário necessária)
+    }
+}
+
+// Função para tocar som de sucesso (Plim)
+function playSuccessSound() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine'; // Som mais suave
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime); // Nota Dó (C5)
+        osc.frequency.exponentialRampToValueAtTime(1046.5, ctx.currentTime + 0.1); // Sobe uma oitava (C6)
+
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5); // Fade out
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.5);
+    } catch (e) {
+        // Ignora erros
+    }
+}
+
+// --- 9. Persistência Local (LocalStorage) ---
+function saveFormProgress() {
+    const formData = {};
+    const inputs = document.querySelectorAll('#formMatricula input, #formMatricula select, #formMatricula textarea');
+    
+    inputs.forEach(input => {
+        if (input.type === 'checkbox' || input.type === 'radio') {
+            if (input.checked) {
+                if (!formData[input.name]) formData[input.name] = [];
+                formData[input.name].push(input.value);
+            }
+        } else {
+            if (input.id) formData[input.id] = input.value;
+        }
+    });
+
+    // Salva estado do sistema
+    formData['currentTab'] = currentTab;
+    formData['currentLeadId'] = currentLeadId;
+    
+    localStorage.setItem('matriculaProgress', JSON.stringify(formData));
+}
+
+function loadFormProgress() {
+    const savedData = localStorage.getItem('matriculaProgress');
+    if (!savedData) return;
+
+    const formData = JSON.parse(savedData);
+
+    // Restaura variáveis de controle
+    if (formData.currentLeadId) currentLeadId = formData.currentLeadId;
+    if (formData.currentTab !== undefined) currentTab = parseInt(formData.currentTab);
+
+    // Restaura inputs
+    for (const key in formData) {
+        // Tenta encontrar por ID (Inputs de texto, selects)
+        const inputById = document.getElementById(key);
+        if (inputById) {
+            inputById.value = formData[key];
+            inputById.dispatchEvent(new Event('change')); // Dispara eventos dependentes (ex: idade)
+        }
+
+        // Tenta encontrar por Name (Checkboxes/Radios)
+        const inputsByName = document.querySelectorAll(`input[name="${key}"]`);
+        if (inputsByName.length > 0) {
+            const values = Array.isArray(formData[key]) ? formData[key] : [formData[key]];
+            inputsByName.forEach(input => {
+                if (values.includes(input.value)) input.checked = true;
+            });
+        }
+    }
+}

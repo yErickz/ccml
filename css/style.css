@@ -205,6 +205,14 @@ nav.fixed-nav {
     border-top: 5px solid var(--gold);
 }
 
+.form-header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 20px;
+}
+.form-header p { color: #666; font-size: 1.05rem; }
+
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .full-width { grid-column: span 2; }
 .input-group { margin-bottom: 5px; }
@@ -579,7 +587,7 @@ footer {
 /* --- Wizard / Passo a Passo --- */
 .form-step {
     display: none;
-    animation: fadeIn 0.5s;
+    /* animation: fadeIn 0.5s; Removido para controle via JS */
 }
 .form-step.active {
     display: block;
@@ -663,3 +671,45 @@ footer {
 .plan-price { font-size: 1.4rem; font-weight: 800; color: var(--gold); margin-bottom: 5px; }
 .plan-price small { font-size: 0.8rem; font-weight: 400; color: #777; }
 .plan-desc { font-size: 0.85rem; color: #666; }
+
+/* --- Animações de Transição do Wizard --- */
+.form-step.animate-next { animation: slideInRight 0.5s ease-out; }
+.form-step.animate-prev { animation: slideInLeft 0.5s ease-out; }
+.form-step.animate-fade { animation: fadeIn 0.5s ease-out; }
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* --- Spinner de Carregamento --- */
+.spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s ease-in-out infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- Shake Animation (Erro) --- */
+.shake {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}

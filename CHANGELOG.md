@@ -2,7 +2,23 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
-## [1.0.14] - 2025-12-23 - "Planos & UX"
+## [1.0.14] - 2025-12-23 - "Polimento & Robustez"
+### Adicionado
+- **UX/UI:**
+  - **Animações:** Transições deslizantes entre etapas e efeito "Shake" (tremer) em erros.
+  - **Feedback Sonoro:** Sons de erro e sucesso (Web Audio API).
+  - **Visual:** Novo cabeçalho do formulário com ícone e design aprimorado.
+  - **Feedback:** Spinner de carregamento no botão de avançar.
+- **Funcionalidade:**
+  - **Auto-Save:** Persistência automática de dados no `LocalStorage`.
+  - **Offline Mode:** Detecção de queda de conexão com banner de aviso.
+  - **Formatação:** Capitalização automática de nomes (Title Case).
+- **Regras de Negócio:**
+  - **Musicalização:** Bloqueio automático do curso para crianças ≤ 6 anos.
+- **Desenvolvimento:**
+  - **DEV_MODE:** Variável para pular validações em testes.
+
+## [1.0.13] - 2025-12-23 - "Planos & UX"
 ### Adicionado
 - **Matrícula:** Nova etapa de "Escolha de Plano" substituindo a Aula Experimental.
 - **Lógica:** Seleção automática e bloqueio de plano quando o curso "Inglês com Música" é escolhido.
