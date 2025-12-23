@@ -1,0 +1,12 @@
+{
+  "name": "ccml",
+  "version": "1.0.0",
+  "description": "Firebase project for ccml",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "firebase": "^12.7.0"
+  }
+}

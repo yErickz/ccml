@@ -2,7 +2,9 @@
 import { saveEnrollment, getEnrollments } from './db.js';
 import { loginWithGoogle } from './auth.js';
 
-console.log("O site carregou e já está conectado ao Firebase!");
+const APP_VERSION = '1.0.1'; // Versão Atual do Sistema
+
+console.log(`CCML App v${APP_VERSION} - O site carregou e já está conectado ao Firebase!`);
 
 // --- CÓDIGO ORIGINAL MIGRADO DO SCRIPT.JS ---
 
@@ -281,7 +283,7 @@ function loadSharedComponents() {
             </div>
 
             <div class="footer-bottom">
-                <p>&copy; 2026 Centro Cultural Maestro Levi. Todos os direitos reservados.</p>
+                <p>&copy; 2026 Centro Cultural Maestro Levi. Todos os direitos reservados. <span style="opacity: 0.5; font-size: 0.8em; margin-left: 10px;">v${APP_VERSION}</span></p>
                 <div class="social-icons">
                     <a href="#"><i class="fa-brands fa-instagram"></i></a>
                     <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
