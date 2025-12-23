@@ -2,6 +2,11 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.0.9-exp] - 2025-12-23 - "Matrícula Experimental"
+### Adicionado
+- **Matrícula:** Reformulação completa com sistema de "Passo a Passo" (Wizard).
+- **Funcionalidade:** Barra de progresso, validação por etapas e novos campos detalhados (Saúde, Pedagógico, Financeiro).
+
 ## [1.0.7] - 2025-12-23 - "Atualização de Matrícula"
 ### Alterado
 - **Matrícula:** Formulário atualizado para incluir campos administrativos (CPF, Dia da Aula, Horário, Valor).

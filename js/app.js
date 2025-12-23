@@ -331,7 +331,7 @@ window.toggleMenu = () => {
 
 // --- 5. Rodapé Dinâmico (Carrega em todas as páginas) ---
 const footerContainer = document.getElementById('footer-container');
-const APP_VERSION = "1.0.7";
+const APP_VERSION = "1.0.9-exp";
 if (footerContainer) {
     footerContainer.innerHTML = `
     <footer>
