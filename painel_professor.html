@@ -47,9 +47,14 @@
     <!-- Conteúdo do Painel (Oculto inicialmente) -->
     <div id="teacherDashboard" style="display: none;">
         <div class="main-container" style="margin-top: 40px;">
-            <div class="dashboard-header">
-                <h1>Olá, Maestro! 🎼</h1>
-                <p>Bem-vindo ao seu painel de controle.</p>
+            <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>Olá, Maestro! 🎼</h1>
+                    <p>Bem-vindo ao seu painel de controle.</p>
+                </div>
+                <button onclick="handleLogout()" class="btn-nav" style="border-color: #d32f2f; color: #d32f2f !important; font-size: 0.9rem;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </button>
             </div>
 
             <!-- SURPRESA: Analytics Visual para Investidores -->
@@ -171,6 +176,6 @@
 
     <div id="footer-container"></div>
 
-    <script type="module" src="js/app.js?v=1.0.1"></script>
+    <script type="module" src="js/app.js?v=1.0.17"></script>
 </body>
 </html>

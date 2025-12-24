@@ -2,12 +2,15 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.0.18] - 2025-12-24 - "Logout do Professor"
+### Adicionado
+- **Painel do Professor:** Botão de "Sair" (Logout) no cabeçalho do dashboard.
+- **Funcionalidade:** Função `handleLogout` que encerra a sessão no Firebase e retorna à tela de login.
+
 ## [1.0.17] - 2025-12-24 - "Segurança & Notificações"
 ### Adicionado
 - **Segurança:** Dados salvos localmente (Auto-Save) agora expiram automaticamente após 30 minutos de inatividade para proteger informações em computadores compartilhados.
 - **UX:** Aviso visual (Pop-up) informando quando o rascunho é limpo por inatividade.
-### Alterado
-- **WhatsApp:** A mensagem de confirmação agora é enviada para o **Responsável Financeiro** (Cliente) em vez da Secretaria.
 
 ## [1.0.16] - 2025-12-24 - "Validação de Disponibilidade"
 ### Adicionado

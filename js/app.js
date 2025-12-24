@@ -410,8 +410,22 @@ window.handleGoogleLogin = async () => {
         await signInWithPopup(auth, provider);
         // O onAuthStateChanged vai lidar com a troca de tela
     } catch (error) {
-        alert("Erro no login: " + error.message);
+        console.error("Erro no login Google:", error);
+        alert("Erro no login: " + error.message + "\n\nVerifique se o domínio está autorizado no Firebase Console (Authentication > Settings > Authorized Domains).");
     }
+};
+
+// Logout (Funciona para Google e Senha)
+window.handleLogout = async () => {
+    try {
+        await signOut(auth); // Desloga do Firebase
+    } catch (e) {
+        console.log("Logout local");
+    }
+    // Força o retorno para a tela de login (cobre o caso de login por senha simples)
+    document.getElementById('teacherDashboard').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('teacherPass').value = ''; // Limpa a senha
 };
 
 // Login com Senha (Simples)
@@ -427,12 +441,16 @@ window.checkTeacherLogin = () => {
 };
 
 // Monitorar Auth State
-if (window.location.pathname.includes('painel_professor')) {
+if (document.getElementById('teacherDashboard')) {
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('teacherDashboard').style.display = 'block';
             loadDashboardData();
+        } else {
+            // Garante que se não houver usuário, mostra login
+            document.getElementById('teacherDashboard').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
         }
     });
 }
@@ -464,11 +482,11 @@ async function loadDashboardData() {
                     <td>${date}</td>
                     <td>
                         <strong>${d.nome}</strong><br>
-                        <small style="color:#777">${d.responsavel !== "N/A" ? 'Resp: ' + d.responsavel : ''}</small>
+                        <small style="color:#777">${d.responsavel_financeiro ? 'Resp: ' + d.responsavel_financeiro : ''}</small>
                     </td>
                     <td><span class="badge-curso">${d.curso}</span></td>
                     <td>
-                        <a href="https://wa.me/55${d.whatsapp.replace(/\D/g,'')}" target="_blank" style="color: var(--gold); font-weight:bold;">
+                        <a href="https://wa.me/55${(d.whatsapp_cobranca || d.telefone || "").replace(/\D/g,'')}" target="_blank" style="color: var(--gold); font-weight:bold;">
                             <i class="fa-brands fa-whatsapp"></i> Contatar
                         </a>
                     </td>
@@ -603,6 +621,17 @@ window.toggleResponsavel = () => {
         document.getElementById('whatsappCobranca').readOnly = false;
     }
 };
+
+// Sincronização automática dos campos se "Mesmo Responsável" estiver marcado
+['nomeAluno', 'cpf', 'telefone'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener('input', () => {
+            const check = document.getElementById('checkMesmoResponsavel');
+            if (check && check.checked) toggleResponsavel();
+        });
+    }
+});
 
 // --- 8. Lógica do Wizard (Passo a Passo) ---
 let currentTab = 0; // Começa na primeira etapa (índice 0)
@@ -1039,7 +1068,10 @@ function loadFormProgress() {
         if (inputsByName.length > 0) {
             const values = Array.isArray(formData[key]) ? formData[key] : [formData[key]];
             inputsByName.forEach(input => {
-                if (values.includes(input.value)) input.checked = true;
+                if (values.includes(input.value)) {
+                    input.checked = true;
+                    input.dispatchEvent(new Event('change')); // Dispara lógica associada (ex: toggleResponsavel)
+                }
             });
         }
     }
