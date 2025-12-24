@@ -3,7 +3,7 @@ import { collection, addDoc, getDocs, query, orderBy, limit, doc, updateDoc, whe
 import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
 
 // --- 0. CONFIGURAÇÃO DE DESENVOLVIMENTO ---
-const DEV_MODE = true; // ⚠️ TRUE = Pula validações para testar. FALSE = Modo normal.
+const DEV_MODE = false; // ⚠️ TRUE = Pula validações para testar. FALSE = Modo normal.
 
 // --- 1. Animações de Scroll ---
 const observerOptions = { threshold: 0.1 };
@@ -170,6 +170,45 @@ nameInputsToFormat.forEach(id => {
         });
     }
 });
+
+// --- 1.6 Validação Cruzada: Sábado vs Noite ---
+const sabadoInput = document.querySelector('input[name="diasPref"][value="Sábado"]');
+const noiteInput = document.querySelector('input[name="turnosPref"][value="Noite"]');
+
+function validateSabadoNoite() {
+    if (!sabadoInput || !noiteInput) return;
+
+    // Regra 1: Se "Noite" selecionado -> Bloqueia "Sábado"
+    if (noiteInput.checked) {
+        if (sabadoInput.checked) {
+            sabadoInput.checked = false;
+            showError("Indisponibilidade: A escola não funciona aos sábados à noite.");
+        }
+        sabadoInput.disabled = true;
+        sabadoInput.parentElement.style.opacity = "0.5";
+        sabadoInput.parentElement.title = "Indisponível para o turno da Noite";
+    } else {
+        sabadoInput.disabled = false;
+        sabadoInput.parentElement.style.opacity = "1";
+        sabadoInput.parentElement.title = "";
+    }
+
+    // Regra 2: Se "Sábado" selecionado -> Bloqueia "Noite"
+    if (sabadoInput.checked) {
+        noiteInput.disabled = true;
+        noiteInput.parentElement.style.opacity = "0.5";
+        noiteInput.parentElement.title = "Indisponível aos Sábados";
+    } else if (!noiteInput.checked) {
+        noiteInput.disabled = false;
+        noiteInput.parentElement.style.opacity = "1";
+        noiteInput.parentElement.title = "";
+    }
+}
+
+if (sabadoInput && noiteInput) {
+    sabadoInput.addEventListener('change', validateSabadoNoite);
+    noiteInput.addEventListener('change', validateSabadoNoite);
+}
 
 // --- 1.3 Controle do Campo "Outro Curso" ---
 const cursoSelect = document.getElementById('curso');
@@ -475,7 +514,7 @@ window.toggleMenu = () => {
 
 // --- 5. Rodapé Dinâmico (Carrega em todas as páginas) ---
 const footerContainer = document.getElementById('footer-container');
-const APP_VERSION = "1.0.15";
+const APP_VERSION = "1.0.16";
 if (footerContainer) {
     footerContainer.innerHTML = `
     <footer>
@@ -580,6 +619,9 @@ window.showTab = (n) => {
     // Mostra a atual
     x[n].style.display = "block";
     x[n].classList.add("active");
+
+    // Rola suavemente para o topo ao trocar de etapa
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // Controle dos botões
     if (n == 0) {
@@ -701,6 +743,7 @@ function validateFormStep() {
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementsByClassName("form-step").length > 0) {
         loadFormProgress(); // Restaura dados salvos
+        if (typeof validateSabadoNoite === 'function') validateSabadoNoite(); // Valida conflitos iniciais
         showTab(currentTab);
         
         // Adiciona listeners para salvar progresso automaticamente

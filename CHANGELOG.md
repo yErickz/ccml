@@ -2,6 +2,13 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.0.16] - 2025-12-24 - "Validação de Disponibilidade"
+### Adicionado
+- **Regras de Negócio:** Validação cruzada que impede a seleção simultânea de "Sábado" e turno "Noite".
+- **UX:** Feedback visual (opacidade e desabilitação) para combinações de horário inválidas.
+### Corrigido
+- **Layout:** Correção na estrutura de tags do Wizard (`fieldset`) que ocultava os botões de navegação.
+
 ## [1.0.15] - 2025-12-24 - "Refinamento de Planos"
 ### Alterado
 - **Precificação:** Ajuste no valor da "Musicalização Infantil" para **R$ 199,90**.

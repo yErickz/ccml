@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matrícula Online - CCML</title>
-    <link rel="stylesheet" href="css/style.css?v=1.0.15">
+    <link rel="stylesheet" href="css/style.css?v=1.0.16">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Biblioteca EmailJS para envio de e-mails -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -45,7 +45,7 @@
                 </div>
 
                 <!-- 1. BLOCO QUEM É (Identificação) -->
-                <div class="form-section form-step active">
+                <fieldset class="form-section form-step active">
                 <h3><i class="fa-solid fa-user"></i> 1. Identificação do Aluno</h3>
                 <div class="form-grid">
                     <div class="input-group full-width">
@@ -83,10 +83,10 @@
                         <input type="email" id="email" placeholder="exemplo@email.com" required>
                     </div>
                 </div>
-                </div>
+                </fieldset>
 
                 <!-- 2. BLOCO QUEM PAGA (Financeiro) -->
-                <div class="form-section form-step">
+                <fieldset class="form-section form-step">
                 <h3><i class="fa-solid fa-file-invoice-dollar"></i> 2. Responsável Financeiro</h3>
                 <div style="margin-bottom: 15px;">
                     <label style="display: inline-flex; align-items: center; cursor: pointer;">
@@ -116,10 +116,10 @@
                         </select>
                     </div>
                 </div>
-                </div>
+                </fieldset>
 
                 <!-- 3. BLOCO O QUE ESTUDA (Pedagógico) -->
-                <div class="form-section form-step">
+                <fieldset class="form-section form-step">
                 <h3><i class="fa-solid fa-music"></i> 3. Dados do Curso</h3>
 
                 <div class="form-grid">
@@ -198,19 +198,19 @@
                         </div>
                     </div>
                 </div>
-                </div>
+                </fieldset>
 
                 <!-- 4. BLOCO SEGURANÇA JURÍDICA -->
-                <div class="form-section form-step">
+                <fieldset class="form-section form-step">
                 <h3><i class="fa-solid fa-heart-pulse"></i> 4. Saúde e Bem-estar</h3>
                 
                 <div class="input-group full-width">
                     <label>Para oferecermos a melhor experiência de aprendizado, há algo sobre a saúde ou desenvolvimento que gostaria de compartilhar?</label>
                     <textarea id="necessidades" rows="3" placeholder="Este é um espaço seguro. Conte-nos se o aluno tem alguma alergia, sensibilidade ou condição específica (ex: TDAH, TEA) para que possamos acolhê-lo da melhor forma."></textarea>
                 </div>
-                </div>
+                </fieldset>
 
-                <div class="form-section form-step">
+                <fieldset class="form-section form-step">
                 <h3><i class="fa-solid fa-hand-holding-dollar"></i> 5. Escolha seu Plano</h3>
                 
                 <div class="input-group full-width">
@@ -269,7 +269,7 @@
                         <span style="font-size: 0.9rem; color: #555; line-height: 1.4;">Autorizo o uso da minha imagem (ou do menor sob minha responsabilidade) para fins de divulgação nas redes sociais da escola.</span>
                     </label>
                 </div>
-                </div>
+                </fieldset>
 
                 <!-- Navegação do Formulário -->
                 <div class="form-navigation">
@@ -296,6 +296,6 @@
     </div>
 
     <!-- Script Principal -->
-    <script type="module" src="js/app.js?v=1.0.15"></script>
+    <script type="module" src="js/app.js?v=1.0.16"></script>
 </body>
 </html>

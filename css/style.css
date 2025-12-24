@@ -23,6 +23,9 @@ body {
     overflow-x: hidden;
 }
 
+/* Reset para Fieldset */
+fieldset { border: none; min-width: 0; padding: 0; margin: 0; }
+
 /* Tipografia */
 h1, h2, h3 {
     font-family: 'Playfair Display', serif;
