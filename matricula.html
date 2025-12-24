@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matrícula Online - CCML</title>
-    <link rel="stylesheet" href="css/style.css?v=1.0.14">
+    <link rel="stylesheet" href="css/style.css?v=1.0.15">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Biblioteca EmailJS para envio de e-mails -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -235,11 +235,20 @@
                         </label>
 
                         <label class="plan-card">
-                            <input type="radio" name="plano" value="Ingles">
+                            <input type="radio" name="plano" value="Musicalizacao" disabled>
+                            <div class="plan-content">
+                                <span class="plan-title">Musicalização Infantil</span>
+                                <span class="plan-price">R$ 199,90 <small>/mês</small></span>
+                                <span class="plan-desc">Educação Musical (até 6 anos)</span>
+                            </div>
+                        </label>
+
+                        <label class="plan-card">
+                            <input type="radio" name="plano" value="Ingles" disabled>
                             <div class="plan-content">
                                 <span class="plan-title">Inglês com Música</span>
                                 <span class="plan-price">R$ 250,00 <small>/mês</small></span>
-                                <span class="plan-desc">Aula em Grupo</span>
+                                <span class="plan-desc">Aprendizado em grupo</span>
                             </div>
                         </label>
                     </div>
@@ -287,6 +296,6 @@
     </div>
 
     <!-- Script Principal -->
-    <script type="module" src="js/app.js?v=1.0.14"></script>
+    <script type="module" src="js/app.js?v=1.0.15"></script>
 </body>
 </html>

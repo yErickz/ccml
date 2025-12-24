@@ -189,7 +189,9 @@ if (cursoSelect && outroCursoInput) {
         // Controle Automático de Planos
         const planRadios = document.querySelectorAll('input[name="plano"]');
         if (planRadios.length > 0) {
-            if (e.target.value === 'Inglês com Música') {
+            const curso = e.target.value;
+
+            if (curso === 'Inglês com Música') {
                 // Trava no plano de Inglês
                 planRadios.forEach(r => {
                     if (r.value === 'Ingles') {
@@ -200,10 +202,21 @@ if (cursoSelect && outroCursoInput) {
                         r.checked = false;
                     }
                 });
-            } else {
-                // Libera Turma/Individual e bloqueia Inglês
+            } else if (curso === 'musicalizacao') {
+                // Trava no plano de Musicalização
                 planRadios.forEach(r => {
-                    if (r.value === 'Ingles') {
+                    if (r.value === 'Musicalizacao') {
+                        r.checked = true;
+                        r.disabled = false;
+                    } else {
+                        r.disabled = true;
+                        r.checked = false;
+                    }
+                });
+            } else {
+                // Libera Turma/Individual e bloqueia Planos Especiais
+                planRadios.forEach(r => {
+                    if (r.value === 'Ingles' || r.value === 'Musicalizacao') {
                         r.disabled = true;
                         r.checked = false;
                     } else {
@@ -462,7 +475,7 @@ window.toggleMenu = () => {
 
 // --- 5. Rodapé Dinâmico (Carrega em todas as páginas) ---
 const footerContainer = document.getElementById('footer-container');
-const APP_VERSION = "1.0.14";
+const APP_VERSION = "1.0.15";
 if (footerContainer) {
     footerContainer.innerHTML = `
     <footer>
@@ -772,6 +785,7 @@ window.updateSummary = () => {
         if (val === 'Turma') { plano = "Aula em Turma"; valor = "R$ 189,90"; }
         if (val === 'Individual') { plano = "Aula Individual"; valor = "R$ 250,00"; }
         if (val === 'Ingles') { plano = "Inglês com Música"; valor = "R$ 250,00"; }
+        if (val === 'Musicalizacao') { plano = "Musicalização Infantil"; valor = "R$ 199,90"; }
     }
 
     document.getElementById('resumoNome').innerText = nome;

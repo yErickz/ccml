@@ -2,6 +2,12 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.0.15] - 2025-12-24 - "Refinamento de Planos"
+### Alterado
+- **Precificação:** Ajuste no valor da "Musicalização Infantil" para **R$ 199,90**.
+- **Interface:** Padronização da descrição do plano de Inglês para "Aprendizado em grupo".
+- **Lógica:** Aprimoramento no bloqueio automático de planos exclusivos (Inglês e Musicalização) ao selecionar o curso.
+
 ## [1.0.14] - 2025-12-23 - "Polimento & Robustez"
 ### Adicionado
 - **UX/UI:**

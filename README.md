@@ -8,11 +8,13 @@ Sistema de gestão escolar e website institucional desenvolvido para o Centro Cu
 - **Landing Page:** Apresentação da escola, estatísticas e chatbot com IA simulada.
 - **Matrícula Online (Wizard):** Formulário passo a passo com:
   - **Captura de Leads:** Salva o contato na primeira etapa para recuperação de matrículas incompletas.
-  - **Validação:** Verificação automática de CPF e Data de Nascimento.
+  - **Validação Inteligente:** Verificação de CPF, Data de Nascimento e formatação automática de nomes.
+  - **Regras de Negócio:** Direcionamento automático para "Musicalização Infantil" (crianças ≤ 6 anos).
   - **Disponibilidade:** Seleção de preferências de dias e turnos.
-  - **Aula Experimental:** Agendamento integrado.
+  - **Resiliência:**
+    - **Auto-Save:** Progresso salvo automaticamente no dispositivo (LocalStorage).
+    - **Modo Offline:** Detecção de queda de internet com proteção de dados.
 - **Planos e Valores:** Tabela comparativa de preços.
-- **Área do Aluno:** Página de progresso e conquistas (Gamificação).
 
 ### 👨‍🏫 Área do Professor (Admin)
 - **Login Seguro:** Autenticação via Google ou Senha.
@@ -22,13 +24,18 @@ Sistema de gestão escolar e website institucional desenvolvido para o Centro Cu
   - Gerador de Feedback para alunos (copia para WhatsApp).
   - Agenda visual.
 
+### ✨ UX/UI (Experiência do Usuário)
+- **Feedback Visual:** Animações de transição (slide), efeito "shake" em erros e spinners de carregamento.
+- **Feedback Sonoro:** Sons sutis para sucesso e erro (Web Audio API).
+- **Responsividade:** Design adaptado para Mobile e Desktop.
+
 ## 🛠️ Tecnologias Utilizadas
 
 - **Frontend:** HTML5, CSS3 (Responsivo), JavaScript (Modules).
 - **Backend (BaaS):** Firebase (Google).
   - **Firestore:** Banco de dados NoSQL para matrículas.
   - **Authentication:** Sistema de login.
-- **Hospedagem:** GitHub Pages.
+- **Hospedagem:** GitHub Pages / Vercel (Frontend estático).
 
 ## 📂 Estrutura do Projeto
 
