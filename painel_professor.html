@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel do Professor - CCML</title>
-    <link rel="stylesheet" href="css/style.css?v=1.0.1">
+    <link rel="stylesheet" href="css/style.css?v=1.0.19">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -30,7 +30,24 @@
             <h2 style="font-size: 1.4rem; margin-bottom: 10px;">Área do Professor</h2>
             <p style="margin-bottom: 25px; color: #666; font-size: 0.9rem;">Acesso restrito à equipe pedagógica</p>
             
-            <input type="password" id="teacherPass" placeholder="Digite a senha de acesso..." class="login-input">
+            <div class="input-wrapper">
+                <i class="fa-solid fa-envelope input-icon"></i>
+                <input type="email" id="teacherEmail" placeholder="E-mail de acesso" class="login-input">
+            </div>
+
+            <div class="input-wrapper">
+                <i class="fa-solid fa-lock input-icon"></i>
+                <input type="password" id="teacherPass" placeholder="Senha" class="login-input">
+                <i class="fa-solid fa-eye toggle-password" onclick="togglePasswordVisibility()" title="Mostrar/Ocultar senha"></i>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <label style="font-size: 0.85rem; color: #666; display: flex; align-items: center; cursor: pointer; margin-bottom: 0;">
+                    <input type="checkbox" id="rememberMe" style="width: auto; margin-right: 5px;"> Lembrar-me
+                </label>
+                <a href="#" onclick="handleForgotPassword()" style="font-size: 0.85rem; color: #666; text-decoration: underline;">Esqueci minha senha</a>
+            </div>
+
             <button onclick="checkTeacherLogin()" class="btn-main" style="width: 100%; margin-top: 5px; margin-bottom: 15px;">Entrar</button>
             
             <div style="display: flex; align-items: center; margin: 10px 0; color: #999; font-size: 0.8rem;"><span style="flex:1; height:1px; background:#eee;"></span><span style="padding: 0 10px;">OU</span><span style="flex:1; height:1px; background:#eee;"></span></div>
@@ -41,141 +58,164 @@
             <a href="index.html" style="display: block; margin-top: 20px; color: #999; font-size: 0.9rem; transition: 0.3s;"><i class="fa-solid fa-arrow-left"></i> Voltar ao Início</a>
             
             <p id="loginError" style="color: red; font-size: 0.8rem; margin-top: 10px; display: none;">Senha incorreta!</p>
+            
+            <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                <p style="font-size: 0.75rem; color: #aaa;">Precisa de ajuda? <a href="#" style="color: var(--gold);">Contate o Suporte</a></p>
+            </div>
         </div>
     </div>
 
     <!-- Conteúdo do Painel (Oculto inicialmente) -->
     <div id="teacherDashboard" style="display: none;">
-        <div class="main-container" style="margin-top: 40px;">
-            <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h1>Olá, Maestro! 🎼</h1>
-                    <p>Bem-vindo ao seu painel de controle.</p>
+        <div class="admin-layout">
+            <!-- Sidebar (Menu Lateral) -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <i class="fa-solid fa-music" style="margin-right: 10px;"></i> <span>CCML</span>
                 </div>
-                <button onclick="handleLogout()" class="btn-nav" style="border-color: #d32f2f; color: #d32f2f !important; font-size: 0.9rem;">
-                    <i class="fa-solid fa-right-from-bracket"></i> Sair
-                </button>
-            </div>
+                <ul class="sidebar-menu">
+                    <li class="active"><a href="#"><i class="fa-solid fa-chart-pie"></i> <span>Visão Geral</span></a></li>
+                    <li><a href="#"><i class="fa-solid fa-users"></i> <span>Alunos</span></a></li>
+                    <li><a href="#"><i class="fa-regular fa-calendar"></i> <span>Agenda</span></a></li>
+                    <li><a href="#"><i class="fa-solid fa-sack-dollar"></i> <span>Financeiro</span></a></li>
+                    <li><a href="#"><i class="fa-solid fa-gear"></i> <span>Configurações</span></a></li>
+                </ul>
+                <div class="sidebar-footer">
+                    <button onclick="handleLogout()" class="btn-logout-sidebar"><i class="fa-solid fa-right-from-bracket"></i> <span>Sair</span></button>
+                </div>
+            </aside>
 
-            <!-- SURPRESA: Analytics Visual para Investidores -->
-            <div class="stats-overview animate-on-scroll fade-up">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
-                    <div class="stat-info">
-                        <h3>124</h3>
-                        <p>Alunos Ativos</p>
+            <!-- Conteúdo Principal -->
+            <main class="admin-main">
+                <header class="admin-header">
+                    <div style="display: flex; align-items: center;">
+                        <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+                        <div class="header-title">
+                            <h1 id="dashTitle">Painel do Professor</h1>
+                            <p id="dashDesc">Bem-vindo ao sistema de gestão.</p>
+                        </div>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #e8f5e9; color: #2e7d32;"><i class="fa-solid fa-chart-line"></i></div>
-                    <div class="stat-info">
-                        <h3>+15%</h3>
-                        <p>Crescimento Mensal</p>
+                    <div class="header-profile">
+                        <div class="notification-bell"><i class="fa-regular fa-bell"></i><span class="dot"></span></div>
+                        <div class="profile-pic">
+                            <img src="https://ui-avatars.com/api/?name=Maestro+Levi&background=C5A059&color=fff" alt="Profile">
+                        </div>
                     </div>
-                </div>
-                <div class="stat-card wide">
-                    <h3>Distribuição por Curso</h3>
-                    <div class="bar-chart">
-                        <div class="bar-row"><span class="label">Piano</span><div class="bar"><div class="fill" style="width: 80%;"></div></div><span class="val">80</span></div>
-                        <div class="bar-row"><span class="label">Violão</span><div class="bar"><div class="fill" style="width: 65%;"></div></div><span class="val">65</span></div>
-                        <div class="bar-row"><span class="label">Vocal</span><div class="bar"><div class="fill" style="width: 45%;"></div></div><span class="val">45</span></div>
-                    </div>
-                </div>
-            </div>
-            <!-- Fim da Surpresa -->
+                </header>
 
-            <div class="dashboard-grid">
-                
-                <!-- Ferramenta 1: Gerador de Feedback -->
-                <div class="dash-card animate-on-scroll fade-up">
-                    <h3><i class="fa-brands fa-whatsapp" style="color: var(--gold);"></i> Feedback Rápido</h3>
-                    <p style="font-size: 0.8rem; color: #777; margin-bottom: 15px;">Gere uma mensagem padronizada para enviar aos pais/alunos.</p>
-                    
-                    <div class="input-group">
-                        <label>Nome do Aluno</label>
-                        <input type="text" id="fbName" placeholder="Ex: Maria">
-                    </div>
-                    <div class="input-group">
-                        <label>Tema da Aula</label>
-                        <input type="text" id="fbTopic" placeholder="Ex: Escala de Dó Maior">
-                    </div>
-                    <div class="input-group">
-                        <label>Desempenho</label>
-                        <select id="fbRating">
-                            <option value="Excelente! 🌟">Excelente! 🌟</option>
-                            <option value="Muito Bom! 👏">Muito Bom! 👏</option>
-                            <option value="Precisa Praticar Mais 🎹">Precisa Praticar Mais 🎹</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Tarefa de Casa</label>
-                        <input type="text" id="fbHomework" placeholder="Ex: Treinar página 12">
+                <div class="admin-content">
+                    <!-- KPIs (Indicadores) -->
+                    <div class="kpi-grid animate-on-scroll fade-up">
+                        <div class="kpi-card">
+                            <div class="kpi-info"><h3>124</h3><p>Alunos Ativos</p></div>
+                            <div class="kpi-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-info"><h3>12</h3><p>Aulas Hoje</p></div>
+                            <div class="kpi-icon icon-green"><i class="fa-regular fa-calendar-check"></i></div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-info"><h3>R$ 15k</h3><p>Receita Mensal</p></div>
+                            <div class="kpi-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-info"><h3>5</h3><p>Novas Matrículas</p></div>
+                            <div class="kpi-icon icon-purple"><i class="fa-solid fa-user-plus"></i></div>
+                        </div>
                     </div>
 
-                    <button onclick="generateFeedback()" class="btn-nav" style="width: 100%; margin-top: 10px;">
-                        <i class="fa-regular fa-copy"></i> Copiar Mensagem
-                    </button>
-                </div>
+                    <div class="dashboard-grid">
+                        <!-- Ferramenta 1: Gerador de Feedback -->
+                        <div class="dash-card animate-on-scroll fade-up">
+                            <h3><i class="fa-brands fa-whatsapp" style="color: var(--gold);"></i> Feedback Rápido</h3>
+                            <p style="font-size: 0.8rem; color: #777; margin-bottom: 15px;">Gere uma mensagem padronizada para enviar aos pais/alunos.</p>
+                            
+                            <div class="input-group">
+                                <label>Nome do Aluno</label>
+                                <input type="text" id="fbName" placeholder="Ex: Maria">
+                            </div>
+                            <div class="input-group">
+                                <label>Tema da Aula</label>
+                                <input type="text" id="fbTopic" placeholder="Ex: Escala de Dó Maior">
+                            </div>
+                            <div class="input-group">
+                                <label>Desempenho</label>
+                                <select id="fbRating">
+                                    <option value="Excelente! 🌟">Excelente! 🌟</option>
+                                    <option value="Muito Bom! 👏">Muito Bom! 👏</option>
+                                    <option value="Precisa Praticar Mais 🎹">Precisa Praticar Mais 🎹</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Tarefa de Casa</label>
+                                <input type="text" id="fbHomework" placeholder="Ex: Treinar página 12">
+                            </div>
 
-                <!-- Ferramenta 2: Agenda Visual (Estática) -->
-                <div class="dash-card animate-on-scroll fade-up delay-200">
-                    <h3><i class="fa-regular fa-calendar" style="color: var(--gold);"></i> Agenda do Dia</h3>
-                    <ul class="agenda-list">
-                        <li>
-                            <span class="time">09:00</span>
-                            <span class="student">João Silva (Piano)</span>
-                        </li>
-                        <li>
-                            <span class="time">10:00</span>
-                            <span class="student">Turma Infantil (Musicalização)</span>
-                        </li>
-                        <li>
-                            <span class="time">14:00</span>
-                            <span class="student">Ana Clara (Violão)</span>
-                        </li>
-                        <li class="free-slot">
-                            <span class="time">15:00</span>
-                            <span>Horário Livre</span>
-                        </li>
-                    </ul>
-                    
-                    <div id="addStudentForm" style="display: none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
-                        <input type="time" id="newTime" class="login-input" style="padding: 8px; margin-bottom: 5px;">
-                        <input type="text" id="newStudent" placeholder="Nome do Aluno" class="login-input" style="padding: 8px; margin-bottom: 10px;">
-                        <button onclick="addStudent()" class="btn-nav" style="width: 100%; background: var(--gold); color: white !important;">Confirmar</button>
+                            <button onclick="generateFeedback()" class="btn-nav" style="width: 100%; margin-top: 10px;">
+                                <i class="fa-regular fa-copy"></i> Copiar Mensagem
+                            </button>
+                        </div>
+
+                        <!-- Ferramenta 2: Agenda Visual (Estática) -->
+                        <div class="dash-card animate-on-scroll fade-up delay-200">
+                            <h3><i class="fa-regular fa-calendar" style="color: var(--gold);"></i> Agenda do Dia</h3>
+                            <ul class="agenda-list">
+                                <li>
+                                    <span class="time">09:00</span>
+                                    <span class="student">João Silva (Piano)</span>
+                                </li>
+                                <li>
+                                    <span class="time">10:00</span>
+                                    <span class="student">Turma Infantil (Musicalização)</span>
+                                </li>
+                                <li>
+                                    <span class="time">14:00</span>
+                                    <span class="student">Ana Clara (Violão)</span>
+                                </li>
+                                <li class="free-slot">
+                                    <span class="time">15:00</span>
+                                    <span>Horário Livre</span>
+                                </li>
+                            </ul>
+                            
+                            <div id="addStudentForm" style="display: none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+                                <input type="time" id="newTime" class="login-input" style="padding: 8px; margin-bottom: 5px;">
+                                <input type="text" id="newStudent" placeholder="Nome do Aluno" class="login-input" style="padding: 8px; margin-bottom: 10px;">
+                                <button onclick="addStudent()" class="btn-nav" style="width: 100%; background: var(--gold); color: white !important;">Confirmar</button>
+                            </div>
+
+                            <button onclick="toggleAddStudent()" class="btn-main" style="width: 100%; margin-top: 20px; font-size: 0.8rem;">+ Adicionar Aluno</button>
+                        </div>
+
+                        <!-- Ferramenta 3: Lista de Matrículas (Nova) -->
+                        <div class="dash-card animate-on-scroll fade-up" style="grid-column: 1 / -1;">
+                            <h3><i class="fa-solid fa-list" style="color: var(--gold);"></i> Solicitações de Matrícula Online</h3>
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; margin-top: 15px; font-size: 0.9rem;">
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Nome</th>
+                                            <th>Curso</th>
+                                            <th>WhatsApp</th>
+                                            <th>Nível</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="enrollmentList">
+                                        <!-- O JavaScript vai preencher aqui -->
+                                    </tbody>
+                                </table>
+                                <p id="loadingMsg" style="text-align: center; padding: 20px; color: #888;">Carregando dados...</p>
+                            </div>
+                        </div>
                     </div>
-
-                    <button onclick="toggleAddStudent()" class="btn-main" style="width: 100%; margin-top: 20px; font-size: 0.8rem;">+ Adicionar Aluno</button>
                 </div>
-
-                <!-- Ferramenta 3: Lista de Matrículas (Nova) -->
-                <div class="dash-card animate-on-scroll fade-up" style="grid-column: 1 / -1;">
-                    <h3><i class="fa-solid fa-list" style="color: var(--gold);"></i> Solicitações de Matrícula Online</h3>
-                    <div style="overflow-x: auto;">
-                        <table style="width: 100%; margin-top: 15px; font-size: 0.9rem;">
-                            <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Nome</th>
-                                    <th>Curso</th>
-                                    <th>WhatsApp</th>
-                                    <th>Nível</th>
-                                </tr>
-                            </thead>
-                            <tbody id="enrollmentList">
-                                <!-- O JavaScript vai preencher aqui -->
-                            </tbody>
-                        </table>
-                        <p id="loadingMsg" style="text-align: center; padding: 20px; color: #888;">Carregando dados...</p>
-                    </div>
-                </div>
-
-            </div>
+            </main>
         </div>
     </div>
 
     <div id="footer-container"></div>
 
-    <script type="module" src="js/app.js?v=1.0.18"></script>
+    <script type="module" src="js/app.js?v=1.0.19"></script>
 </body>
 </html>

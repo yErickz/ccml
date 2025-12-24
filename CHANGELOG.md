@@ -2,6 +2,17 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.0.19] - 2025-12-24 - "Acesso & Recuperação"
+### Adicionado
+- **Login:** Funcionalidade "Lembrar-me" que salva o e-mail do professor no navegador para facilitar acessos futuros.
+- **Painel do Professor:** Campo de E-mail no login e link "Esqueci minha senha".
+- **Funcionalidade:** Integração com `sendPasswordResetEmail` do Firebase para redefinição de senha.
+- **Login:** Suporte híbrido para login via Firebase (E-mail/Senha) ou Senha Simples (Legado).
+- **Dashboard:** Identificação visual (Badges coloridos) para os níveis dos alunos (Iniciante, Básico, etc.).
+- **Segurança:** Implementação de Níveis de Acesso (Admin vs Professor). Admins veem dados financeiros, Professores veem apenas dados pedagógicos.
+- **UI/UX:** Reformulação completa do Painel do Professor com layout Sidebar (Menu Lateral) e Cards de KPI, inspirado em sistemas SaaS (Emusys).
+- **UI/UX:** Funcionalidade de recolher o menu lateral (Collapse) para maximizar a área de trabalho no Desktop.
+
 ## [1.0.18] - 2025-12-24 - "Logout do Professor"
 ### Adicionado
 - **Painel do Professor:** Botão de "Sair" (Logout) no cabeçalho do dashboard.

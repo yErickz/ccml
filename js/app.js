@@ -1,9 +1,11 @@
 import { db, auth, provider } from "./firebase-config.js";
 import { collection, addDoc, getDocs, query, orderBy, limit, doc, updateDoc, where } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
-import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+import { signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
 
 // --- 0. CONFIGURAÇÃO DE DESENVOLVIMENTO ---
 const DEV_MODE = false; // ⚠️ TRUE = Pula validações para testar. FALSE = Modo normal.
+const ADMIN_EMAILS = ["admin@ccml.com.br", "diretoria@ccml.com.br"]; // E-mails com acesso total
+let currentUserRole = "professor"; // 'admin' ou 'professor'
 
 // --- 1. Animações de Scroll ---
 const observerOptions = { threshold: 0.1 };
@@ -411,7 +413,11 @@ window.handleGoogleLogin = async () => {
         // O onAuthStateChanged vai lidar com a troca de tela
     } catch (error) {
         console.error("Erro no login Google:", error);
-        alert("Erro no login: " + error.message + "\n\nVerifique se o domínio está autorizado no Firebase Console (Authentication > Settings > Authorized Domains).");
+        if (error.code === 'auth/account-exists-with-different-credential') {
+            alert("Este e-mail já está cadastrado usando Senha. Por favor, faça login com sua senha para vincular as contas.");
+        } else {
+            alert("Erro no login: " + error.message);
+        }
     }
 };
 
@@ -425,18 +431,93 @@ window.handleLogout = async () => {
     // Força o retorno para a tela de login (cobre o caso de login por senha simples)
     document.getElementById('teacherDashboard').style.display = 'none';
     document.getElementById('loginScreen').style.display = 'flex';
+    document.querySelector('nav').style.display = 'flex'; // Restaura menu principal
     document.getElementById('teacherPass').value = ''; // Limpa a senha
 };
 
-// Login com Senha (Simples)
-window.checkTeacherLogin = () => {
+// Login com Senha (Simples ou Firebase)
+window.checkTeacherLogin = async () => {
+    const email = document.getElementById('teacherEmail').value;
     const pass = document.getElementById('teacherPass').value;
-    if(pass === "admin123" || pass === "maestro") { // Senha simples para demo
+    const errorMsg = document.getElementById('loginError');
+    const remember = document.getElementById('rememberMe') ? document.getElementById('rememberMe').checked : false;
+
+    // 1. Tenta Login via Firebase (E-mail e Senha reais)
+    if (email && pass) {
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+            
+            if (remember) {
+                localStorage.setItem('teacherEmail', email);
+            } else {
+                localStorage.removeItem('teacherEmail');
+            }
+
+            // Sucesso: onAuthStateChanged vai redirecionar
+            errorMsg.style.display = 'none';
+            return;
+        } catch (error) {
+            console.error("Erro Firebase:", error);
+            if (error.code === 'auth/wrong-password') {
+                errorMsg.innerText = "Senha incorreta.";
+            } else if (error.code === 'auth/user-not-found') {
+                errorMsg.innerText = "E-mail não cadastrado.";
+            } else {
+                errorMsg.innerText = "Erro ao entrar. Verifique seus dados.";
+            }
+            errorMsg.style.display = 'block';
+            return;
+        }
+    }
+
+    // 2. Fallback: Login Simples (Apenas Senha - Demo/Legado)
+    if (!email && (pass === "admin123" || pass === "maestro")) { 
+        currentUserRole = (pass === "admin123") ? "admin" : "professor"; // Define nível de acesso
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('teacherDashboard').style.display = 'block';
+        document.querySelector('nav').style.display = 'none'; // Oculta menu principal
+        updateDashboardUI(); // Atualiza textos do painel
         loadDashboardData();
+        errorMsg.style.display = 'none';
     } else {
-        document.getElementById('loginError').style.display = 'block';
+        errorMsg.innerText = "Senha incorreta ou e-mail não informado!";
+        errorMsg.style.display = 'block';
+    }
+};
+
+// Recuperação de Senha
+window.handleForgotPassword = async () => {
+    const email = document.getElementById('teacherEmail').value;
+    if (!email) {
+        alert("Por favor, preencha o campo de e-mail acima para recuperar sua senha.");
+        return;
+    }
+    
+    try {
+        await sendPasswordResetEmail(auth, email);
+        alert(`Um e-mail de redefinição de senha foi enviado para: ${email}\n\nVerifique sua caixa de entrada (e spam).`);
+    } catch (error) {
+        console.error("Erro ao enviar reset:", error);
+        if (error.code === 'auth/user-not-found') {
+            alert("Este e-mail não está cadastrado como professor.");
+        } else {
+            alert("Erro ao enviar e-mail: " + error.message);
+        }
+    }
+};
+
+// Toggle Password Visibility (Mostrar/Ocultar Senha)
+window.togglePasswordVisibility = () => {
+    const passInput = document.getElementById('teacherPass');
+    const icon = document.querySelector('.toggle-password');
+    if (passInput.type === 'password') {
+        passInput.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        passInput.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
     }
 };
 
@@ -444,8 +525,17 @@ window.checkTeacherLogin = () => {
 if (document.getElementById('teacherDashboard')) {
     onAuthStateChanged(auth, (user) => {
         if (user) {
+            // Define papel baseado no email (Lógica simples)
+            if (ADMIN_EMAILS.includes(user.email) || user.email.startsWith('admin')) {
+                currentUserRole = "admin";
+            } else {
+                currentUserRole = "professor";
+            }
+
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('teacherDashboard').style.display = 'block';
+            document.querySelector('nav').style.display = 'none'; // Oculta menu principal
+            updateDashboardUI();
             loadDashboardData();
         } else {
             // Garante que se não houver usuário, mostra login
@@ -453,6 +543,19 @@ if (document.getElementById('teacherDashboard')) {
             document.getElementById('loginScreen').style.display = 'flex';
         }
     });
+}
+
+// Função para atualizar a interface baseada no nível de acesso
+function updateDashboardUI() {
+    const title = document.getElementById('dashTitle');
+    const desc = document.getElementById('dashDesc');
+    if (currentUserRole === 'admin') {
+        title.innerHTML = 'Olá, Diretor(a)! 🎓';
+        desc.innerHTML = 'Painel Administrativo - Acesso Total';
+    } else {
+        title.innerHTML = 'Olá, Professor(a)! 🎼';
+        desc.innerHTML = 'Painel Pedagógico - Visualização de Alunos';
+    }
 }
 
 // Carregar Dados do Dashboard
@@ -477,12 +580,25 @@ async function loadDashboardData() {
             const d = doc.data();
             const date = new Date(d.data_registro).toLocaleDateString('pt-BR');
             
+            // Mapeamento de Cores para Níveis
+            const nivelMap = {
+                'iniciante': { label: 'Iniciante', class: 'nivel-iniciante' },
+                'basico': { label: 'Básico', class: 'nivel-basico' },
+                'intermediario': { label: 'Intermediário', class: 'nivel-intermediario' },
+                'avancado': { label: 'Avançado', class: 'nivel-avancado' }
+            };
+            const nivelData = nivelMap[d.nivel] || { label: d.nivel || 'N/A', class: 'nivel-padrao' };
+            
+            // Admin vê o Responsável Financeiro, Professor não.
+            const respInfo = (currentUserRole === 'admin' && d.responsavel_financeiro) 
+                ? `<br><small style="color:#777">Resp: ${d.responsavel_financeiro}</small>` 
+                : '';
+
             const row = `
                 <tr>
                     <td>${date}</td>
                     <td>
-                        <strong>${d.nome}</strong><br>
-                        <small style="color:#777">${d.responsavel_financeiro ? 'Resp: ' + d.responsavel_financeiro : ''}</small>
+                        <strong>${d.nome}</strong>${respInfo}
                     </td>
                     <td><span class="badge-curso">${d.curso}</span></td>
                     <td>
@@ -490,7 +606,7 @@ async function loadDashboardData() {
                             <i class="fa-brands fa-whatsapp"></i> Contatar
                         </a>
                     </td>
-                    <td>${d.nivel}</td>
+                    <td><span class="badge-nivel ${nivelData.class}">${nivelData.label}</span></td>
                 </tr>
             `;
             list.innerHTML += row;
@@ -524,6 +640,16 @@ window.selectPlan = (planName) => {
     window.open(`https://wa.me/5594999999999?text=Olá, tenho interesse no plano ${planName}`, '_blank');
 };
 
+// --- Sidebar Toggle (Responsivo) ---
+window.toggleSidebar = () => {
+    const sidebar = document.getElementById('sidebar');
+    if (window.innerWidth > 992) {
+        sidebar.classList.toggle('collapsed'); // Desktop: Recolhe
+    } else {
+        sidebar.classList.toggle('active'); // Mobile: Mostra/Esconde
+    }
+};
+
 // --- Menu Mobile ---
 window.toggleMenu = () => {
     const nav = document.querySelector('.nav-links');
@@ -532,7 +658,7 @@ window.toggleMenu = () => {
 
 // --- 5. Rodapé Dinâmico (Carrega em todas as páginas) ---
 const footerContainer = document.getElementById('footer-container');
-const APP_VERSION = "1.0.18";
+const APP_VERSION = "1.0.19";
 if (footerContainer) {
     footerContainer.innerHTML = `
     <footer>
@@ -780,6 +906,17 @@ document.addEventListener("DOMContentLoaded", () => {
         if (form) {
             form.addEventListener('input', saveFormProgress);
             form.addEventListener('change', saveFormProgress);
+        }
+    }
+
+    // Carregar e-mail salvo (Login Professor)
+    const emailInput = document.getElementById('teacherEmail');
+    if (emailInput) {
+        const savedEmail = localStorage.getItem('teacherEmail');
+        if (savedEmail) {
+            emailInput.value = savedEmail;
+            const rememberCheck = document.getElementById('rememberMe');
+            if (rememberCheck) rememberCheck.checked = true;
         }
     }
 });
