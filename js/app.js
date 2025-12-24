@@ -514,7 +514,7 @@ window.toggleMenu = () => {
 
 // --- 5. Rodapé Dinâmico (Carrega em todas as páginas) ---
 const footerContainer = document.getElementById('footer-container');
-const APP_VERSION = "1.0.16";
+const APP_VERSION = "1.0.17";
 if (footerContainer) {
     footerContainer.innerHTML = `
     <footer>
@@ -1001,6 +1001,7 @@ function saveFormProgress() {
     // Salva estado do sistema
     formData['currentTab'] = currentTab;
     formData['currentLeadId'] = currentLeadId;
+    formData['timestamp'] = new Date().getTime(); // Salva o momento exato da edição
     
     localStorage.setItem('matriculaProgress', JSON.stringify(formData));
 }
@@ -1010,6 +1011,15 @@ function loadFormProgress() {
     if (!savedData) return;
 
     const formData = JSON.parse(savedData);
+
+    // Verifica se os dados expiraram (30 minutos)
+    const now = new Date().getTime();
+    const savedTime = formData.timestamp || 0;
+    if (now - savedTime > 30 * 60 * 1000) { // 30 minutos em milissegundos
+        localStorage.removeItem('matriculaProgress'); // Limpa dados antigos
+        showError("Sessão Expirada: Por segurança, seu rascunho salvo foi limpo após 30 minutos de inatividade.");
+        return; // Não carrega nada
+    }
 
     // Restaura variáveis de controle
     if (formData.currentLeadId) currentLeadId = formData.currentLeadId;

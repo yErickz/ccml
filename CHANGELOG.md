@@ -2,6 +2,13 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.0.17] - 2025-12-24 - "Segurança & Notificações"
+### Adicionado
+- **Segurança:** Dados salvos localmente (Auto-Save) agora expiram automaticamente após 30 minutos de inatividade para proteger informações em computadores compartilhados.
+- **UX:** Aviso visual (Pop-up) informando quando o rascunho é limpo por inatividade.
+### Alterado
+- **WhatsApp:** A mensagem de confirmação agora é enviada para o **Responsável Financeiro** (Cliente) em vez da Secretaria.
+
 ## [1.0.16] - 2025-12-24 - "Validação de Disponibilidade"
 ### Adicionado
 - **Regras de Negócio:** Validação cruzada que impede a seleção simultânea de "Sábado" e turno "Noite".
