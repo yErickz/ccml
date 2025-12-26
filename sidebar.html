@@ -1,0 +1,22 @@
+<!-- Sidebar (Menu Lateral) -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <i class="fa-solid fa-music" style="margin-right: 10px;"></i> <span>CCML</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li class="nav-item active" onclick="switchView('overview', this)"><a href="#"><i class="fa-solid fa-chart-pie"></i> <span>Visão Geral</span></a></li>
+        <li class="nav-item" onclick="switchView('students', this)"><a href="#"><i class="fa-solid fa-users"></i> <span>Alunos</span> <span id="sidebarPendingCount" class="badge-notification" style="display:none">0</span></a></li>
+        <li class="nav-item" onclick="switchView('financial', this)"><a href="#"><i class="fa-solid fa-sack-dollar"></i> <span>Financeiro</span> <span class="badge-beta">Em Breve</span></a></li>
+        <li class="nav-item" onclick="switchView('settings', this)"><a href="#"><i class="fa-solid fa-gear"></i> <span>Configurações</span></a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <div class="theme-toggle-wrapper" title="Alternar aparência">
+            <span class="theme-label"><i class="fa-solid fa-moon"></i> Modo Escuro</span>
+            <label class="switch">
+                <input type="checkbox" id="themeToggleCheckbox" onchange="toggleTheme()">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <button onclick="handleLogout()" class="btn-logout-sidebar"><i class="fa-solid fa-right-from-bracket"></i> <span>Sair</span></button>
+    </div>
+</aside>

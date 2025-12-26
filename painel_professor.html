@@ -6,6 +6,299 @@
     <title>Painel do Professor - CCML</title>
     <link rel="stylesheet" href="css/style.css?v=1.0.19">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Status Badges */
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .status-pendente { background-color: #ffebee; color: #c62828; }
+        .status-pagamento { background-color: #fff3e0; color: #ef6c00; }
+        .status-ativo { background-color: #e8f5e9; color: #2e7d32; }
+        .status-inativo { background-color: #eceff1; color: #546e7a; }
+
+        /* Modal de Gestão */
+        .management-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
+        }
+        .management-content {
+            background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;
+        }
+        .management-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .management-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .full-row { grid-column: 1 / -1; }
+        .btn-save { background-color: var(--gold); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 15px; }
+        .btn-save:hover { opacity: 0.9; }
+        
+        /* Botão de Ação na Tabela */
+        .btn-manage {
+            background: none; border: 1px solid #ddd; padding: 5px 10px; border-radius: 4px;
+            cursor: pointer; font-size: 0.8rem; color: #555; transition: 0.2s;
+        }
+        .btn-manage:hover { background: var(--gold); color: white; border-color: var(--gold); }
+
+        /* Bússola Social Inspired: Tags & Timeline */
+        .tag-input-area { border: 1px solid #ddd; border-radius: 5px; padding: 5px; background: white; display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+        .tag-input { border: none; outline: none; font-size: 0.85rem; padding: 5px; flex: 1; min-width: 120px; }
+        .tag-badge { background-color: #e0e0e0; color: #333; padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; display: inline-flex; align-items: center; font-weight: 500; }
+        .tag-badge i { margin-left: 6px; cursor: pointer; color: #666; font-size: 0.7rem; }
+        .tag-badge i:hover { color: #c62828; }
+
+        .timeline-box { max-height: 250px; overflow-y: auto; margin-top: 15px; padding-right: 5px; border: 1px solid #eee; border-radius: 5px; padding: 15px; background: #fafafa; }
+        .timeline-entry { border-left: 2px solid #ddd; padding-left: 15px; margin-bottom: 20px; position: relative; }
+        .timeline-entry:last-child { margin-bottom: 0; }
+        .timeline-entry::before { content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background: var(--gold); border-radius: 50%; border: 2px solid white; }
+        .timeline-meta { font-size: 0.7rem; color: #888; margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .timeline-text { font-size: 0.85rem; color: #444; background: white; padding: 10px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+
+        /* --- Layout Profissional de Gestão --- */
+        .mgmt-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-top: 20px; }
+        @media (max-width: 992px) { .mgmt-layout { grid-template-columns: 1fr; } }
+        
+        .mgmt-card {
+            background: #fff; border-radius: 12px; padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; margin-bottom: 24px;
+        }
+        .mgmt-card h4 {
+            font-size: 0.85rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #f5f5f5;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .full-col { grid-column: 1 / -1; }
+        
+        .form-label { display: block; font-size: 0.75rem; font-weight: 600; color: #555; margin-bottom: 6px; text-transform: uppercase; }
+        .form-input {
+            width: 100%; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 6px;
+            font-size: 0.9rem; transition: all 0.2s; background: #fafafa; color: #333;
+        }
+        .form-input:focus {
+            background: #fff; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.1); outline: none;
+        }
+        
+        .btn-close-mgmt {
+            width: 32px; height: 32px; border-radius: 50%; border: 1px solid #eee; background: white;
+            color: #777; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center;
+        }
+        .btn-close-mgmt:hover { background: #f5f5f5; color: #333; }
+        
+        .mgmt-actions {
+            position: sticky; bottom: 0; background: white; padding: 15px 20px; border-top: 1px solid #eee;
+            display: flex; gap: 15px; justify-content: flex-end; border-radius: 0 0 12px 12px;
+            margin: -24px -24px -24px -24px; z-index: 10;
+        }
+        
+        /* Status Select Custom */
+        .status-select { font-weight: bold; cursor: pointer; }
+        .status-select option[value="ativo"] { color: green; }
+        .status-select option[value="pendente"] { color: red; }
+
+        /* --- PILOT DASHBOARD STYLES --- */
+        .pilot-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; margin-top: 25px; }
+        @media (max-width: 992px) { .pilot-grid { grid-template-columns: 1fr; } }
+
+        /* Vital Cards (Topo) */
+        .vital-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 10px; }
+        .vital-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-left: 4px solid var(--gold); position: relative; overflow: hidden; }
+        .vital-card h4 { font-size: 0.85rem; color: #888; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; }
+        .vital-card .number { font-size: 1.8rem; font-weight: 800; color: var(--dark); display: flex; align-items: center; gap: 10px; }
+        .vital-card .trend { font-size: 0.8rem; padding: 2px 8px; border-radius: 10px; background: #e8f5e9; color: #2e7d32; font-weight: bold; }
+        .vital-card .trend.down { background: #ffebee; color: #c62828; }
+        .vital-card .progress-bar { height: 4px; background: #eee; margin-top: 15px; border-radius: 2px; overflow: hidden; }
+        .vital-card .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 1s ease; }
+
+        /* Timeline Vertical (Agenda) */
+        .agenda-container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); height: 100%; }
+        .agenda-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .v-timeline { position: relative; padding-left: 20px; border-left: 2px solid #f0f0f0; }
+        .v-item { position: relative; margin-bottom: 25px; padding-left: 20px; }
+        .v-item::before { content: ''; position: absolute; left: -26px; top: 5px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 2; }
+        
+        /* Status da Bolinha */
+        .v-item.done::before { background: #4caf50; } /* Verde */
+        .v-item.now::before { background: #ff9800; animation: pulse 2s infinite; } /* Amarelo */
+        .v-item.future::before { background: #bdbdbd; } /* Cinza */
+        .v-item.issue::before { background: #f44336; } /* Vermelho */
+
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 152, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); } }
+
+        .v-time { font-size: 0.85rem; font-weight: bold; color: var(--gold); margin-bottom: 4px; }
+        .v-content { background: #fafafa; padding: 12px; border-radius: 8px; border: 1px solid #eee; transition: 0.2s; }
+        .v-content:hover { transform: translateX(5px); background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-color: var(--gold); }
+        .v-title { font-weight: 700; color: #333; font-size: 0.95rem; }
+        .v-subtitle { font-size: 0.85rem; color: #666; display: flex; justify-content: space-between; margin-top: 5px; }
+        
+        .btn-action-agenda {
+            margin-top: 10px; width: 100%; background: white; border: 1px solid var(--gold); color: var(--gold);
+            padding: 6px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: 600;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+        }
+        .btn-action-agenda:hover { background: var(--gold); color: white; }
+
+        /* Chart Styles */
+        .chart-row { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.85rem; }
+        .chart-label { width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #555; }
+        .chart-bar-bg { flex: 1; height: 8px; background: #f0f0f0; border-radius: 4px; margin: 0 10px; overflow: hidden; }
+        .chart-bar-fill { height: 100%; background: var(--gold); border-radius: 4px; width: 0; transition: width 1s ease; }
+        .chart-val { font-weight: 700; color: #333; width: 30px; text-align: right; }
+        
+        /* Management Header */
+        .mgmt-header-box {
+            background: white; padding: 20px 30px; border-radius: 12px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; 
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .mgmt-header-box h3 { margin: 0; color: var(--dark); font-size: 1.2rem; }
+        .mgmt-header-box p { margin: 4px 0 0; color: #888; font-size: 0.85rem; }
+        
+        /* Dynamic List Items (Teachers, Agenda details) */
+        .teacher-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; background: #fff; }
+        .teacher-item strong { color: #333; }
+        .teacher-item small { color: #777; }
+        .v-course { font-weight: 400; color: #777; }
+
+        /* Classes para substituir estilos inline do JS */
+        .text-muted { color: #777; }
+        .btn-whatsapp-charge { background: none; border: none; color: #d32f2f; cursor: pointer; margin-left: 5px; }
+        .btn-remove-teacher { color: #c62828; border: 1px solid #ffcdd2; background: #ffebee; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .btn-remove-teacher:hover { background: #c62828; color: white; }
+
+        /* --- Sidebar Profissional (Dark/Gold) --- */
+        .sidebar {
+            background: #1a1a1a !important; /* Fundo escuro */
+            color: #fff;
+            border-right: 1px solid #333 !important;
+        }
+        .sidebar-header {
+            border-bottom: 1px solid #333 !important;
+            color: var(--gold) !important;
+        }
+        .sidebar-header span { font-weight: 800; letter-spacing: 1px; }
+        
+        .nav-item { margin-bottom: 5px; border-radius: 8px; transition: all 0.2s; }
+        .nav-item a { color: #aaa !important; font-weight: 500; display: flex; align-items: center; width: 100%; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); }
+        .nav-item:hover a { color: #fff !important; }
+        
+        .nav-item.active {
+            background: linear-gradient(90deg, var(--gold) 0%, #a08040 100%) !important;
+            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.2);
+        }
+        .nav-item.active a { color: #fff !important; font-weight: 700; }
+        .nav-item.active i { color: #fff !important; }
+        
+        .sidebar-footer { border-top: 1px solid #333 !important; }
+        
+        /* Theme Toggle Switch */
+        .theme-toggle-wrapper {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 15px; margin: 15px; background: rgba(255,255,255,0.05);
+            border-radius: 8px; border: 1px solid #333;
+        }
+        .theme-label { font-size: 0.85rem; color: #aaa; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        
+        .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #555; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--gold); }
+        input:focus + .slider { box-shadow: 0 0 1px var(--gold); }
+        input:checked + .slider:before { transform: translateX(18px); }
+
+        /* --- Smooth Theme Transition --- */
+        body, .admin-main, .admin-header, .sidebar, .dash-card, .vital-card, .widget-card, 
+        .agenda-container, .mgmt-card, .search-bar-container, .form-input, .tag-input-area, .v-content, 
+        .mgmt-actions, .btn-close-mgmt, .timeline-text, .student-row {
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        /* --- Dark Mode --- */
+        body.dark-mode { background-color: #121212; color: #e0e0e0; }
+        body.dark-mode .admin-main, body.dark-mode .admin-header { background-color: #121212; border-color: #333; }
+        body.dark-mode .dash-card, body.dark-mode .vital-card, body.dark-mode .widget-card, body.dark-mode .agenda-container, body.dark-mode .mgmt-card, body.dark-mode .search-bar-container {
+            background-color: #1e1e1e; color: #e0e0e0; border-color: #333;
+        }
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 { color: #e0e0e0; }
+        body.dark-mode .vital-card h4, body.dark-mode .widget-header, body.dark-mode .v-title, body.dark-mode .mgmt-card h4, body.dark-mode .header-title h1 { color: #e0e0e0; }
+        body.dark-mode .vital-card .number { color: #fff; }
+        body.dark-mode .form-input, body.dark-mode .tag-input-area { background-color: #2c2c2c; border-color: #444; color: #fff; }
+        body.dark-mode .chart-val { color: #fff; }
+        body.dark-mode .chart-label { color: #ccc; }
+        body.dark-mode .mgmt-header-box { background-color: #1e1e1e; box-shadow: none; }
+        body.dark-mode .mgmt-header-box h3 { color: #e0e0e0; }
+        body.dark-mode .chart-svg-text { fill: #fff; }
+        body.dark-mode .chart-svg-label { fill: #ccc; }
+        body.dark-mode .v-content { background-color: #252525; border-color: #333; }
+        body.dark-mode .v-content:hover { background-color: #2a2a2a; }
+        body.dark-mode .v-subtitle, body.dark-mode .header-title p, body.dark-mode .form-label { color: #aaa; }
+        body.dark-mode table th { color: #ccc; border-bottom: 1px solid #444; }
+        body.dark-mode table td { border-bottom: 1px solid #333; color: #ddd; }
+        body.dark-mode .btn-close-mgmt { background: #333; border-color: #444; color: #fff; }
+        body.dark-mode .mgmt-actions { background: #1e1e1e; border-top-color: #333; }
+        body.dark-mode .timeline-text { background: #2c2c2c; color: #ddd; }
+        body.dark-mode .timeline-meta { color: #888; }
+        body.dark-mode .student-row:hover { background-color: #252525; }
+        body.dark-mode .btn-nav { background-color: #333 !important; color: #fff !important; border-color: #444 !important; }
+        
+        /* Fix Dynamic Items in Dark Mode */
+        body.dark-mode .teacher-item { background-color: #252525; border-bottom-color: #333; }
+        body.dark-mode .teacher-item strong { color: #e0e0e0; }
+        body.dark-mode .teacher-item small { color: #aaa; }
+        body.dark-mode .v-course { color: #aaa; }
+        body.dark-mode .text-muted { color: #aaa; }
+        body.dark-mode option { background-color: #2c2c2c; color: #fff; }
+        
+        .btn-logout-sidebar {
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid #333 !important;
+            color: #aaa !important;
+        }
+        .btn-logout-sidebar:hover {
+            background: #c62828 !important;
+            color: white !important;
+            border-color: #c62828 !important;
+        }
+        
+        .badge-beta { font-size: 0.6rem; background: #333; color: #aaa; padding: 2px 6px; border-radius: 4px; margin-left: auto; border: 1px solid #444; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-item:hover .badge-beta { border-color: #666; color: #fff; }
+        
+        .badge-notification { background: #d32f2f; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; margin-left: auto; font-weight: bold; min-width: 20px; text-align: center; }
+        
+        @keyframes badgePulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
+            70% { transform: scale(1.3); box-shadow: 0 0 0 6px rgba(211, 47, 47, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+        }
+        .badge-notification.pulse { animation: badgePulse 1s ease-out; }
+
+        /* Widgets de Estratégia */
+        .widget-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        .widget-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-weight: 700; color: var(--dark); font-size: 1rem; }
+        
+        /* Termômetro de Evasão */
+        .risk-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #f5f5f5; }
+        .risk-item:last-child { border-bottom: none; }
+        .risk-name { font-weight: 600; color: #d32f2f; }
+        .risk-reason { font-size: 0.75rem; color: #888; }
+        .btn-whatsapp-mini { background: #25D366; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-whatsapp-mini:hover { transform: scale(1.1); box-shadow: 0 2px 5px rgba(37, 211, 102, 0.4); }
+
+        /* Aniversariantes */
+        .bday-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+        .bday-date { background: var(--gold); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+        
+        /* Hall da Fama */
+        .hall-fame { text-align: center; background: linear-gradient(135deg, #2c3e50, #000); color: white; padding: 20px; border-radius: 12px; position: relative; overflow: hidden; }
+        .hall-fame::before { content: '\f005'; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; top: -10px; right: -10px; font-size: 5rem; color: rgba(255,255,255,0.1); transform: rotate(15deg); }
+        .star-icon { color: #ffd700; font-size: 1.5rem; margin-bottom: 10px; animation: spin 10s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- View Switching --- */
+        .view-section { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .search-bar-container { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 10px; border: 1px solid #eee; }
+    </style>
 </head>
 <body>
 
@@ -69,21 +362,9 @@
     <div id="teacherDashboard" style="display: none;">
         <div class="admin-layout">
             <!-- Sidebar (Menu Lateral) -->
-            <aside class="sidebar" id="sidebar">
-                <div class="sidebar-header">
-                    <i class="fa-solid fa-music" style="margin-right: 10px;"></i> <span>CCML</span>
-                </div>
-                <ul class="sidebar-menu">
-                    <li class="active"><a href="#"><i class="fa-solid fa-chart-pie"></i> <span>Visão Geral</span></a></li>
-                    <li><a href="#"><i class="fa-solid fa-users"></i> <span>Alunos</span></a></li>
-                    <li><a href="#"><i class="fa-regular fa-calendar"></i> <span>Agenda</span></a></li>
-                    <li><a href="#"><i class="fa-solid fa-sack-dollar"></i> <span>Financeiro</span></a></li>
-                    <li><a href="#"><i class="fa-solid fa-gear"></i> <span>Configurações</span></a></li>
-                </ul>
-                <div class="sidebar-footer">
-                    <button onclick="handleLogout()" class="btn-logout-sidebar"><i class="fa-solid fa-right-from-bracket"></i> <span>Sair</span></button>
-                </div>
-            </aside>
+            <div id="sidebar-container">
+                <!-- O Sidebar será carregado aqui pelo JavaScript -->
+            </div>
 
             <!-- Conteúdo Principal -->
             <main class="admin-main">
@@ -104,92 +385,117 @@
                 </header>
 
                 <div class="admin-content">
-                    <!-- KPIs (Indicadores) -->
-                    <div class="kpi-grid animate-on-scroll fade-up">
-                        <div class="kpi-card">
-                            <div class="kpi-info"><h3>124</h3><p>Alunos Ativos</p></div>
-                            <div class="kpi-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+                    
+                    <!-- VIEW 1: VISÃO GERAL (Dashboard) -->
+                    <div id="view-overview" class="view-section active">
+                        <!-- 1. Números Vitais (Topo) -->
+                        <div class="vital-grid animate-on-scroll fade-up">
+                            <div class="vital-card">
+                                <h4>Alunos Ativos</h4>
+                                <div class="number"><span id="kpiActiveStudents">0</span> <span class="trend"><i class="fa-solid fa-arrow-trend-up"></i> +5%</span></div>
+                                <p style="font-size: 0.8rem; color: #999; margin-top: 5px;">Meta: 150 alunos</p>
+                                <div class="progress-bar"><div class="progress-fill" id="progActive" style="width: 0%"></div></div>
+                            </div>
+                            <div class="vital-card">
+                                <h4>Faturamento (Mês)</h4>
+                                <div class="number" style="color: var(--gold);"><span id="kpiRevenue">R$ 0</span></div>
+                                <p style="font-size: 0.8rem; color: #999; margin-top: 5px;">Projeção: R$ 25k</p>
+                                <div class="progress-bar"><div class="progress-fill" id="progRevenue" style="width: 0%"></div></div>
+                            </div>
+                            <div class="vital-card" style="border-left-color: #d32f2f; cursor: pointer;" onclick="switchView('students'); document.getElementById('statusFilter').value='pendente'; filterStudents();">
+                                <h4>Inadimplência / Pendentes</h4>
+                                <div class="number" style="color: #d32f2f;"><span id="kpiDelinquency">0</span> <span class="trend down" style="background: #ffebee; color: #d32f2f;">Ação Necessária</span></div>
+                                <p style="font-size: 0.8rem; color: #999; margin-top: 5px;">Clique para ver lista</p>
+                            </div>
+                            <div class="vital-card" style="border-left-color: #1976d2;">
+                                <h4>Aulas Hoje</h4>
+                                <div class="number" style="color: #1976d2;"><span id="kpiClassesToday">0</span></div>
+                                <p style="font-size: 0.8rem; color: #999; margin-top: 5px;">Agenda do dia</p>
+                            </div>
                         </div>
-                        <div class="kpi-card">
-                            <div class="kpi-info"><h3>12</h3><p>Aulas Hoje</p></div>
-                            <div class="kpi-icon icon-green"><i class="fa-regular fa-calendar-check"></i></div>
+                        
+                        <!-- Gráfico de Evolução Financeira -->
+                        <div class="dash-card animate-on-scroll fade-up" style="margin-top: 25px; margin-bottom: 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h3><i class="fa-solid fa-chart-line" style="color: var(--gold);"></i> Evolução do Faturamento (6 Meses)</h3>
+                            </div>
+                            <div id="revenueChartContainer" style="width: 100%; height: 250px; position: relative;"></div>
                         </div>
-                        <div class="kpi-card">
-                            <div class="kpi-info"><h3>R$ 15k</h3><p>Receita Mensal</p></div>
-                            <div class="kpi-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
-                        </div>
-                        <div class="kpi-card">
-                            <div class="kpi-info"><h3>5</h3><p>Novas Matrículas</p></div>
-                            <div class="kpi-icon icon-purple"><i class="fa-solid fa-user-plus"></i></div>
+
+                        <div class="pilot-grid">
+                            <!-- 2. Coluna Esquerda: Agenda Inteligente -->
+                            <div class="agenda-container animate-on-scroll fade-up">
+                                <div class="agenda-header">
+                                    <h3 style="margin:0;"><i class="fa-regular fa-calendar-check" style="color: var(--gold);"></i> Agenda do Dia</h3>
+                                    <span style="font-size: 0.8rem; background: #f0f0f0; padding: 5px 10px; border-radius: 20px;" id="currentDateDisplay">Hoje</span>
+                                </div>
+                                <div class="v-timeline" id="timelineAgenda">
+                                    <!-- Preenchido via JS -->
+                                    <p style="color: #999; font-size: 0.9rem;">Nenhuma aula agendada para hoje.</p>
+                                </div>
+                            </div>
+
+                            <!-- 3. Coluna Direita: Estratégia -->
+                            <div class="strategy-col animate-on-scroll fade-up delay-200">
+                                <!-- Termômetro de Evasão -->
+                                <div class="widget-card">
+                                    <div class="widget-header"><i class="fa-solid fa-temperature-arrow-up" style="color: #d32f2f;"></i> Risco de Evasão</div>
+                                    <div id="churnList">
+                                        <p style="font-size: 0.8rem; color: #999;">Tudo tranquilo! Nenhum aluno em risco crítico.</p>
+                                    </div>
+                                </div>
+
+                            <!-- Distribuição de Cursos -->
+                            <div class="widget-card">
+                                <div class="widget-header"><i class="fa-solid fa-chart-pie" style="color: var(--gold);"></i> Cursos Populares</div>
+                                <div id="courseChart">
+                                    <!-- Preenchido via JS -->
+                                </div>
+                            </div>
+
+                                <!-- Hall da Fama -->
+                                <div class="widget-card hall-fame">
+                                    <i class="fa-solid fa-trophy star-icon"></i>
+                                    <h4 style="margin: 0; font-size: 1.1rem;">Aluno Destaque</h4>
+                                    <h2 style="margin: 10px 0; color: #ffd700;" id="starStudentName">Carregando...</h2>
+                                    <p style="font-size: 0.8rem; opacity: 0.8;" id="starStudentReason">Assiduidade Impecável</p>
+                                </div>
+
+                                <!-- Aniversariantes -->
+                                <div class="widget-card">
+                                    <div class="widget-header"><i class="fa-solid fa-cake-candles" style="color: #e91e63;"></i> Aniversariantes (Mês)</div>
+                                    <div id="bdayList">
+                                        <!-- Preenchido via JS -->
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="dashboard-grid">
-                        <!-- Ferramenta 1: Gerador de Feedback -->
+                    <!-- VIEW 2: ALUNOS (Lista Completa) -->
+                    <div id="view-students" class="view-section">
+                        <div class="search-bar-container animate-on-scroll fade-up">
+                            <input type="text" id="studentSearch" class="form-input" placeholder="Buscar por nome, curso ou CPF..." onkeyup="filterStudents()">
+                            <select class="form-input" style="max-width: 200px;" onchange="filterStudents()" id="statusFilter">
+                                <option value="all">Todos os Status</option>
+                                <option value="ativo">Ativos</option>
+                                <option value="pendente">Pendentes</option>
+                                <option value="aguardando_pagamento">Aguardando Pagto</option>
+                            </select>
+                            <select class="form-input admin-only" style="max-width: 200px;" onchange="filterStudents()" id="professorFilter">
+                                <option value="all">Todos os Professores</option>
+                            </select>
+                            <button class="btn-main" style="width: auto; margin: 0;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+
                         <div class="dash-card animate-on-scroll fade-up">
-                            <h3><i class="fa-brands fa-whatsapp" style="color: var(--gold);"></i> Feedback Rápido</h3>
-                            <p style="font-size: 0.8rem; color: #777; margin-bottom: 15px;">Gere uma mensagem padronizada para enviar aos pais/alunos.</p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h3><i class="fa-solid fa-list" style="color: var(--gold);"></i> Base de Alunos</h3>
+                                <button onclick="exportData()" class="btn-nav" style="background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; font-size: 0.8rem;">
+                                    <i class="fa-solid fa-file-excel"></i> Exportar
+                                </button>
+                            </div>
                             
-                            <div class="input-group">
-                                <label>Nome do Aluno</label>
-                                <input type="text" id="fbName" placeholder="Ex: Maria">
-                            </div>
-                            <div class="input-group">
-                                <label>Tema da Aula</label>
-                                <input type="text" id="fbTopic" placeholder="Ex: Escala de Dó Maior">
-                            </div>
-                            <div class="input-group">
-                                <label>Desempenho</label>
-                                <select id="fbRating">
-                                    <option value="Excelente! 🌟">Excelente! 🌟</option>
-                                    <option value="Muito Bom! 👏">Muito Bom! 👏</option>
-                                    <option value="Precisa Praticar Mais 🎹">Precisa Praticar Mais 🎹</option>
-                                </select>
-                            </div>
-                            <div class="input-group">
-                                <label>Tarefa de Casa</label>
-                                <input type="text" id="fbHomework" placeholder="Ex: Treinar página 12">
-                            </div>
-
-                            <button onclick="generateFeedback()" class="btn-nav" style="width: 100%; margin-top: 10px;">
-                                <i class="fa-regular fa-copy"></i> Copiar Mensagem
-                            </button>
-                        </div>
-
-                        <!-- Ferramenta 2: Agenda Visual (Estática) -->
-                        <div class="dash-card animate-on-scroll fade-up delay-200">
-                            <h3><i class="fa-regular fa-calendar" style="color: var(--gold);"></i> Agenda do Dia</h3>
-                            <ul class="agenda-list">
-                                <li>
-                                    <span class="time">09:00</span>
-                                    <span class="student">João Silva (Piano)</span>
-                                </li>
-                                <li>
-                                    <span class="time">10:00</span>
-                                    <span class="student">Turma Infantil (Musicalização)</span>
-                                </li>
-                                <li>
-                                    <span class="time">14:00</span>
-                                    <span class="student">Ana Clara (Violão)</span>
-                                </li>
-                                <li class="free-slot">
-                                    <span class="time">15:00</span>
-                                    <span>Horário Livre</span>
-                                </li>
-                            </ul>
-                            
-                            <div id="addStudentForm" style="display: none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
-                                <input type="time" id="newTime" class="login-input" style="padding: 8px; margin-bottom: 5px;">
-                                <input type="text" id="newStudent" placeholder="Nome do Aluno" class="login-input" style="padding: 8px; margin-bottom: 10px;">
-                                <button onclick="addStudent()" class="btn-nav" style="width: 100%; background: var(--gold); color: white !important;">Confirmar</button>
-                            </div>
-
-                            <button onclick="toggleAddStudent()" class="btn-main" style="width: 100%; margin-top: 20px; font-size: 0.8rem;">+ Adicionar Aluno</button>
-                        </div>
-
-                        <!-- Ferramenta 3: Lista de Matrículas (Nova) -->
-                        <div class="dash-card animate-on-scroll fade-up" style="grid-column: 1 / -1;">
-                            <h3><i class="fa-solid fa-list" style="color: var(--gold);"></i> Solicitações de Matrícula Online</h3>
                             <div style="overflow-x: auto;">
                                 <table style="width: 100%; margin-top: 15px; font-size: 0.9rem;">
                                     <thead>
@@ -199,6 +505,8 @@
                                             <th>Curso</th>
                                             <th>WhatsApp</th>
                                             <th>Nível</th>
+                                            <th>Status</th>
+                                            <th class="admin-only">Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody id="enrollmentList">
@@ -209,6 +517,186 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- VIEW 3: FINANCEIRO -->
+                    <div id="view-financial" class="view-section">
+                        <div class="dash-card animate-on-scroll fade-up" style="text-align: center; padding: 50px;">
+                            <i class="fa-solid fa-sack-dollar" style="font-size: 3rem; color: #ddd; margin-bottom: 20px;"></i>
+                            <h3>Módulo Financeiro</h3>
+                            <p style="color: #777;">Esta funcionalidade estará disponível na próxima atualização do sistema.</p>
+                        </div>
+                    </div>
+
+                    <!-- VIEW 4: CONFIGURAÇÕES -->
+                    <div id="view-settings" class="view-section">
+                        <div class="dash-card animate-on-scroll fade-up">
+                            <h3>Configurações da Conta</h3>
+                            <p>Gerencie sua senha e preferências de notificação aqui.</p>
+                        </div>
+
+                        <!-- Gestão de Professores (Dinâmico) -->
+                        <div class="dash-card animate-on-scroll fade-up admin-only" style="margin-top: 20px;">
+                            <h3><i class="fa-solid fa-chalkboard-user" style="color: var(--gold);"></i> Gestão de Professores</h3>
+                            <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">Adicione ou remova membros da equipe pedagógica.</p>
+                            
+                            <div class="input-group" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <input type="text" id="newTeacherName" placeholder="Nome (ex: Prof. João)" class="form-input" style="flex: 1;">
+                                <input type="email" id="newTeacherEmail" placeholder="E-mail de Acesso" class="form-input" style="flex: 1;">
+                                <button onclick="addTeacher()" class="btn-main" style="width: auto; margin: 0;">Adicionar</button>
+                            </div>
+
+                            <ul id="teachersListSettings" style="margin-top: 20px; list-style: none; padding: 0;">
+                                <!-- Lista preenchida via JavaScript -->
+                                <li style="color: #999; text-align: center; padding: 10px;">Carregando equipe...</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- View de Gerenciamento (Injetada aqui para manter sidebar/header) -->
+                    <div id="managementView" style="display: none;">
+                        <!-- Header Fixo -->
+                        <div class="mgmt-header-box">
+                            <div>
+                                <h3><i class="fa-solid fa-user-pen" style="color: var(--gold); margin-right: 8px;"></i> Ficha do Aluno</h3>
+                                <p>Edição completa de dados cadastrais e financeiros.</p>
+                            </div>
+                            <button onclick="closeManagementView()" class="btn-close-mgmt" title="Fechar"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+
+                        <input type="hidden" id="manageId">
+
+                        <div class="mgmt-layout animate-on-scroll fade-up">
+                            
+                            <!-- Coluna Principal (Esquerda) -->
+                            <div class="mgmt-col-main">
+                                <!-- Card: Dados Pessoais -->
+                                <div class="mgmt-card">
+                                    <h4><i class="fa-regular fa-id-card"></i> Dados Pessoais</h4>
+                                    <div class="input-grid">
+                                        <div class="full-col">
+                                            <label class="form-label">Nome Completo</label>
+                                            <input type="text" id="manageNome" class="form-input">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">CPF</label>
+                                            <input type="text" id="manageCpf" class="form-input">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">Data Nascimento</label>
+                                            <input type="date" id="manageNascimento" class="form-input">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">WhatsApp / Contato</label>
+                                            <input type="text" id="manageTelefone" class="form-input">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">E-mail</label>
+                                            <input type="email" id="manageEmail" class="form-input">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card: Pedagógico -->
+                                <div class="mgmt-card">
+                                    <h4><i class="fa-solid fa-graduation-cap"></i> Pedagógico</h4>
+                                    <div class="input-grid">
+                                        <div>
+                                            <label class="form-label">Curso</label>
+                                            <select id="manageCurso" class="form-input">
+                                                <option value="">-- Selecione --</option>
+                                                <option value="Piano/Teclado">Piano / Teclado</option>
+                                                <option value="Violão">Violão</option>
+                                                <option value="Violino">Violino</option>
+                                                <option value="Bateria">Bateria</option>
+                                                <option value="Canto/Técnica Vocal">Canto / Técnica Vocal</option>
+                                                <option value="Flauta Doce">Flauta Doce</option>
+                                                <option value="Inglês com Música">Inglês com Música</option>
+                                                <option value="musicalizacao">Musicalização Infantil</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="form-label">Nível</label>
+                                            <select id="manageNivel" class="form-input">
+                                                <option value="iniciante">Iniciante</option>
+                                                <option value="basico">Básico</option>
+                                                <option value="intermediario">Intermediário</option>
+                                                <option value="avancado">Avançado</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="form-label">Plano</label>
+                                            <input type="text" id="managePlano" class="form-input">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">Professor</label>
+                                            <select id="manageProfessor" class="form-input">
+                                                <option value="">-- Selecione --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Coluna Lateral (Direita) -->
+                            <div class="mgmt-col-side">
+                                <!-- Card: Status -->
+                                <div class="mgmt-card" style="border-top: 4px solid var(--gold);">
+                                    <label class="form-label">Status da Matrícula</label>
+                                    <select id="manageStatus" class="form-input status-select" style="margin-bottom: 15px;">
+                                        <option value="pendente">Pendente</option>
+                                        <option value="aguardando_pagamento">Aguardando Pagamento</option>
+                                        <option value="ativo">Ativo</option>
+                                        <option value="inativo">Inativo</option>
+                                    </select>
+                                    
+                                    <label class="form-label">Etiquetas (Tags)</label>
+                                    <div class="tag-input-area" id="tagContainer" onclick="document.getElementById('newTagInput').focus()">
+                                        <input type="text" id="newTagInput" class="tag-input" placeholder="+ Adicionar (ex: Bolsista)">
+                                    </div>
+                                </div>
+
+                                <!-- Card: Financeiro -->
+                                <div class="mgmt-card">
+                                    <h4><i class="fa-solid fa-coins"></i> Financeiro</h4>
+                                    <div class="input-grid" style="grid-template-columns: 1fr;">
+                                        <div>
+                                            <label class="form-label">Responsável</label>
+                                            <input type="text" id="manageRespNome" class="form-input">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">CPF Resp.</label>
+                                            <input type="text" id="manageRespCpf" class="form-input">
+                                        </div>
+                                        <div style="background: #e8f5e9; padding: 12px; border-radius: 6px; border: 1px solid #c8e6c9; margin-top: 5px;">
+                                            <label style="display: flex; align-items: center; cursor: pointer; margin: 0;">
+                                                <input type="checkbox" id="managePagamento" style="width: auto; margin-right: 10px;">
+                                                <span style="font-weight: bold; color: #2e7d32; font-size: 0.85rem;">Pagamento Verificado</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card: Timeline -->
+                                <div class="mgmt-card">
+                                    <h4><i class="fa-solid fa-clock-rotate-left"></i> Histórico</h4>
+                                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                        <input type="text" id="newTimelineNote" class="form-input" style="flex: 1;" placeholder="Nova observação...">
+                                        <button onclick="addTimelineItem()" class="btn-nav" style="background: var(--gold); color: white; border: none;"><i class="fa-solid fa-paper-plane"></i></button>
+                                    </div>
+                                    <div id="timelineList" class="timeline-box">
+                                        <p style="text-align: center; color: #999; font-size: 0.8rem; padding: 20px;">Nenhum registro encontrado.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Ações Fixas no Rodapé do Card -->
+                            <div class="mgmt-card full-col mgmt-actions">
+                                <button onclick="closeManagementView()" class="btn-nav" style="background: #f0f0f0; color: #333; border: 1px solid #ddd;">Cancelar</button>
+                                <button onclick="saveManagementData()" class="btn-main" style="width: auto; padding: 0 30px;">Salvar Alterações</button>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>
@@ -216,6 +704,12 @@
 
     <div id="footer-container"></div>
 
-    <script type="module" src="js/app.js?v=1.0.19"></script>
+    <!-- Maestro AI Widget -->
+    <script src="js/maestro-ui.js"></script>
+
+    <!-- Confetti Effect -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script type="module" src="js/app.js?v=1.0.20"></script>
 </body>
 </html>

@@ -87,6 +87,8 @@
 
 </div>
 
+<div id="footer-container"></div>
+
 <!-- AI Chat Floating Button -->
 <button class="ai-fab" onclick="toggleChat()">
     <i class="fa-solid fa-wand-magic-sparkles"></i> Dúvidas sobre Valores?
@@ -96,7 +98,10 @@
 <div id="aiModal" class="ai-modal">
     <div class="ai-header">
         <span>Maestro Virtual - Financeiro</span>
-        <button style="background:none; border:none; color:white; cursor:pointer;" onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
+        <div style="display: flex; gap: 10px;">
+            <button class="ai-minimize" onclick="minimizeChat()" style="background:none; border:none; color:white; cursor:pointer;"><i class="fa-solid fa-minus"></i></button>
+            <button style="background:none; border:none; color:white; cursor:pointer;" onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
     </div>
     <div class="chat-container" id="chatContainer">
         <div class="message bot">
@@ -109,8 +114,11 @@
     </div>
 </div>
 
+<!-- Maestro AI Widget Logic -->
+<script src="js/maestro-ui.js"></script>
+
 <!-- Script Principal -->
-<script type="module" src="js/app.js"></script>
+<script type="module" src="js/app.js?v=1.0.20"></script>
 
 </body>
 </html>
