@@ -65,7 +65,7 @@ if (document.getElementById('teacherDashboard')) {
 // 3. Rodapé Dinâmico (Todas as páginas)
 const footerContainer = document.getElementById('footer-container');
 if (footerContainer) {
-    loadComponent('components/footer.html', 'footer-container').then(() => {
+    loadComponent('footer.html', 'footer-container').then(() => {
         const versionEl = document.getElementById('appVersion');
         if (versionEl) versionEl.innerText = `v${APP_VERSION}`;
     });

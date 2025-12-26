@@ -2,6 +2,17 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.0.21] - 2025-12-26 - "Restauração de Componentes"
+### Corrigido
+- **Componentes:** Restaurada a localização dos arquivos `sidebar.html` e `footer.html` para a raiz do projeto para resolver problemas de carregamento.
+- **Inicialização:** Scripts ajustados para buscar componentes na raiz.
+
+## [1.0.20] - 2025-12-26 - "Estabilização do Sistema"
+### Refatorado
+- **Core:** Implementação do `js/init.js` para gerenciamento robusto de dependências e inicialização sem módulos ES6.
+- **Compatibilidade:** Conversão de scripts para funcionar globalmente, evitando problemas de CORS em ambiente local.
+- **UI:** Indicadores de carregamento adicionados aos componentes dinâmicos.
+
 ## [1.0.19] - 2025-12-24 - "Acesso & Recuperação"
 ### Adicionado
 - **Login:** Funcionalidade "Lembrar-me" que salva o e-mail do professor no navegador para facilitar acessos futuros.
