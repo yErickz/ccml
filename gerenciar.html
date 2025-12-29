@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Matrícula - CCML</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --gold: #d4af37;
+            --bg-light: #f8f9fa;
+            --text-dark: #333;
+            --border-color: #ddd;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+        .btn-back {
+            text-decoration: none;
+            color: #666;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s;
+        }
+        .btn-back:hover {
+            color: var(--primary);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        .form-control:focus {
+            border-color: var(--gold);
+            outline: none;
+        }
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            border-left: 4px solid var(--gold);
+            padding-left: 10px;
+        }
+        .card-panel {
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .tag-badge {
+            background: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tag-badge i {
+            cursor: pointer;
+            opacity: 0.7;
+        }
+        .tag-badge i:hover {
+            opacity: 1;
+        }
+        .timeline-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        .timeline-entry {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .timeline-entry:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .timeline-meta {
+            font-size: 0.8rem;
+            color: #888;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        .timeline-text {
+            font-size: 0.95rem;
+            color: #444;
+        }
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        .btn-primary {
+            background: var(--gold);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #c5a028;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            font-size: 1.5rem;
+            color: var(--gold);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <i class="fa-solid fa-spinner fa-spin"></i> &nbsp; Carregando dados...
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Gerenciar Matrícula</h1>
+            <a href="#" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Voltar ao Painel</a>
+        </div>
+
+        <input type="hidden" id="manageId">
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Nome do Aluno</label>
+                <input type="text" id="manageNome" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Curso</label>
+                <input type="text" id="manageCurso" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="manageEmail" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Telefone / WhatsApp</label>
+                <input type="text" id="manageTelefone" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>CPF</label>
+                <input type="text" id="manageCpf" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Data de Nascimento</label>
+                <input type="date" id="manageNascimento" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Nível</label>
+                <select id="manageNivel" class="form-control">
+                    <option value="iniciante">Iniciante</option>
+                    <option value="basico">Básico</option>
+                    <option value="intermediario">Intermediário</option>
+                    <option value="avancado">Avançado</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Plano</label>
+                <select id="managePlano" class="form-control">
+                    <option value="Mensal">Mensal</option>
+                    <option value="Trimestral">Trimestral</option>
+                    <option value="Semestral">Semestral</option>
+                    <option value="Turma">Turma</option>
+                    <option value="Musicalizacao">Musicalização</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Status da Matrícula</label>
+                <select id="manageStatus" class="form-control">
+                    <option value="pendente">Pendente</option>
+                    <option value="aguardando_pagamento">Aguardando Pagamento</option>
+                    <option value="ativo">Ativo</option>
+                    <option value="inativo">Inativo</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Professor Responsável</label>
+                <select id="manageProfessor" class="form-control">
+                    <option value="">-- Selecione --</option>
+                    <!-- Preenchido via JS -->
+                </select>
+            </div>
+        </div>
+
+        <div class="card-panel">
+            <h3 class="section-title"><i class="fa-solid fa-file-invoice-dollar"></i> Responsável Financeiro</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Nome do Responsável</label>
+                    <input type="text" id="manageRespNome" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>CPF do Responsável</label>
+                    <input type="text" id="manageRespCpf" class="form-control">
+                </div>
+            </div>
+            <div class="form-group">
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                    <input type="checkbox" id="managePagamento" style="width:20px; height:20px;"> 
+                    <span>Pagamento Verificado (Matrícula Paga)</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="card-panel">
+            <h3 class="section-title"><i class="fa-solid fa-tags"></i> Tags & Observações</h3>
+            <div class="form-group">
+                <div id="tagContainer" class="tag-container"></div>
+                <input type="text" id="newTagInput" class="form-control" placeholder="Digite uma tag e pressione Enter...">
+            </div>
+        </div>
+
+        <div class="card-panel">
+            <h3 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Linha do Tempo (Histórico)</h3>
+            <div id="timelineList" class="timeline-list"></div>
+            <div style="display:flex; gap:10px;">
+                <textarea id="newTimelineNote" class="form-control" placeholder="Adicionar nova nota ao histórico..." rows="2"></textarea>
+                <button id="btnAddTimeline" class="btn btn-primary" style="height:fit-content; align-self:flex-end;">Adicionar</button>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button onclick="window.close()" class="btn btn-secondary">Cancelar</button>
+            <button id="btnSave" class="btn btn-primary"><i class="fa-solid fa-save"></i> Salvar Alterações</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/gerenciar.js"></script>
+</body>
+</html>

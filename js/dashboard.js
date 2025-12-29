@@ -6,14 +6,48 @@ import { customAlert, customConfirm } from "./utils.js";
 let currentTags = [];
 let teachersList = []; // Lista dinâmica do banco
 
+// --- DADOS FICTÍCIOS (MOCK) PARA TESTE ---
+const mockStudents = [
+    {
+        id: "1",
+        data_registro: "2024-02-15",
+        nome: "Ana Silva",
+        curso: "Piano/Teclado",
+        telefone: "(11) 99999-9999",
+        whatsapp_cobranca: "11999999999",
+        nivel: "iniciante",
+        status_matricula: "ativo",
+        professor_atribuido: "prof.joao@ccml.com",
+        plano_escolhido: "Mensal",
+        responsavel_financeiro: "Carlos Silva",
+        cpf: "123.456.789-00",
+        email: "ana@email.com",
+        nascimento: "2010-05-15",
+        pagamento_verificado: true
+    },
+    {
+        id: "2",
+        data_registro: "2024-03-10",
+        nome: "Bruno Souza",
+        curso: "Violão",
+        telefone: "(11) 98888-8888",
+        whatsapp_cobranca: "11988888888",
+        nivel: "intermediario",
+        status_matricula: "pendente",
+        professor_atribuido: "prof.maria@ccml.com",
+        plano_escolhido: "Trimestral",
+        responsavel_financeiro: "Julia Souza",
+        cpf: "222.333.444-55",
+        email: "bruno@email.com",
+        nascimento: "2008-08-20",
+        pagamento_verificado: false
+    }
+];
+
 export function initDashboard() {
     // Expor funções globais
     window.switchView = switchView;
     window.openManagementView = openManagementView;
-    window.closeManagementView = closeManagementView;
-    window.saveManagementData = saveManagementData;
-    window.addTimelineItem = addTimelineItem;
-    window.removeTag = removeTag;
     window.filterStudents = filterStudents;
     window.toggleSidebar = toggleSidebar;
     window.selectPlan = selectPlan;
@@ -23,22 +57,7 @@ export function initDashboard() {
     window.exportData = exportData;
     window.sendCharge = sendCharge;
     window.toggleTheme = toggleTheme;
-
-    // Listener para Tags
-    const tagInput = document.getElementById('newTagInput');
-    if (tagInput) {
-        tagInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const val = e.target.value.trim();
-                if (val && !currentTags.includes(val)) {
-                    currentTags.push(val);
-                    renderTags();
-                    e.target.value = '';
-                }
-            }
-        });
-    }
+    window.loadDashboardData = loadDashboardData; // Permite que o popup de gerenciar atualize a lista
 
     // Lógica de Automação do Checkbox de Pagamento
     const paymentCheck = document.getElementById('managePagamento');
@@ -87,23 +106,27 @@ export async function loadDashboardData() {
     list.innerHTML = "";
     
     try {
-        let q;
-        if (currentUserRole === 'admin') {
-            q = query(collection(db, "matriculas"), orderBy("data_registro", "desc"), limit(50));
-        } else {
-            q = query(collection(db, "matriculas"), where("professor_atribuido", "==", currentUserEmail));
+        // Busca dados reais do Firebase
+        let dataList = [];
+        try {
+            const q = query(collection(db, "matriculas"), orderBy("data_registro", "desc"));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                dataList.push({ id: doc.id, ...doc.data() });
+            });
+        } catch (e) {
+            console.warn("Erro ao carregar Firebase, usando dados fictícios:", e);
+            dataList = mockStudents;
         }
-        
-        const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) {
+
+        if (dataList.length === 0) {
             document.getElementById('loadingMsg').innerText = "Nenhuma matrícula recente.";
             return;
         }
         document.getElementById('loadingMsg').style.display = 'none';
 
-        querySnapshot.forEach((doc) => {
-            const d = doc.data();
-            const docId = doc.id;
+        dataList.forEach((d) => {
+            const docId = d.id;
             const date = new Date(d.data_registro).toLocaleDateString('pt-BR');
             
             const nivelMap = {
@@ -199,13 +222,16 @@ export async function loadOverviewData() {
 
     try {
         // Busca todas as matrículas para calcular KPIs
-        let q;
-        if (currentUserRole === 'admin') {
-            q = query(collection(db, "matriculas"));
-        } else {
-            q = query(collection(db, "matriculas"), where("professor_atribuido", "==", currentUserEmail));
+        let snapshot = [];
+        try {
+            const q = query(collection(db, "matriculas"));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                snapshot.push({ id: doc.id, ...doc.data() });
+            });
+        } catch (e) {
+            snapshot = mockStudents;
         }
-        const snapshot = await getDocs(q);
         
         let activeCount = 0;
         let revenue = 0;
@@ -213,9 +239,8 @@ export async function loadOverviewData() {
         let students = [];
         let courseCounts = {};
 
-        snapshot.forEach(doc => {
-            const d = doc.data();
-            students.push({ id: doc.id, ...d });
+        snapshot.forEach(d => {
+            students.push(d);
 
             // KPI: Alunos Ativos
             if (d.status_matricula === 'ativo') {
@@ -532,18 +557,42 @@ function generateChurnRisk(students) {
 }
 
 function generateBirthdays(students) {
-    // Lógica simplificada: Pega alunos aleatórios para demo, pois nem todos têm data válida
-    // Em produção: filtrar por month === currentMonth
     const list = document.getElementById('bdayList');
     if(!list) return;
     list.innerHTML = "";
     
-    const bdayStudents = students.slice(0, 2); // Pega 2 para exemplo
+    const today = new Date();
+    const currentMonth = today.getMonth(); // 0 a 11 (Janeiro é 0)
+    const currentDay = today.getDate();
+
+    // Filtra alunos que fazem aniversário no mês atual
+    const bdayStudents = students.filter(s => {
+        if (!s.nascimento) return false;
+        const parts = s.nascimento.split('-'); // Espera formato YYYY-MM-DD
+        if (parts.length !== 3) return false;
+        
+        const month = parseInt(parts[1]) - 1; // Ajusta mês (1-12) para índice (0-11)
+        return month === currentMonth;
+    }).sort((a, b) => {
+        // Ordena pelo dia do mês
+        return parseInt(a.nascimento.split('-')[2]) - parseInt(b.nascimento.split('-')[2]);
+    });
+
+    if (bdayStudents.length === 0) {
+        list.innerHTML = '<div style="padding:15px; text-align:center; color:#888; font-size:0.9rem;">Nenhum aniversariante este mês.</div>';
+        return;
+    }
+
     bdayStudents.forEach(s => {
+        const day = parseInt(s.nascimento.split('-')[2]);
+        const isToday = (day === currentDay);
+        const dateLabel = isToday ? 'HOJE' : `${day}/${(currentMonth + 1).toString().padStart(2, '0')}`;
+        const style = isToday ? 'background-color: #fff0f0; border-left: 3px solid #e91e63;' : '';
+
         const phone = (s.whatsapp_cobranca || s.telefone || "").replace(/\D/g, '');
         list.innerHTML += `
-            <div class="bday-item">
-                <div class="bday-date">HOJE</div>
+            <div class="bday-item" style="${style}">
+                <div class="bday-date" style="${isToday ? 'color:#e91e63; font-weight:bold;' : ''}">${dateLabel}</div>
                 <div style="flex:1; font-size:0.9rem;">${s.nome}</div>
                 <button class="btn-whatsapp-mini" style="background:#e91e63;" onclick="window.open('https://wa.me/55${phone}?text=Parabéns ${s.nome.split(' ')[0]}! Feliz aniversário! 🎂', '_blank')"><i class="fa-solid fa-gift"></i></button>
             </div>
@@ -577,86 +626,63 @@ function animateValue(id, start, end, duration) {
 
 // --- Gestão de Matrícula ---
 async function openManagementView(id) {
-    document.getElementById('dashboardView').style.display = 'none';
-    document.getElementById('managementView').style.display = 'block';
-    document.getElementById('manageId').value = id;
-    
-    // Reset Fields
-    ['manageNome', 'manageCurso', 'manageEmail', 'manageTelefone', 'manageCpf', 'manageNascimento', 'manageRespNome', 'manageRespCpf', 'managePlano', 'newTimelineNote'].forEach(id => document.getElementById(id).value = "");
-    document.getElementById('manageNome').value = "Carregando...";
-    
-    currentTags = [];
-    renderTags();
-    renderTimeline([]);
-    populateTeacherSelect();
+    // Abre a nova página de gerenciamento em uma nova aba
+    window.open(`gerenciar.html?id=${id}`, '_blank');
+}
 
-    try {
-        const docSnap = await getDoc(doc(db, "matriculas", id));
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            document.getElementById('manageNome').value = data.nome || "";
-            document.getElementById('manageCurso').value = data.curso || "";
-            document.getElementById('manageEmail').value = data.email || "";
-            document.getElementById('manageTelefone').value = data.telefone || "";
-            document.getElementById('manageCpf').value = data.cpf || "";
-            document.getElementById('manageNascimento').value = data.nascimento || "";
-            document.getElementById('manageNivel').value = data.nivel || "iniciante";
-            document.getElementById('managePlano').value = data.plano_escolhido || "";
-            document.getElementById('manageStatus').value = data.status_matricula || (data.status === 'completo' ? 'aguardando_pagamento' : 'pendente');
-            document.getElementById('manageProfessor').value = data.professor_atribuido || "";
-            document.getElementById('managePagamento').checked = data.pagamento_verificado || false;
-            document.getElementById('manageRespNome').value = data.responsavel_financeiro || "";
-            document.getElementById('manageRespCpf').value = data.cpf_responsavel || "";
+// --- Auxiliares de UI ---
+
+function populateTeacherSelect() {
+    ['editProfessor', 'manageProfessor', 'professorFilter'].forEach(id => {
+        const select = document.getElementById(id);
+        if (select) {
+            // Mantém apenas a primeira opção (-- Selecione --)
+            const defaultText = id === 'professorFilter' ? 'Todos os Professores' : '-- Selecione --';
+            const defaultValue = id === 'professorFilter' ? 'all' : '';
             
-            currentTags = data.tags || [];
-            renderTags();
-            renderTimeline(data.timeline || []);
-        } else {
-            customAlert("Matrícula não encontrada.");
-            closeManagementView();
+            select.innerHTML = `<option value="${defaultValue}">${defaultText}</option>`;
+            teachersList.forEach(t => {
+                select.innerHTML += `<option value="${t.email}">${t.name}</option>`;
+            });
         }
-    } catch (e) {
-        console.error("Erro ao carregar:", e);
-        closeManagementView();
-    }
+    });
 }
 
-function closeManagementView() {
-    document.getElementById('managementView').style.display = 'none';
+function toggleTheme() {
+    const checkbox = document.getElementById('themeToggleCheckbox');
+    if (!checkbox) return; // Sai da função se o checkbox não existir
+
+    const isDark = checkbox.checked;
+    document.body.classList.toggle('dark-mode', isDark);
+    
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
 }
 
-async function saveManagementData() {
-    const id = document.getElementById('manageId').value;
-    const btn = document.querySelector('button[onclick="saveManagementData()"]');
-    if(btn) { btn.innerText = "Salvando..."; btn.disabled = true; }
+function renderTeachersSettings() {
+    const list = document.getElementById('teachersListSettings');
+    if (!list) return;
+    list.innerHTML = "";
+    
+    teachersList.forEach(t => {
+        list.innerHTML += `
+            <li class="teacher-item">
+                <span><strong>${t.name}</strong> <br><small>${t.email}</small></span>
+                <button onclick="removeTeacher('${t.id}', '${t.email}')" class="btn-remove-teacher"><i class="fa-solid fa-trash"></i> Remover</button>
+            </li>
+        `;
+    });
+}
 
-    const updates = {
-        nome: document.getElementById('manageNome').value,
-        curso: document.getElementById('manageCurso').value,
-        email: document.getElementById('manageEmail').value,
-        telefone: document.getElementById('manageTelefone').value,
-        cpf: document.getElementById('manageCpf').value,
-        nascimento: document.getElementById('manageNascimento').value,
-        nivel: document.getElementById('manageNivel').value,
-        plano_escolhido: document.getElementById('managePlano').value,
-        status_matricula: document.getElementById('manageStatus').value,
-        professor_atribuido: document.getElementById('manageProfessor').value,
-        pagamento_verificado: document.getElementById('managePagamento').checked,
-        responsavel_financeiro: document.getElementById('manageRespNome').value,
-        cpf_responsavel: document.getElementById('manageRespCpf').value,
-        tags: currentTags
-    };
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    if (window.innerWidth > 992) sidebar.classList.toggle('collapsed');
+    else sidebar.classList.toggle('active');
+}
 
-    try {
-        await updateDoc(doc(db, "matriculas", id), updates);
-        customAlert("Dados atualizados com sucesso!", "Sucesso");
-        closeManagementView();
-        loadDashboardData();
-    } catch (e) {
-        customAlert("Erro ao salvar alterações.");
-    } finally {
-        if(btn) { btn.innerText = "Salvar Alterações"; btn.disabled = false; }
-    }
+function selectPlan(planName) {
+    customAlert(`Ótima escolha! O plano "${planName}" é excelente. Redirecionando para o WhatsApp...`, "Plano Selecionado");
+    window.open(`https://wa.me/5594999999999?text=Olá, tenho interesse no plano ${planName}`, '_blank');
 }
 
 // --- Gestão de Professores (Firebase) ---
@@ -715,117 +741,4 @@ async function removeTeacher(id, email) {
         console.error(e);
         customAlert("Erro ao verificar vínculos do professor.");
     }
-}
-
-// --- Auxiliares de UI ---
-
-function populateTeacherSelect() {
-    ['editProfessor', 'manageProfessor', 'professorFilter'].forEach(id => {
-        const select = document.getElementById(id);
-        if (select) {
-            // Mantém apenas a primeira opção (-- Selecione --)
-            const defaultText = id === 'professorFilter' ? 'Todos os Professores' : '-- Selecione --';
-            const defaultValue = id === 'professorFilter' ? 'all' : '';
-            
-            select.innerHTML = `<option value="${defaultValue}">${defaultText}</option>`;
-            teachersList.forEach(t => {
-                select.innerHTML += `<option value="${t.email}">${t.name}</option>`;
-            });
-        }
-    });
-}
-
-function toggleTheme() {
-    const checkbox = document.getElementById('themeToggleCheckbox');
-    if (!checkbox) return; // Sai da função se o checkbox não existir
-
-    const isDark = checkbox.checked;
-    document.body.classList.toggle('dark-mode', isDark);
-    
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-}
-
-function renderTags() {
-    const container = document.getElementById('tagContainer');
-    const input = document.getElementById('newTagInput');
-    if (!container || !input) return;
-
-    Array.from(container.getElementsByClassName('tag-badge')).forEach(el => el.remove());
-
-    currentTags.forEach((tag, index) => {
-        const badge = document.createElement('span');
-        badge.className = 'tag-badge';
-        badge.innerHTML = `${tag} <i class="fa-solid fa-xmark" onclick="removeTag(${index})"></i>`;
-        container.insertBefore(badge, input);
-    });
-}
-
-function removeTag(index) {
-    currentTags.splice(index, 1);
-    renderTags();
-}
-
-function renderTeachersSettings() {
-    const list = document.getElementById('teachersListSettings');
-    if (!list) return;
-    list.innerHTML = "";
-    
-    teachersList.forEach(t => {
-        list.innerHTML += `
-            <li class="teacher-item">
-                <span><strong>${t.name}</strong> <br><small>${t.email}</small></span>
-                <button onclick="removeTeacher('${t.id}', '${t.email}')" class="btn-remove-teacher"><i class="fa-solid fa-trash"></i> Remover</button>
-            </li>
-        `;
-    });
-}
-
-function renderTimeline(timelineData) {
-    const list = document.getElementById('timelineList');
-    list.innerHTML = "";
-    if (!timelineData || timelineData.length === 0) {
-        list.innerHTML = '<p style="text-align: center; color: #999; font-size: 0.8rem; padding: 20px;">Nenhum registro encontrado.</p>';
-        return;
-    }
-    const sorted = [...timelineData].sort((a, b) => new Date(b.date) - new Date(a.date));
-    sorted.forEach(item => {
-        const dateObj = new Date(item.date);
-        const dateStr = dateObj.toLocaleDateString('pt-BR') + ' às ' + dateObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-        list.innerHTML += `
-            <div class="timeline-entry">
-                <div class="timeline-meta"><strong>${item.author || 'Sistema'}</strong><span>${dateStr}</span></div>
-                <div class="timeline-text">${item.text}</div>
-            </div>`;
-    });
-}
-
-async function addTimelineItem() {
-    const text = document.getElementById('newTimelineNote').value.trim();
-    const id = document.getElementById('manageId').value;
-    if (!text) return;
-    try {
-        const docRef = doc(db, "matriculas", id);
-        await updateDoc(docRef, {
-            timeline: arrayUnion({
-                text: text,
-                date: new Date().toISOString(),
-                author: currentUserRole === 'admin' ? 'Diretoria' : 'Professor'
-            })
-        });
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) renderTimeline(docSnap.data().timeline || []);
-        document.getElementById('newTimelineNote').value = "";
-    } catch (e) { console.error(e); }
-}
-
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    if (!sidebar) return;
-    if (window.innerWidth > 992) sidebar.classList.toggle('collapsed');
-    else sidebar.classList.toggle('active');
-}
-
-function selectPlan(planName) {
-    customAlert(`Ótima escolha! O plano "${planName}" é excelente. Redirecionando para o WhatsApp...`, "Plano Selecionado");
-    window.open(`https://wa.me/5594999999999?text=Olá, tenho interesse no plano ${planName}`, '_blank');
 }

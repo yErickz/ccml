@@ -1,29 +1,38 @@
-// --- Configuração da IA (Google Gemini) ---
-const GEMINI_API_KEY = "AIzaSyCql2qRYkCgnwDMzLA_xfeO0uzkysZ292k"; // ⚠️ COLOQUE SUA API KEY AQUI: https://aistudio.google.com/app/apikey
+// --- Configuração da IA (ChatGPT) ---
+const OPENAI_API_KEY = ""; // Chave removida por segurança. Insira apenas localmente ou use variáveis de ambiente.
 
-async function getGeminiResponse(userText) {
-    if (!GEMINI_API_KEY) return null;
+async function getChatGPTResponse(userText) {
+    if (!OPENAI_API_KEY) return null;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const url = "https://api.openai.com/v1/chat/completions";
     const systemPrompt = `Você é o Maestro Virtual do CCML (Centro Cultural Maestro Levi). 
     Seu tom é acolhedor, musical e educado. Use emojis relacionados a música. 
-    Responda dúvidas sobre aulas de música, instrumentos e teoria musical. Mantenha as respostas curtas (máximo 3 frases).
-    O usuário disse: `;
+    Responda dúvidas sobre aulas de música, instrumentos e teoria musical. Mantenha as respostas curtas (máximo 3 frases).`;
 
     try {
         const response = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt + userText }] }] })
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${OPENAI_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "gpt-3.5-turbo",
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: userText }
+                ],
+                max_tokens: 200
+            })
         });
         const data = await response.json();
         
         if (data.error) {
-            console.error("⚠️ Erro da API Gemini:", data.error.message);
+            console.error("⚠️ Erro da API OpenAI:", data.error.message);
             return null;
         }
         
-        return data.candidates?.[0]?.content?.parts?.[0]?.text;
+        return data.choices?.[0]?.message?.content;
     } catch (e) {
         console.error("Erro na IA:", e);
         return null;
@@ -31,6 +40,14 @@ async function getGeminiResponse(userText) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+    // Correção: Previne erro de favicon 404 injetando um ícone vazio se não existir
+    if (!document.querySelector("link[rel*='icon']")) {
+        const link = document.createElement('link');
+        link.rel = 'icon';
+        link.href = 'data:image/x-icon;base64,';
+        document.head.appendChild(link);
+    }
+
     // HTML do componente Maestro AI
     const aiComponent = `
     <style>
@@ -73,6 +90,32 @@ document.addEventListener("DOMContentLoaded", function() {
     // Injeta o HTML no final do body se ainda não existir
     if (!document.querySelector('.ai-fab')) {
         document.body.insertAdjacentHTML('beforeend', aiComponent);
+    }
+
+    // --- Correção: Renderiza Sidebar se estiver vazia (Fallback) ---
+    const sidebarContainer = document.getElementById('sidebar-container');
+    if (sidebarContainer && !sidebarContainer.innerHTML.trim()) {
+        sidebarContainer.innerHTML = `
+            <div class="sidebar" style="width: 250px; background: #1a1a1a; color: white; height: 100vh; position: fixed; display: flex; flex-direction: column; z-index: 999;">
+                <div class="sidebar-header" style="padding: 20px; border-bottom: 1px solid #333; color: #C5A059; font-weight: bold; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-music"></i> <span>CCML Gestão</span>
+                </div>
+                <ul style="list-style: none; padding: 10px; flex: 1;">
+                    <li class="nav-item active" onclick="switchView('overview')">
+                        <a href="#" style="padding: 12px; display: flex; align-items: center; gap: 10px; color: #aaa; text-decoration: none;"><i class="fa-solid fa-chart-pie" style="width: 20px;"></i> Visão Geral</a>
+                    </li>
+                    <li class="nav-item" onclick="switchView('students')">
+                        <a href="#" style="padding: 12px; display: flex; align-items: center; gap: 10px; color: #aaa; text-decoration: none;"><i class="fa-solid fa-users" style="width: 20px;"></i> Alunos</a>
+                    </li>
+                    <li class="nav-item" onclick="switchView('financial')">
+                        <a href="#" style="padding: 12px; display: flex; align-items: center; gap: 10px; color: #aaa; text-decoration: none;"><i class="fa-solid fa-coins" style="width: 20px;"></i> Financeiro</a>
+                    </li>
+                    <li class="nav-item" onclick="switchView('settings')">
+                        <a href="#" style="padding: 12px; display: flex; align-items: center; gap: 10px; color: #aaa; text-decoration: none;"><i class="fa-solid fa-gear" style="width: 20px;"></i> Configurações</a>
+                    </li>
+                </ul>
+            </div>
+        `;
     }
 });
 
@@ -146,7 +189,7 @@ window.sendMessage = async () => {
 
         // 2. Inteligência Artificial (Se não for comando básico)
         if (!reply) {
-            reply = await getGeminiResponse(text);
+            reply = await getChatGPTResponse(text);
         }
 
         // 3. Fallback (Se IA falhar ou não tiver chave)

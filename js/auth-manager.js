@@ -98,6 +98,7 @@ async function checkTeacherLogin(e, onLoginSuccess) {
     }
 
     // Fallback: Login Simples (Demo)
+    // ⚠️ ATENÇÃO: Remova este bloco em produção para segurança!
     if (!email && (pass === "admin123" || pass === "maestro")) {
         currentUserRole = (pass === "admin123") ? "admin" : "professor";
         currentUserEmail = (pass === "admin123") ? "admin@ccml.com.br" : "professor@ccml.com.br";

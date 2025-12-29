@@ -2,6 +2,15 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.1.0] - 2025-12-29 - "Gestão Completa"
+### Adicionado
+- **Módulo de Gerenciamento:** Nova página `gerenciar.html` e script `gerenciar.js` para edição detalhada de alunos.
+- **Sincronização:** Atualização em tempo real entre a janela de edição e o dashboard principal.
+- **Histórico:** Sistema de timeline para adicionar notas e observações no cadastro do aluno.
+### Corrigido
+- **Aniversariantes:** Lógica de filtro de data corrigida para exibir corretamente os aniversariantes do mês atual.
+- **UI:** Ajustes no CSS para tabelas e formulários na área administrativa.
+
 ## [1.0.21] - 2025-12-26 - "Restauração de Componentes"
 ### Corrigido
 - **Componentes:** Restaurada a localização dos arquivos `sidebar.html` e `footer.html` para a raiz do projeto para resolver problemas de carregamento.
