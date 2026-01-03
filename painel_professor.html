@@ -323,53 +323,8 @@
         </ul>
     </nav>
 
-    <!-- Tela de Login (Simulada) -->
-    <div id="loginScreen" class="login-overlay">
-        <div class="login-box animate-on-scroll fade-up">
-            <div style="margin-bottom: 25px;">
-                <h1 class="logo" style="color: var(--gold); font-size: 2.0rem; margin-bottom: 5px;">Centro Cultural Maestro Levi</h1>
-            </div>
-            
-            <h2 style="font-size: 1.4rem; margin-bottom: 10px;">Área do Professor</h2>
-            <p style="margin-bottom: 25px; color: #666; font-size: 0.9rem;">Acesso restrito à equipe pedagógica</p>
-            
-            <div class="input-wrapper">
-                <i class="fa-solid fa-envelope input-icon"></i>
-                <input type="email" id="teacherEmail" placeholder="E-mail de acesso" class="login-input">
-            </div>
-
-            <div class="input-wrapper">
-                <i class="fa-solid fa-lock input-icon"></i>
-                <input type="password" id="teacherPass" placeholder="Senha" class="login-input">
-                <i class="fa-solid fa-eye toggle-password" onclick="togglePasswordVisibility()" title="Mostrar/Ocultar senha"></i>
-            </div>
-            
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <label style="font-size: 0.85rem; color: #666; display: flex; align-items: center; cursor: pointer; margin-bottom: 0;">
-                    <input type="checkbox" id="rememberMe" style="width: auto; margin-right: 5px;"> Lembrar-me
-                </label>
-                <a href="#" onclick="handleForgotPassword()" style="font-size: 0.85rem; color: #666; text-decoration: underline;">Esqueci minha senha</a>
-            </div>
-
-            <button onclick="checkTeacherLogin()" class="btn-main" style="width: 100%; margin-top: 5px; margin-bottom: 15px;">Entrar</button>
-            
-            <div style="display: flex; align-items: center; margin: 10px 0; color: #999; font-size: 0.8rem;"><span style="flex:1; height:1px; background:#eee;"></span><span style="padding: 0 10px;">OU</span><span style="flex:1; height:1px; background:#eee;"></span></div>
-
-            <button onclick="handleGoogleLogin()" class="btn-main" style="width: 100%; margin-top: 5px; background-color: #4285F4; color: white;">
-                <i class="fa-brands fa-google" style="margin-right: 8px;"></i> Entrar com Google
-            </button>
-            <a href="index.html" style="display: block; margin-top: 20px; color: #999; font-size: 0.9rem; transition: 0.3s;"><i class="fa-solid fa-arrow-left"></i> Voltar ao Início</a>
-            
-            <p id="loginError" style="color: red; font-size: 0.8rem; margin-top: 10px; display: none;">Senha incorreta!</p>
-            
-            <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                <p style="font-size: 0.75rem; color: #aaa;">Precisa de ajuda? <a href="#" style="color: var(--gold);">Contate o Suporte</a></p>
-            </div>
-        </div>
-    </div>
-
     <!-- Conteúdo do Painel (Oculto inicialmente) -->
-    <div id="teacherDashboard" style="display: none;">
+    <div id="teacherDashboard">
         <div class="admin-layout">
             <!-- Sidebar (Menu Lateral) -->
             <div id="sidebar-container">

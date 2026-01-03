@@ -9,35 +9,31 @@ export let currentUserEmail = "";
 export function initAuth(callbacks = {}) {
     // Monitorar Auth State
     onAuthStateChanged(auth, (user) => {
-        if (user) {
-            if (ADMIN_EMAILS.includes(user.email) || user.email.startsWith('admin')) {
-                currentUserRole = "admin";
-            } else {
-                currentUserRole = "professor";
-            }
-            currentUserEmail = user.email;
+        const isLoginPage = window.location.pathname.includes('login.html');
 
-            // UI Updates
-            const loginScreen = document.getElementById('loginScreen');
-            const dashboard = document.getElementById('teacherDashboard');
-            const nav = document.querySelector('nav');
-            
-            if (loginScreen) loginScreen.style.display = 'none';
-            if (dashboard) dashboard.style.display = 'block';
-            if (nav) nav.style.display = 'none';
+        if (user) {
+            // User is signed in.
+            currentUserEmail = user.email;
+            currentUserRole = ADMIN_EMAILS.includes(user.email) ? "admin" : "professor";
+
+            if (isLoginPage) {
+                // If on login page, redirect to dashboard.
+                window.location.href = 'painel_professor.html';
+            }
 
             if (callbacks.onLogin) callbacks.onLogin();
         } else {
-            const loginScreen = document.getElementById('loginScreen');
-            const dashboard = document.getElementById('teacherDashboard');
+            // User is signed out.
+            currentUserEmail = "";
+            currentUserRole = "";
             
-            if (dashboard) dashboard.style.display = 'none';
-            if (loginScreen) loginScreen.style.display = 'flex';
+            // The onLogout callback in app.js handles redirecting from the dashboard.
+            if (callbacks.onLogout) callbacks.onLogout();
         }
     });
 
     // Carregar e-mail salvo
-    const emailInput = document.getElementById('teacherEmail');
+    const emailInput = document.getElementById('emailInput');
     if (emailInput) {
         const savedEmail = localStorage.getItem('teacherEmail');
         if (savedEmail) {
@@ -50,75 +46,87 @@ export function initAuth(callbacks = {}) {
     // Expor funções globais
     window.handleGoogleLogin = handleGoogleLogin;
     window.handleLogout = handleLogout;
-    window.checkTeacherLogin = (e) => checkTeacherLogin(e, callbacks.onLogin);
+    window.checkTeacherLogin = checkTeacherLogin;
     window.handleForgotPassword = handleForgotPassword;
-    window.togglePasswordVisibility = togglePasswordVisibility;
 }
 
 async function handleGoogleLogin() {
+    const loginButton = document.getElementById('loginButton');
+    const googleButton = document.getElementById('googleLoginButton');
+
+    if (loginButton) loginButton.disabled = true;
+    if (googleButton) {
+        googleButton.innerHTML = '<span class="spinner"></span> Verificando...';
+        googleButton.disabled = true;
+    }
+
     try {
         await signInWithPopup(auth, provider);
+        // onAuthStateChanged will handle the redirect.
     } catch (error) {
         console.error("Erro Google:", error);
-        showError("Erro no login: " + error.message);
+        showError("Falha no login com Google. Tente novamente.");
+        if (loginButton) loginButton.disabled = false;
+        if (googleButton) {
+            googleButton.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo"> Entrar com o Google';
+            googleButton.disabled = false;
+        }
     }
 }
 
 async function handleLogout() {
     try {
         await signOut(auth);
-    } catch (e) { console.log("Logout local"); }
-    
-    // Reset UI
-    document.getElementById('teacherDashboard').style.display = 'none';
-    document.getElementById('loginScreen').style.display = 'flex';
-    document.querySelector('nav').style.display = 'flex';
-    document.getElementById('teacherPass').value = '';
+        // onAuthStateChanged will trigger the onLogout callback which redirects.
+    } catch (e) { 
+        console.error("Erro no logout:", e);
+        window.location.href = 'login.html'; // Force redirect
+    }
 }
 
-async function checkTeacherLogin(e, onLoginSuccess) {
-    const email = document.getElementById('teacherEmail').value;
-    const pass = document.getElementById('teacherPass').value;
+async function checkTeacherLogin() {
+    const emailInput = document.getElementById('emailInput');
+    const passInput = document.getElementById('passwordInput');
+    const email = emailInput ? emailInput.value : '';
+    const pass = passInput ? passInput.value : '';
     const errorMsg = document.getElementById('loginError');
+    const loginButton = document.getElementById('loginButton');
     const remember = document.getElementById('rememberMe') ? document.getElementById('rememberMe').checked : false;
 
-    if (email && pass) {
-        try {
-            await signInWithEmailAndPassword(auth, email, pass);
-            if (remember) localStorage.setItem('teacherEmail', email);
-            else localStorage.removeItem('teacherEmail');
-            if (errorMsg) errorMsg.style.display = 'none';
-        } catch (error) {
-            if (errorMsg) {
-                errorMsg.innerText = "Senha incorreta ou usuário não encontrado.";
-                errorMsg.style.display = 'block';
-            }
+    if (!email || !pass) {
+        if (errorMsg) {
+            errorMsg.innerText = "Por favor, preencha e-mail e senha.";
+            errorMsg.style.display = 'block';
         }
         return;
     }
 
-    // Fallback: Login Simples (Demo)
-    // ⚠️ ATENÇÃO: Remova este bloco em produção para segurança!
-    if (!email && (pass === "admin123" || pass === "maestro")) {
-        currentUserRole = (pass === "admin123") ? "admin" : "professor";
-        currentUserEmail = (pass === "admin123") ? "admin@ccml.com.br" : "professor@ccml.com.br";
-        
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('teacherDashboard').style.display = 'block';
-        document.querySelector('nav').style.display = 'none';
-        
-        if (onLoginSuccess) onLoginSuccess();
-        if (errorMsg) errorMsg.style.display = 'none';
-    } else {
-        if (errorMsg) {
-            errorMsg.innerText = "Senha incorreta!";
-            errorMsg.style.display = 'block';
+    if (loginButton) {
+        loginButton.innerHTML = '<span class="spinner"></span> Entrando...';
+        loginButton.disabled = true;
+    }
+    if (errorMsg) errorMsg.style.display = 'none';
+
+    try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        if (remember) localStorage.setItem('teacherEmail', email);
+        else localStorage.removeItem('teacherEmail');
+        // onAuthStateChanged handles success and redirect.
+    } catch (error) {
+        const loginBox = document.querySelector('.login-box');
+        if (loginBox) {
+            loginBox.classList.add('shake');
+            setTimeout(() => loginBox.classList.remove('shake'), 500);
         }
+        if (errorMsg) errorMsg.innerText = "E-mail ou senha inválidos. Tente novamente.";
+        if (errorMsg) errorMsg.style.display = 'block';
+        if (loginButton) loginButton.innerHTML = 'Entrar';
+        if (loginButton) loginButton.disabled = false;
     }
 }
 
 async function handleForgotPassword() {
-    const email = document.getElementById('teacherEmail').value;
+    const email = document.getElementById('emailInput').value;
     if (!email) {
         customAlert("Preencha o e-mail para recuperar a senha.");
         return;
@@ -128,19 +136,5 @@ async function handleForgotPassword() {
         customAlert("E-mail de redefinição enviado!", "Sucesso");
     } catch (error) {
         showError("Erro: " + error.message);
-    }
-}
-
-function togglePasswordVisibility() {
-    const passInput = document.getElementById('teacherPass');
-    const icon = document.querySelector('.toggle-password');
-    if (passInput.type === 'password') {
-        passInput.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-    } else {
-        passInput.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
     }
 }

@@ -30,7 +30,7 @@
             <li><a href="sobre.html">Sobre</a></li>
             <li><a href="matricula.html" style="color: var(--gold);">Matrícula</a></li>
             <li><a href="valores_ccml.html">Valores</a></li>
-            <li><a href="painel_professor.html" class="btn-nav">Área do Professor</a></li>
+            <li><a href="login.html" class="btn-nav">Área do Professor</a></li>
         </ul>
     </nav>
 
@@ -295,7 +295,8 @@
                     <p><strong>Aluno:</strong> <span id="resumoNome"></span></p>
                     <p><strong>Curso:</strong> <span id="resumoCurso"></span></p>
                     <p><strong>Plano Selecionado:</strong> <span id="resumoPlano">Aguardando seleção...</span></p>
-                    <p style="font-size: 1.2rem; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px;"><strong>Total Mensal:</strong> <span id="resumoValor" style="color: green; font-weight: 800;">R$ 0,00</span></p>
+                    <p><strong>Taxa de Matrícula:</strong> R$ 50,00 <small>(Pagamento Único)</small></p>
+                    <p style="font-size: 1.2rem; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px;"><strong>Total (1º Mês):</strong> <span id="resumoValor" style="color: green; font-weight: 800;">R$ 0,00</span></p>
                 </div>
 
                 <div class="input-group full-width" style="margin-top: 10px;">
@@ -360,5 +361,49 @@
 
     <!-- Script Principal -->
     <script type="module" src="js/app.js?v=1.0.20"></script>
+
+    <script>
+        function updateFinancialSummary() {
+            const nome = document.getElementById('nomeAluno').value;
+            const curso = document.getElementById('curso').value;
+            const planos = document.getElementsByName('plano');
+            let planoSelecionado = null;
+            let valorPlano = 0;
+
+            for (const plano of planos) {
+                if (plano.checked) {
+                    planoSelecionado = plano.value;
+                    if (planoSelecionado === 'Turma') valorPlano = 189.90;
+                    else if (planoSelecionado === 'Individual') valorPlano = 250.00;
+                    else if (planoSelecionado === 'Musicalizacao') valorPlano = 199.90;
+                    else if (planoSelecionado === 'Ingles') valorPlano = 250.00;
+                    break;
+                }
+            }
+
+            document.getElementById('resumoNome').innerText = nome || 'Não informado';
+            document.getElementById('resumoCurso').innerText = curso || 'Não selecionado';
+
+            if (planoSelecionado) {
+                const taxaMatricula = 50.00;
+                const totalPrimeiroMes = valorPlano + taxaMatricula;
+                
+                let nomePlanoTexto = '';
+                if (planoSelecionado === 'Turma') nomePlanoTexto = 'Aula em Turma';
+                else if (planoSelecionado === 'Individual') nomePlanoTexto = 'Aula Individual';
+                else if (planoSelecionado === 'Musicalizacao') nomePlanoTexto = 'Musicalização Infantil';
+                else if (planoSelecionado === 'Ingles') nomePlanoTexto = 'Inglês com Música';
+
+                document.getElementById('resumoPlano').innerText = nomePlanoTexto;
+                document.getElementById('resumoValor').innerHTML = `R$ ${totalPrimeiroMes.toFixed(2).replace('.', ',')}`;
+                document.getElementById('resumoFinal').style.display = 'block';
+            }
+        }
+
+        // Listeners para atualização em tempo real
+        document.querySelectorAll('input[name="plano"]').forEach(input => input.addEventListener('change', updateFinancialSummary));
+        document.getElementById('nomeAluno').addEventListener('input', updateFinancialSummary);
+        document.getElementById('curso').addEventListener('change', updateFinancialSummary);
+    </script>
 </body>
 </html>

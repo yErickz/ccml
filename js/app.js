@@ -44,6 +44,12 @@ initAuth({
             loadDashboardData();
             loadOverviewData(); // Carrega KPIs e Badge do Sidebar
         }
+    },
+    onLogout: () => {
+        // Se estiver no painel e não houver usuário autenticado, redireciona para login
+        if (document.getElementById('teacherDashboard')) {
+            window.location.href = 'login.html';
+        }
     }
 });
 

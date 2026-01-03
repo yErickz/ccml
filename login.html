@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Centro Cultural Maestro Levi</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+</head>
+<body>
+
+    <!-- Overlay de Fundo (Cobre toda a tela) -->
+    <div class="login-overlay">
+        <div class="login-box animate__animated animate__fadeInDown">
+            <h2>Centro Cultural Maestro Levi</h2>
+            <p style="color: #666; margin-bottom: 30px;">Bem-vindo! Acesse o Portal do Aluno/Professor.</p>
+            
+            <form id="loginForm" onsubmit="event.preventDefault(); checkTeacherLogin();">
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-envelope input-icon"></i>
+                    <input type="email" id="emailInput" class="login-input" placeholder="Seu e-mail" required>
+                </div>
+                
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock input-icon"></i>
+                    <input type="password" class="login-input" id="passwordInput" placeholder="Sua senha" required>
+                    <i class="fa-solid fa-eye toggle-password" onclick="togglePasswordVisibility()"></i>
+                </div>
+
+                <p id="loginError" style="color: red; font-size: 0.85rem; margin-bottom: 15px; text-align: center; display: none;"></p>
+
+                <button type="submit" id="loginButton" class="btn-login">Entrar</button>
+            </form>
+
+            <button class="btn-google" id="googleLoginButton" onclick="handleGoogleLogin()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo">
+                Entrar com o Google
+            </button>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                <label style="font-size: 0.85rem; color: #666; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                    <input type="checkbox" id="rememberMe" style="width: auto;"> Lembrar-me
+                </label>
+                <a href="#" class="forgot-password" style="margin-top: 0;" onclick="event.preventDefault(); handleForgotPassword();">Esqueceu a senha?</a>
+            </div>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                <a href="index.html" class="back-home-link" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <i class="fa-solid fa-arrow-left"></i> Voltar ao site
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('passwordInput');
+            const icon = document.querySelector('.toggle-password');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
+
+    <!-- Script Principal que inicializa a autenticação -->
+    <script type="module" src="js/app.js?v=1.1.0"></script>
+</body>
+</html>
