@@ -399,6 +399,12 @@ input:focus, select:focus, textarea:focus {
     outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px hsla(42, 50%, 56%, 0.1);
 }
 
+/* Validação de Formulário */
+input.invalid, select.invalid, textarea.invalid {
+    border-color: #ff4444;
+    background-color: #fff8f8;
+}
+
 /* Checkbox padrão com cor do tema */
 input[type="checkbox"] { accent-color: var(--primary); cursor: pointer; width: 18px; height: 18px; }
 
@@ -688,59 +694,164 @@ footer {
 
 /* --- Painel do Professor --- */
 .login-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+    position: fixed; 
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(34, 40, 49, 0.9), rgba(34, 40, 49, 0.95)), url('https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
     background-size: cover;
     background-position: center;
-    display: flex; justify-content: center; align-items: center;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
     z-index: 2000;
+    backdrop-filter: blur(5px);
 }
 
 .login-box {
-    background: var(--card); padding: 40px; border-radius: var(--radius);
-    text-align: center; width: 90%; max-width: 400px;
-    border-top: 5px solid var(--primary);
-    box-shadow: var(--shadow-medium);
+    background: white;
+    padding: 50px 40px;
+    border-radius: 20px;
+    text-align: center;
+    width: 90%;
+    max-width: 420px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-out;
 }
 
-.login-input {
-    padding: 15px; border: 1px solid #ccc; border-radius: 5px;
-    width: 100%; margin-bottom: 10px; font-size: 1rem;
+.login-box h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--dark);
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+}
+
+.login-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: var(--gold);
 }
 
 /* --- Inputs com Ícones (Login Completo) --- */
 .input-wrapper {
     position: relative;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
-.input-wrapper .login-input {
-    padding-left: 45px; /* Espaço para o ícone */
-    margin-bottom: 0;
+.login-input {
+    padding: 15px 15px 15px 45px; /* Espaço para ícone */
+    border: 1px solid #eee;
+    border-radius: 50px;
+    width: 100%;
+    font-size: 1rem;
+    background: #f9f9f9;
+    transition: 0.3s;
+    color: #333;
+    margin-bottom: 0; /* Controlado pelo wrapper */
+}
+
+.login-input:focus {
+    background: white;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 4px rgba(197, 160, 89, 0.1);
+    outline: none;
 }
 
 .input-icon {
     position: absolute;
-    left: 15px;
+    left: 18px;
     top: 50%;
     transform: translateY(-50%);
-    color: #aaa;
-    font-size: 1rem;
+    color: var(--gold);
+    font-size: 1.1rem;
     pointer-events: none;
+    transition: 0.3s;
+}
+
+.input-wrapper:focus-within .input-icon {
+    color: var(--gold-hover);
 }
 
 .toggle-password {
     position: absolute;
-    right: 15px;
+    right: 18px;
     top: 50%;
     transform: translateY(-50%);
     color: #aaa;
     cursor: pointer;
     transition: color 0.3s;
+    font-size: 1rem;
 }
 
 .toggle-password:hover {
-    color: var(--primary);
+    color: var(--gold);
+}
+
+.btn-login {
+    width: 100%;
+    padding: 15px;
+    background: var(--gold);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 10px 20px rgba(197, 160, 89, 0.3);
+    margin-top: 10px;
+}
+
+.btn-login:hover {
+    background: var(--gold-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(197, 160, 89, 0.4);
+}
+
+.btn-google {
+    width: 100%;
+    padding: 14px;
+    background: white;
+    color: #444;
+    border: 1px solid #ddd;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-google:hover {
+    background: #f7f7f7;
+    border-color: #ccc;
+}
+
+.btn-google img {
+    width: 20px;
+    height: 20px;
+}
+
+.forgot-password {
+    display: block;
+    margin-top: 20px;
+    color: #888;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.forgot-password:hover {
+    color: var(--gold);
 }
 
 .dashboard-header {
