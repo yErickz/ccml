@@ -5,7 +5,7 @@ async function getChatGPTResponse(userText) {
     if (!OPENAI_API_KEY) return null;
 
     const url = "https://api.openai.com/v1/chat/completions";
-    const systemPrompt = `Você é o Maestro Virtual do CCML (Centro Cultural Maestro Levi). 
+    const systemPrompt = `Você é o Maestro Virtual do Centro Cultural Maestro Levi. 
     Seu tom é acolhedor, musical e educado. Use emojis relacionados a música. 
     Responda dúvidas sobre aulas de música, instrumentos e teoria musical. Mantenha as respostas curtas (máximo 3 frases).`;
 
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <!-- AI Chat Modal -->
     <div id="aiModal" class="ai-modal">
         <div class="ai-header">
-            <span>Maestro Virtual CCML</span>
+            <span>Maestro Virtual - Centro Cultural Maestro Levi</span>
             <div style="display: flex; gap: 10px;">
                 <button class="ai-clear" onclick="clearChat()" style="background:none; border:none; color:white; cursor:pointer;" title="Limpar Conversa"><i class="fa-solid fa-trash"></i></button>
                 <button class="ai-minimize" onclick="minimizeChat()" style="background:none; border:none; color:white; cursor:pointer;"><i class="fa-solid fa-minus"></i></button>
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function() {
         </div>
         <div class="chat-container" id="chatContainer">
             <div class="message bot">
-                Olá! Sou a IA do CCML. 🎵<br>Posso te ajudar a escolher um instrumento ou tirar dúvidas sobre os cursos. O que gostaria de saber?
+                Olá! Sou a IA do Centro Cultural Maestro Levi. 🎵<br>Posso te ajudar a escolher um instrumento ou tirar dúvidas sobre os cursos. O que gostaria de saber?
             </div>
         </div>
         <div class="input-area">
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function() {
         sidebarContainer.innerHTML = `
             <div class="sidebar" style="width: 250px; background: #1a1a1a; color: white; height: 100vh; position: fixed; display: flex; flex-direction: column; z-index: 999;">
                 <div class="sidebar-header" style="padding: 20px; border-bottom: 1px solid #333; color: #C5A059; font-weight: bold; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
-                    <i class="fa-solid fa-music"></i> <span>CCML Gestão</span>
+                    <i class="fa-solid fa-music"></i> <span>Centro Cultural Maestro Levi</span>
                 </div>
                 <ul style="list-style: none; padding: 10px; flex: 1;">
                     <li class="nav-item active" onclick="switchView('overview')">

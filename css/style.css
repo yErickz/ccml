@@ -59,8 +59,10 @@ nav.fixed-nav {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--gold);
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     font-family: 'Playfair Display', serif;
+    line-height: 1.2;
+    max-width: 80%;
 }
 
 .nav-links {
@@ -539,6 +541,7 @@ footer {
 /* --- Responsividade --- */
 @media (max-width: 768px) {
     .hero h1 { font-size: 2.5rem; }
+    .logo { font-size: 1.1rem; }
     
     /* Menu Mobile */
     .mobile-menu-btn { display: block; }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Investimento - CCML</title>
+    <title>Investimento - Centro Cultural Maestro Levi</title>
     <link rel="stylesheet" href="css/style.css">
     <!-- Ícones Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,83 +11,129 @@
 <body>
 
 <nav>
-    <div class="logo">CCML</div>
+    <div class="logo">Centro Cultural Maestro Levi</div>
     <button class="mobile-menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
     <ul class="nav-links">
         <li><a href="index.html">Início</a></li>
+        <li><a href="sobre.html">Sobre</a></li>
         <li><a href="matricula.html">Matrícula</a></li>
         <li><a href="valores_ccml.html" style="color: var(--gold);">Valores</a></li>
         <li><a href="painel_professor.html" class="btn-nav">Área do Professor</a></li>
     </ul>
 </nav>
 
-<div class="main-container" style="margin-top: 20px;">
+<div class="main-container">
+    <div class="form-box animate-on-scroll fade-up">
+        <div class="form-header">
+            <i class="fa-solid fa-sack-dollar" style="font-size: 2.5rem; color: var(--gold); margin-bottom: 15px;"></i>
+            <h2>Investimento</h2>
+            <p>Escolha a modalidade ideal para o seu aprendizado musical. Todos os nossos planos são mensais e sem taxa de matrícula.</p>
+        </div>
 
-    <h2>Planos de Investimento</h2>
-    <p class="subtitle">Escolha a modalidade ideal para o seu aprendizado musical. Todos os nossos planos são mensais e sem taxa de matrícula.</p>
-    
-    <div class="table-responsive">
-    <table class="animate-on-scroll fade-up">
-        <thead>
-            <tr>
-                <th style="text-align: left; padding-left: 30px;">Modalidade</th>
-                <th>Mensalidade</th>
-                <th>Detalhes</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="modalidade-col" style="padding-left: 30px;">
-                    <i class="fa-solid fa-users" style="color: var(--primary); margin-right: 10px;"></i>
-                    Aula em Turma
-                </td>
-                <td class="price-highlight">R$ 189,90</td>
-                <td class="benefits-text">Interação com outros alunos.<br>Ideal para quem gosta de aprender em grupo.</td>
-                <td><button class="btn-action" onclick="selectPlan('Aula em Turma')">Escolher</button></td>
-            </tr>
-            <tr>
-                <td class="modalidade-col" style="padding-left: 30px;">
-                    <i class="fa-solid fa-user" style="color: var(--primary); margin-right: 10px;"></i>
-                    Aula Individual
-                </td>
-                <td class="price-highlight">R$ 250,00</td>
-                <td class="benefits-text">Atenção exclusiva do professor.<br>Ritmo personalizado e foco total.</td>
-                <td><button class="btn-action" onclick="selectPlan('Aula Individual')">Escolher</button></td>
-            </tr>
-            <tr>
-                <td class="modalidade-col" style="padding-left: 30px;">
-                    <i class="fa-solid fa-language" style="color: var(--primary); margin-right: 10px;"></i>
-                    Inglês Instrumental
-                </td>
-                <td class="price-highlight">R$ 250,00</td>
-                <td class="benefits-text">Aprenda música e inglês simultaneamente.<br>Vocabulário técnico e prática.</td>
-                <td><button class="btn-action" onclick="selectPlan('Inglês Instrumental')">Escolher</button></td>
-            </tr>
-        </tbody>
-    </table>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 30px;">
+            
+            <!-- Card 1 -->
+            <div style="border: 1px solid #eee; border-radius: 10px; padding: 25px; text-align: center; transition: 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <i class="fa-solid fa-users" style="font-size: 2rem; color: var(--gold); margin-bottom: 15px;"></i>
+                <h3 style="margin: 10px 0; color: #333;">Aula em Turma</h3>
+                <div style="font-size: 2rem; font-weight: 800; color: var(--gold); margin: 15px 0;">R$ 189,90 <small style="font-size: 1rem; color: #777;">/mês</small></div>
+                <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Interação e aprendizado em grupo.</p>
+                <ul style="text-align: left; list-style: none; padding: 0; margin-bottom: 25px; color: #555; font-size: 0.9rem;">
+                    <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color: green; margin-right: 8px;"></i> 1 aula semanal (60min)</li>
+                    <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color: green; margin-right: 8px;"></i> Material digital incluso</li>
+                    <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color: green; margin-right: 8px;"></i> Apresentações semestrais</li>
+                </ul>
+                <a href="matricula.html" class="btn-main" style="width: 100%; display: block; box-sizing: border-box; text-align: center;">Matricule-se</a>
+            </div>
+
+            <!-- Card 2 -->
+            <div style="border: 1px solid #eee; border-radius: 10px; padding: 25px; text-align: center; transition: 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: relative; overflow: hidden;">
+                <div style="background: var(--gold); color: white; position: absolute; top: 0; left: 0; width: 100%; padding: 5px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase;">Recomendado</div>
+                <i class="fa-solid fa-user" style="font-size: 2rem; color: var(--gold); margin-bottom: 15px; margin-top: 10px;"></i>
+                <h3 style="margin: 10px 0; color: #333;">Aula Individual</h3>
+                <div style="font-size: 2rem; font-weight: 800; color: var(--gold); margin: 15px 0;">R$ 250,00 <small style="font-size: 1rem; color: #777;">/mês</small></div>
+                <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Foco total e ritmo personalizado.</p>
+                <ul style="text-align: left; list-style: none; padding: 0; margin-bottom: 25px; color: #555; font-size: 0.9rem;">
+                    <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color: green; margin-right: 8px;"></i> 1 aula semanal (60min)</li>
+                    <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color: green; margin-right: 8px;"></i> Atenção exclusiva</li>
+                    <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color: green; margin-right: 8px;"></i> Repertório livre</li>
+                </ul>
+                <a href="matricula.html" class="btn-main" style="width: 100%; display: block; box-sizing: border-box; text-align: center;">Matricule-se</a>
+            </div>
+
+            <!-- Card 3 -->
+            <div style="border: 1px solid #eee; border-radius: 10px; padding: 25px; text-align: center; transition: 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <i class="fa-solid fa-language" style="font-size: 2rem; color: var(--gold); margin-bottom: 15px;"></i>
+                <h3 style="margin: 10px 0; color: #333;">Inglês com Música</h3>
+                <div style="font-size: 2rem; font-weight: 800; color: var(--gold); margin: 15px 0;">R$ 250,00 <small style="font-size: 1rem; color: #777;">/mês</small></div>
+                <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Aprenda o idioma tocando.</p>
+                <ul style="text-align: left; list-style: none; padding: 0; margin-bottom: 25px; color: #555; font-size: 0.9rem;">
+                    <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color: green; margin-right: 8px;"></i> 1 aula semanal (60min)</li>
+                    <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color: green; margin-right: 8px;"></i> Vocabulário técnico</li>
+                    <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color: green; margin-right: 8px;"></i> Prática instrumental</li>
+                </ul>
+                <a href="matricula.html" class="btn-main" style="width: 100%; display: block; box-sizing: border-box; text-align: center;">Matricule-se</a>
+            </div>
+
+            <!-- Card 4 -->
+            <div style="border: 1px solid #eee; border-radius: 10px; padding: 25px; text-align: center; transition: 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <i class="fa-solid fa-child-reaching" style="font-size: 2rem; color: var(--gold); margin-bottom: 15px;"></i>
+                <h3 style="margin: 10px 0; color: #333;">Musicalização Infantil</h3>
+                <div style="font-size: 2rem; font-weight: 800; color: var(--gold); margin: 15px 0;">R$ 199,90 <small style="font-size: 1rem; color: #777;">/mês</small></div>
+                <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Desenvolvimento lúdico para crianças.</p>
+                <ul style="text-align: left; list-style: none; padding: 0; margin-bottom: 25px; color: #555; font-size: 0.9rem;">
+                    <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color: green; margin-right: 8px;"></i> Para crianças até 6 anos</li>
+                    <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color: green; margin-right: 8px;"></i> Estímulo cognitivo e motor</li>
+                    <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color: green; margin-right: 8px;"></i> Material adaptado</li>
+                </ul>
+                <a href="matricula.html" class="btn-main" style="width: 100%; display: block; box-sizing: border-box; text-align: center;">Matricule-se</a>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; background: #f9f9f9; padding: 20px; border-radius: 8px; border-left: 4px solid var(--gold);">
+            <h4 style="margin-top: 0; color: #333;"><i class="fa-solid fa-circle-info" style="color: var(--gold); margin-right: 8px;"></i> Informações Importantes:</h4>
+            <ul style="margin-bottom: 0; padding-left: 20px; color: #555;">
+                <li><strong>Duração:</strong> Todas as aulas têm duração de 60 minutos (1 hora).</li>
+                <li><strong>Frequência:</strong> 1 aula por semana.</li>
+                <li><strong>Reposição:</strong> Consulte nossa política de reposição de aulas na secretaria.</li>
+            </ul>
+        </div>
+
+        <!-- Link para voltar ao Início -->
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="index.html" class="btn-back-footer">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Início
+            </a>
+        </div>
     </div>
-
-    <div class="info-card animate-on-scroll slide-left delay-200">
-        <h4><i class="fa-solid fa-circle-info"></i> Informações Importantes:</h4>
-        <ul>
-            <li><strong>Duração:</strong> Todas as aulas têm duração de 60 minutos (1 hora).</li>
-            <li><strong>Frequência:</strong> 1 aula por semana.</li>
-            <li><strong>Material:</strong> Material didático digital incluso.</li>
-            <li><strong>Reposição:</strong> Consulte nossa política de reposição de aulas na secretaria.</li>
-        </ul>
-    </div>
-
-    <!-- Link para voltar ao Início -->
-    <div style="text-align: center; margin-bottom: 20px;">
-        <a href="index.html" class="btn-back-footer">
-            <i class="fa-solid fa-arrow-left"></i> Voltar ao Início
-        </a>
-    </div>
-
 </div>
 
-<div id="footer-container"></div>
+<footer>
+    <div class="footer-content">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>Centro Cultural Maestro Levi</h3>
+                <p>Transformando vidas através da música com excelência e dedicação.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Contato</h4>
+                <ul class="footer-links">
+                    <li><i class="fa-solid fa-location-dot"></i> Rua da Música, 123 - Centro</li>
+                    <li><i class="fa-brands fa-whatsapp"></i> (94) 99999-9999</li>
+                    <li><i class="fa-solid fa-envelope"></i> contato@ccml.com.br</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Centro Cultural Maestro Levi. Todos os direitos reservados.</p>
+        </div>
+    </div>
+</footer>
 
 <!-- AI Chat Floating Button -->
 <button class="ai-fab" onclick="toggleChat()">
