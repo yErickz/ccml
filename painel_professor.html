@@ -173,50 +173,8 @@
         .btn-remove-teacher { color: #c62828; border: 1px solid #ffcdd2; background: #ffebee; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
         .btn-remove-teacher:hover { background: #c62828; color: white; }
 
-        /* --- Sidebar Profissional (Dark/Gold) --- */
-        .sidebar {
-            background: #1a1a1a !important; /* Fundo escuro */
-            color: #fff;
-            border-right: 1px solid #333 !important;
-        }
-        .sidebar-header {
-            border-bottom: 1px solid #333 !important;
-            color: var(--gold) !important;
-        }
-        .sidebar-header span { font-weight: 800; letter-spacing: 1px; }
-        
-        .nav-item { margin-bottom: 5px; border-radius: 8px; transition: all 0.2s; }
-        .nav-item a { color: #aaa !important; font-weight: 500; display: flex; align-items: center; width: 100%; }
-        .nav-item:hover { background: rgba(255,255,255,0.05); }
-        .nav-item:hover a { color: #fff !important; }
-        
-        .nav-item.active {
-            background: linear-gradient(90deg, var(--gold) 0%, #a08040 100%) !important;
-            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.2);
-        }
-        .nav-item.active a { color: #fff !important; font-weight: 700; }
-        .nav-item.active i { color: #fff !important; }
-        
-        .sidebar-footer { border-top: 1px solid #333 !important; }
-        
-        /* Theme Toggle Switch */
-        .theme-toggle-wrapper {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 15px; margin: 15px; background: rgba(255,255,255,0.05);
-            border-radius: 8px; border: 1px solid #333;
-        }
-        .theme-label { font-size: 0.85rem; color: #aaa; display: flex; align-items: center; gap: 10px; font-weight: 500; }
-        
-        .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #555; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--gold); }
-        input:focus + .slider { box-shadow: 0 0 1px var(--gold); }
-        input:checked + .slider:before { transform: translateX(18px); }
-
         /* --- Smooth Theme Transition --- */
-        body, .admin-main, .admin-header, .sidebar, .dash-card, .vital-card, .widget-card, 
+        body, .admin-layout, .admin-main, .admin-header, .sidebar, .dash-card, .vital-card, .widget-card, 
         .agenda-container, .mgmt-card, .search-bar-container, .form-input, .tag-input-area, .v-content, 
         .mgmt-actions, .btn-close-mgmt, .timeline-text, .student-row {
             transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
@@ -224,7 +182,7 @@
 
         /* --- Dark Mode --- */
         body.dark-mode { background-color: #121212; color: #e0e0e0; }
-        body.dark-mode .admin-main, body.dark-mode .admin-header { background-color: #121212; border-color: #333; }
+        body.dark-mode .admin-layout, body.dark-mode .admin-main, body.dark-mode .admin-header { background-color: #121212; border-color: #333; }
         body.dark-mode .dash-card, body.dark-mode .vital-card, body.dark-mode .widget-card, body.dark-mode .agenda-container, body.dark-mode .mgmt-card, body.dark-mode .search-bar-container {
             background-color: #1e1e1e; color: #e0e0e0; border-color: #333;
         }
@@ -327,9 +285,30 @@
     <div id="teacherDashboard">
         <div class="admin-layout">
             <!-- Sidebar (Menu Lateral) -->
-            <div id="sidebar-container">
-                <!-- O Sidebar será carregado aqui pelo JavaScript -->
-            </div>
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <i class="fa-solid fa-music"></i>
+                    <span>Maestro Admin</span>
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="nav-item active" onclick="switchView('overview', this)"><a href="#"><i class="fa-solid fa-chart-pie"></i> <span>Visão Geral</span></a></li>
+                    <li class="nav-item" onclick="switchView('students', this)"><a href="#"><i class="fa-solid fa-users"></i> <span>Alunos</span></a></li>
+                    <li class="nav-item" onclick="switchView('financial', this)"><a href="#"><i class="fa-solid fa-coins"></i> <span>Financeiro</span></a></li>
+                    <li class="nav-item" onclick="switchView('settings', this)"><a href="#"><i class="fa-solid fa-gear"></i> <span>Configurações</span></a></li>
+                </ul>
+                <div class="sidebar-footer">
+                    <div class="theme-toggle-wrapper">
+                        <span class="theme-label"><i class="fa-solid fa-moon"></i> Escuro</span>
+                        <label class="switch">
+                            <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <button onclick="logout()" class="btn-logout-sidebar">
+                        <i class="fa-solid fa-right-from-bracket"></i> <span>Sair</span>
+                    </button>
+                </div>
+            </aside>
 
             <!-- Conteúdo Principal -->
             <main class="admin-main">
@@ -699,6 +678,311 @@
 
     <!-- Confetti Effect -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        // Função para alternar o tema (Claro/Escuro)
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = document.getElementById('themeToggle').checked;
+            
+            if (isDark) {
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Inicializar tema salvo ao carregar a página
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            const toggle = document.getElementById('themeToggle');
+            if (toggle) toggle.checked = true;
+        }
+
+        // Função para alternar entre as seções do painel
+        function switchView(viewName, element) {
+            // 1. Esconder todas as seções
+            document.querySelectorAll('.view-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // 2. Mostrar a seção selecionada
+            const targetView = document.getElementById('view-' + viewName);
+            if (targetView) {
+                targetView.classList.add('active');
+            }
+
+            // 3. Atualizar menu lateral (Sidebar)
+            if (element) {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                element.classList.add('active');
+            }
+
+            // 4. Atualizar Título e Descrição do Header
+            const titles = {
+                'overview': { title: 'Painel do Professor', desc: 'Bem-vindo ao sistema de gestão.' },
+                'students': { title: 'Gestão de Alunos', desc: 'Base completa de matrículas e contatos.' },
+                'financial': { title: 'Financeiro', desc: 'Controle de mensalidades e fluxo de caixa.' },
+                'settings': { title: 'Configurações', desc: 'Preferências da conta e sistema.' }
+            };
+
+            if (titles[viewName]) {
+                const titleEl = document.getElementById('dashTitle');
+                const descEl = document.getElementById('dashDesc');
+                if (titleEl) titleEl.innerText = titles[viewName].title;
+                if (descEl) descEl.innerText = titles[viewName].desc;
+            }
+            
+            // Fechar sidebar no mobile se estiver aberta (Melhoria de UX)
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        }
+
+        // Função para abrir/fechar sidebar no mobile
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+    </script>
+
+    <script type="module" src="js/app.js?v=1.1.0"></script>
+</body>
+</html>                 <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Contato</h4>
+                    <ul class="footer-links">
+                        <li><i class="fa-solid fa-location-dot"></i> Rua da Música, 123 - Centro</li>
+                        <li><i class="fa-brands fa-whatsapp"></i> (94) 99999-9999</li>
+                        <li><i class="fa-solid fa-envelope"></i> contato@ccml.com.br</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Centro Cultural Maestro Levi. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Maestro AI Widget -->
+    <script src="js/maestro-ui.js"></script>
+
+    <!-- Confetti Effect -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        // Função para alternar o tema (Claro/Escuro)
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = document.getElementById('themeToggle').checked;
+            
+            if (isDark) {
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Inicializar tema salvo ao carregar a página
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            const toggle = document.getElementById('themeToggle');
+            if (toggle) toggle.checked = true;
+        }
+        
+        // Dados Simulados (Caso não haja localStorage)
+        const mockStudents = [
+            { nome: "Ana Clara", curso: "Piano/Teclado", status: "ativo", valor: 250, data: "2025-12-10" },
+            { nome: "João Pedro", curso: "Violão", status: "pendente", valor: 189.90, data: "2026-01-02" },
+            { nome: "Maria Silva", curso: "Canto/Técnica Vocal", status: "ativo", valor: 250, data: "2025-11-15" },
+            { nome: "Lucas Souza", curso: "Bateria", status: "ativo", valor: 189.90, data: "2025-10-20" },
+            { nome: "Beatriz Costa", curso: "Violino", status: "aguardando_pagamento", valor: 250, data: "2026-01-05" },
+            { nome: "Pedro Henrique", curso: "Violão", status: "ativo", valor: 189.90, data: "2025-09-10" },
+            { nome: "Julia Lima", curso: "Musicalização Infantil", status: "ativo", valor: 199.90, data: "2025-12-01" },
+            { nome: "Rafael Alves", curso: "Piano/Teclado", status: "inativo", valor: 250, data: "2025-08-15" }
+        ];
+
+        function getStudents() {
+            const stored = localStorage.getItem('ccml_students');
+            return stored ? JSON.parse(stored) : mockStudents;
+        }
+
+        // Função para alternar entre as seções do painel
+        function switchView(viewName, element) {
+            // 1. Esconder todas as seções
+            document.querySelectorAll('.view-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // 2. Mostrar a seção selecionada
+            const targetView = document.getElementById('view-' + viewName);
+            if (targetView) {
+                targetView.classList.add('active');
+            }
+
+            // 3. Atualizar menu lateral (Sidebar)
+            if (element) {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                element.classList.add('active');
+            }
+
+            // 4. Atualizar Título e Descrição do Header
+            const titles = {
+                'overview': { title: 'Painel do Professor', desc: 'Bem-vindo ao sistema de gestão.' },
+                'students': { title: 'Gestão de Alunos', desc: 'Base completa de matrículas e contatos.' },
+                'financial': { title: 'Financeiro', desc: 'Controle de mensalidades e fluxo de caixa.' },
+                'settings': { title: 'Configurações', desc: 'Preferências da conta e sistema.' }
+            };
+
+            if (titles[viewName]) {
+                const titleEl = document.getElementById('dashTitle');
+                const descEl = document.getElementById('dashDesc');
+                if (titleEl) titleEl.innerText = titles[viewName].title;
+                if (descEl) descEl.innerText = titles[viewName].desc;
+            }
+            
+            // Fechar sidebar no mobile se estiver aberta (Melhoria de UX)
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        }
+
+        // Função para abrir/fechar sidebar no mobile
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        // Função Principal para Carregar Dados do Dashboard
+        function loadDashboardData() {
+            const students = getStudents();
+            
+            // 1. KPIs
+            const activeStudents = students.filter(s => s.status === 'ativo').length;
+            const pendingStudents = students.filter(s => s.status === 'pendente' || s.status === 'aguardando_pagamento').length;
+            
+            // Cálculo de Receita (Soma dos valores dos ativos)
+            const revenue = students
+                .filter(s => s.status === 'ativo')
+                .reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+
+            // Atualizar DOM
+            document.getElementById('kpiActiveStudents').innerText = activeStudents;
+            document.getElementById('kpiRevenue').innerText = revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('kpiDelinquency').innerText = pendingStudents;
+            
+            // Barra de Progresso (Meta: 150 alunos)
+            const metaAlunos = 150;
+            const progActive = Math.min((activeStudents / metaAlunos) * 100, 100);
+            document.getElementById('progActive').style.width = `${progActive}%`;
+
+            // Barra de Progresso Receita (Meta: 25k)
+            const metaReceita = 25000;
+            const progRevenue = Math.min((revenue / metaReceita) * 100, 100);
+            document.getElementById('progRevenue').style.width = `${progRevenue}%`;
+
+            // 2. Gráfico de Receita (ApexCharts)
+            const optionsRevenue = {
+                series: [{
+                    name: 'Faturamento',
+                    data: [12500, 15000, 14200, 18500, 21000, revenue] // Dados simulados + atual
+                }],
+                chart: {
+                    type: 'area',
+                    height: 250,
+                    toolbar: { show: false },
+                    fontFamily: 'Inter, sans-serif'
+                },
+                colors: ['#C5A059'],
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.2,
+                        stops: [0, 90, 100]
+                    }
+                },
+                dataLabels: { enabled: false },
+                stroke: { curve: 'smooth', width: 2 },
+                xaxis: {
+                    categories: ['Ago', 'Set', 'Out', 'Nov', 'Dez', 'Jan'],
+                    axisBorder: { show: false },
+                    axisTicks: { show: false }
+                },
+                yaxis: { show: false },
+                grid: {
+                    borderColor: '#f1f1f1',
+                    strokeDashArray: 4,
+                }
+            };
+
+            const chartRevenue = new ApexCharts(document.querySelector("#revenueChartContainer"), optionsRevenue);
+            chartRevenue.render();
+
+            // 3. Gráfico de Cursos (Donut)
+            const coursesCount = {};
+            students.forEach(s => {
+                coursesCount[s.curso] = (coursesCount[s.curso] || 0) + 1;
+            });
+
+            const optionsCourses = {
+                series: Object.values(coursesCount),
+                labels: Object.keys(coursesCount),
+                chart: {
+                    type: 'donut',
+                    height: 250,
+                    fontFamily: 'Inter, sans-serif'
+                },
+                colors: ['#C5A059', '#222831', '#d32f2f', '#1976d2', '#388e3c'],
+                legend: { position: 'bottom' },
+                dataLabels: { enabled: false },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '65%'
+                        }
+                    }
+                }
+            };
+
+            const chartCourses = new ApexCharts(document.querySelector("#courseChart"), optionsCourses);
+            chartCourses.render();
+
+            // 4. Aluno Destaque (Simulado)
+            if (students.length > 0) {
+                const randomStudent = students[Math.floor(Math.random() * students.length)];
+                document.getElementById('starStudentName').innerText = randomStudent.nome;
+            }
+
+            // 5. Aniversariantes (Simulado)
+            const bdayList = document.getElementById('bdayList');
+            bdayList.innerHTML = `
+                <div class="bday-item">
+                    <span class="bday-date">15/Jan</span>
+                    <span>Prof. Levi Abraão</span>
+                </div>
+                <div class="bday-item">
+                    <span class="bday-date">22/Jan</span>
+                    <span>${students[0]?.nome || 'Aluno Exemplo'}</span>
+                </div>
+            `;
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', loadDashboardData);
+    </script>
 
     <script type="module" src="js/app.js?v=1.1.0"></script>
 </body>

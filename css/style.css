@@ -1346,22 +1346,28 @@ footer {
 /* --- Admin Layout (Estilo Emusys/SaaS) --- */
 .admin-layout {
     display: flex;
-    min-height: 100vh;
+    min-height: calc(100vh - 160px); /* Ajuste para caber entre header e footer */
     background-color: #f4f6f9;
-    font-family: 'Open Sans', sans-serif;
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; /* Ocupa tela toda */
-    z-index: 2000; /* Fica acima de tudo */
-    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    position: relative; /* Alterado de fixed para relative */
+    width: 100%; 
+    height: auto;
+    z-index: 1;
+    padding-top: 60px; /* Ajustado para a altura real da Navbar */
 }
 
 .sidebar {
     width: 260px;
-    background-color: var(--dark);
+    background-color: var(--secondary);
     color: #fff;
     display: flex;
     flex-direction: column;
     transition: 0.3s;
     flex-shrink: 0;
+    /* Sidebar fixa na rolagem */
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
 }
 
 .sidebar-header {
@@ -1418,7 +1424,7 @@ footer {
     width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary);
 }
 
-.admin-content { padding: 30px; overflow-y: auto; flex: 1; }
+.admin-content { padding: 0 30px 30px 30px; flex: 1; }
 
 /* KPI Grid (Indicadores) */
 .kpi-grid {
