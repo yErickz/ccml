@@ -58,6 +58,7 @@ export function initDashboard() {
     window.sendCharge = sendCharge;
     window.toggleTheme = toggleTheme;
     window.loadDashboardData = loadDashboardData; // Permite que o popup de gerenciar atualize a lista
+    window.deleteEnrollment = deleteEnrollment;
 
     // Adicionar opção "Incompleto" ao filtro de status dinamicamente
     const statusFilter = document.getElementById('statusFilter');
@@ -170,7 +171,10 @@ export async function loadDashboardData() {
                 ? `<br><small class="text-muted">Resp: ${d.responsavel_financeiro}</small>` : '';
 
             const actionBtn = (currentUserRole === 'admin') 
-                ? `<td class="admin-only"><button class="btn-manage" onclick="openManagementView('${docId}')"><i class="fa-solid fa-pen-to-square"></i> Gerenciar</button></td>` : '';
+                ? `<td class="admin-only">
+                    <button class="btn-manage" onclick="openManagementView('${docId}')"><i class="fa-solid fa-pen-to-square"></i> Gerenciar</button>
+                    <button onclick="deleteEnrollment('${docId}', '${d.nome}')" style="background-color: #d32f2f; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-left: 5px;" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                   </td>` : '';
 
             // Botão de Cobrança Rápida (WhatsApp) para pendentes
             let chargeBtn = "";
@@ -761,4 +765,17 @@ async function removeTeacher(id, email) {
         console.error(e);
         customAlert("Erro ao verificar vínculos do professor.");
     }
+}
+
+async function deleteEnrollment(id, name) {
+    customConfirm(`Tem certeza que deseja excluir permanentemente o cadastro de ${name}?`, async () => {
+        try {
+            await deleteDoc(doc(db, "matriculas", id));
+            customAlert("Cadastro excluído com sucesso!", "Excluído");
+            loadDashboardData();
+        } catch (e) {
+            console.error("Erro ao excluir:", e);
+            customAlert("Erro ao excluir cadastro.");
+        }
+    });
 }

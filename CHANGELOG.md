@@ -2,6 +2,15 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.1.1] - 2026-01-16 - "Recuperação Inteligente"
+### Adicionado
+- **Matrícula:** Sistema de "Rascunho Automático" e recuperação de cadastro. Permite continuar matrículas incompletas ao reinserir o CPF.
+- **Dashboard:** Botão de exclusão de matrícula e filtro automático para status "Incompleto".
+- **Gestão:** Inclusão de campos detalhados (Endereço, Instrumento, Disponibilidade, etc.) na visualização e edição do aluno.
+### Corrigido
+- **Validação:** O erro "CPF já cadastrado" não bloqueia mais se o cadastro existente for apenas um rascunho incompleto.
+- **Dados:** Correção na persistência de tags para limpar o status "incompleto" após a finalização.
+
 ## [1.1.0] - 2025-12-29 - "Gestão Completa"
 ### Adicionado
 - **Módulo de Gerenciamento:** Nova página `gerenciar.html` e script `gerenciar.js` para edição detalhada de alunos.

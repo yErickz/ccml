@@ -146,6 +146,17 @@ async function loadData(id) {
     document.getElementById('manageRespNome').value = data.responsavel_financeiro || "";
     document.getElementById('manageRespCpf').value = data.cpf_responsavel || "";
     
+    // Novos campos adicionados para exibir todos os dados coletados
+    if(document.getElementById('manageEndereco')) document.getElementById('manageEndereco').value = data.endereco || "";
+    if(document.getElementById('manageWhatsapp')) document.getElementById('manageWhatsapp').value = data.whatsapp_cobranca || "";
+    if(document.getElementById('manageVencimento')) document.getElementById('manageVencimento').value = data.dia_vencimento || "";
+    if(document.getElementById('manageInstrumento')) document.getElementById('manageInstrumento').value = data.instrumento_proprio || "";
+    if(document.getElementById('manageObjetivo')) document.getElementById('manageObjetivo').value = data.objetivo || "";
+    if(document.getElementById('manageNecessidades')) document.getElementById('manageNecessidades').value = data.necessidades_especiais || "";
+    if(document.getElementById('manageAutorizacao')) document.getElementById('manageAutorizacao').checked = data.autorizacao_imagem || false;
+    if(document.getElementById('manageDias')) document.getElementById('manageDias').value = Array.isArray(data.disponibilidade_dias) ? data.disponibilidade_dias.join(', ') : (data.disponibilidade_dias || "");
+    if(document.getElementById('manageTurnos')) document.getElementById('manageTurnos').value = Array.isArray(data.disponibilidade_turnos) ? data.disponibilidade_turnos.join(', ') : (data.disponibilidade_turnos || "");
+    
     currentTags = data.tags || [];
     renderTags();
     renderTimeline(data.timeline || []);
@@ -172,7 +183,17 @@ async function saveManagementData() {
         pagamento_verificado: document.getElementById('managePagamento').checked,
         responsavel_financeiro: document.getElementById('manageRespNome').value,
         cpf_responsavel: document.getElementById('manageRespCpf').value,
-        tags: currentTags
+        tags: currentTags,
+        // Novos campos para salvar
+        endereco: document.getElementById('manageEndereco')?.value || "",
+        whatsapp_cobranca: document.getElementById('manageWhatsapp')?.value || "",
+        dia_vencimento: document.getElementById('manageVencimento')?.value || "",
+        instrumento_proprio: document.getElementById('manageInstrumento')?.value || "",
+        objetivo: document.getElementById('manageObjetivo')?.value || "",
+        necessidades_especiais: document.getElementById('manageNecessidades')?.value || "",
+        autorizacao_imagem: document.getElementById('manageAutorizacao')?.checked || false,
+        disponibilidade_dias: document.getElementById('manageDias')?.value ? document.getElementById('manageDias').value.split(',').map(s => s.trim()) : [],
+        disponibilidade_turnos: document.getElementById('manageTurnos')?.value ? document.getElementById('manageTurnos').value.split(',').map(s => s.trim()) : []
     };
 
     // 1. Tenta salvar no Firebase (Prioridade)

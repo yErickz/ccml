@@ -139,6 +139,7 @@ async function handleEnrollment(e) {
         plano_escolhido: document.querySelector('input[name="plano"]:checked')?.value || "N/A",
         necessidades_especiais: document.getElementById('necessidades').value,
         autorizacao_imagem: document.getElementById('autorizacaoImagem').checked,
+        tags: [], // Limpa a tag de incompleto ao finalizar
         status: "completo",
         data_registro: new Date().toISOString()
     };
@@ -172,6 +173,7 @@ async function saveLead() {
         telefone: document.getElementById('telefone').value,
         email: document.getElementById('email').value,
         status: "incompleto",
+        tags: ['incompleto'], // Garante que a tag seja salva no rascunho
         data_registro: new Date().toISOString()
     };
 
@@ -190,7 +192,18 @@ async function checkDuplicateEnrollment(cpf) {
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
         for (const doc of querySnapshot.docs) {
-            if (doc.id !== currentLeadId) return true;
+            if (doc.id !== currentLeadId) {
+                const data = doc.data();
+                // Verifica se é incompleto por TAG ou por STATUS
+                if ((data.tags && data.tags.includes('incompleto')) || data.status === 'incompleto') {
+                    if (!currentLeadId) {
+                        currentLeadId = doc.id;
+                        localStorage.setItem('ccml_enrollment_id', currentLeadId);
+                    }
+                    continue;
+                }
+                return true;
+            }
         }
     }
     return false;

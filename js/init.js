@@ -364,14 +364,21 @@ function loadEnrollmentFunctions() {
             const querySnapshot = await window.getDocs(q);
             
             if (!querySnapshot.empty) {
-                const docSnap = querySnapshot.docs[0];
-                const data = docSnap.data();
+                // 1. Verifica se existe algum cadastro COMPLETO (Bloqueante)
+                const takenDoc = querySnapshot.docs.find(d => {
+                    const data = d.data();
+                    return !((data.tags && data.tags.includes('incompleto')) || data.status === 'incompleto');
+                });
                 
-                if (data.tags && data.tags.includes('incompleto')) {
-                    return { status: 'incomplete', id: docSnap.id, data: data };
-                } else {
-                    return { status: 'taken', id: docSnap.id };
-                }
+                if (takenDoc) return { status: 'taken', id: takenDoc.id };
+
+                // 2. Se não tem completo, procura um incompleto para recuperar
+                const incompleteDoc = querySnapshot.docs.find(d => {
+                    const data = d.data();
+                    return (data.tags && data.tags.includes('incompleto')) || data.status === 'incompleto';
+                });
+
+                if (incompleteDoc) return { status: 'incomplete', id: incompleteDoc.id, data: incompleteDoc.data() };
             }
             return { status: 'available' };
         } catch (e) {
