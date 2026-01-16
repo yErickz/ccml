@@ -59,6 +59,18 @@ export function initDashboard() {
     window.toggleTheme = toggleTheme;
     window.loadDashboardData = loadDashboardData; // Permite que o popup de gerenciar atualize a lista
 
+    // Adicionar opção "Incompleto" ao filtro de status dinamicamente
+    const statusFilter = document.getElementById('statusFilter');
+    if (statusFilter) {
+        // Verifica se a opção já existe para evitar duplicatas
+        if (!statusFilter.querySelector('option[value="incompleto"]')) {
+            const opt = document.createElement('option');
+            opt.value = 'incompleto';
+            opt.innerText = 'Incompleto';
+            statusFilter.appendChild(opt);
+        }
+    }
+
     // Lógica de Automação do Checkbox de Pagamento
     const paymentCheck = document.getElementById('managePagamento');
     if (paymentCheck) {
@@ -141,9 +153,17 @@ export async function loadDashboardData() {
                 'pendente': { label: 'Pendente', class: 'status-pendente' },
                 'aguardando_pagamento': { label: 'Aguardando Pagto', class: 'status-pagamento' },
                 'ativo': { label: 'Ativo', class: 'status-ativo' },
-                'inativo': { label: 'Inativo', class: 'status-inativo' }
+                'inativo': { label: 'Inativo', class: 'status-inativo' },
+                'incompleto': { label: 'Incompleto', class: 'status-inativo' }
             };
-            const currentStatus = d.status_matricula || (d.status === 'completo' ? 'aguardando_pagamento' : 'pendente');
+            
+            let currentStatus = d.status_matricula || (d.status === 'completo' ? 'aguardando_pagamento' : 'pendente');
+            
+            // Identifica cadastros incompletos via tag
+            if (d.tags && d.tags.includes('incompleto')) {
+                currentStatus = 'incompleto';
+            }
+            
             const statusInfo = statusMap[currentStatus] || statusMap['pendente'];
 
             const respInfo = (currentUserRole === 'admin' && d.responsavel_financeiro) 

@@ -161,6 +161,9 @@ function startApp() {
             if (window.initEnrollment) {
                 window.initEnrollment();
             }
+            if (window.setupCpfValidation) {
+                window.setupCpfValidation();
+            }
         }
         
         if (document.getElementById('teacherDashboard')) {
@@ -351,6 +354,116 @@ function loadAuthFunctions() {
 
 // Carregar funções de matrícula
 function loadEnrollmentFunctions() {
+    // --- Funções Globais de Matrícula ---
+    
+    // 1. Verificar Status do CPF
+    window.checkCpfStatus = async function(cpf) {
+        if (!window.db) return { status: 'retry' };
+        try {
+            const q = window.query(window.collection(window.db, "matriculas"), window.where("cpf", "==", cpf));
+            const querySnapshot = await window.getDocs(q);
+            
+            if (!querySnapshot.empty) {
+                const docSnap = querySnapshot.docs[0];
+                const data = docSnap.data();
+                
+                if (data.tags && data.tags.includes('incompleto')) {
+                    return { status: 'incomplete', id: docSnap.id, data: data };
+                } else {
+                    return { status: 'taken', id: docSnap.id };
+                }
+            }
+            return { status: 'available' };
+        } catch (e) {
+            console.error("Erro checkCpfStatus:", e);
+            return { status: 'error' };
+        }
+    };
+
+    // 2. Recuperar Matrícula
+    window.recoverEnrollment = async function(autoStart = false) {
+        const savedId = localStorage.getItem('ccml_enrollment_id');
+        if (!savedId) return;
+
+        try {
+            if (!window.db) { setTimeout(() => window.recoverEnrollment(autoStart), 500); return; }
+
+            const docRef = window.doc(window.db, "matriculas", savedId);
+            const docSnap = await window.getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.tags && data.tags.includes('incompleto')) {
+                    if (autoStart || confirm("Você tem uma matrícula não finalizada. Deseja continuar de onde parou?")) {
+                    // Preencher campos
+                    for (const [key, value] of Object.entries(data)) {
+                        const input = document.getElementById(key) || document.querySelector(`[name="${key}"]`);
+                        if (input) {
+                            if (input.type === 'checkbox') input.checked = value;
+                            else input.value = value;
+                        }
+                    }
+                    if (data.last_step && typeof window.goToStep === 'function') {
+                        window.goToStep(data.last_step);
+                    }
+                    window.customAlert("Seus dados foram recuperados. Continue de onde parou.", "Bem-vindo de volta");
+                    }
+                }
+            }
+        } catch (e) {
+            console.error("Erro ao recuperar:", e);
+        }
+    };
+
+    // 3. Setup Validação CPF
+    window.setupCpfValidation = function() {
+        const cpfInput = document.getElementById('cpf');
+        if (!cpfInput || cpfInput.dataset.cpfValidated) return;
+        cpfInput.dataset.cpfValidated = "true";
+        
+        cpfInput.addEventListener('blur', async function() {
+            const cpf = this.value;
+            if (cpf.length < 14) return;
+
+            const result = await window.checkCpfStatus(cpf);
+            
+            if (result.status === 'taken') {
+                window.showError("Este CPF já possui um cadastro ativo.");
+                this.value = "";
+            } else if (result.status === 'incomplete') {
+                if (confirm("Existe um cadastro não finalizado para este CPF. Deseja continuar?")) {
+                    localStorage.setItem('ccml_enrollment_id', result.id);
+                    window.recoverEnrollment(true);
+                }
+            }
+        });
+    };
+
+    // 4. Salvar Rascunho (Auto-Save)
+    window.saveDraft = async function(step) {
+        if (!window.db) return;
+        const form = document.getElementById('formMatricula');
+        if (!form) return;
+        
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((value, key) => data[key] = value);
+        
+        data.tags = ['incompleto'];
+        data.last_step = step;
+        data.updated_at = new Date().toISOString();
+        
+        try {
+            const savedId = localStorage.getItem('ccml_enrollment_id');
+            if (savedId) {
+                await window.updateDoc(window.doc(window.db, "matriculas", savedId), data);
+            } else if (data.cpf && data.cpf.length >= 14) {
+                const docRef = await window.addDoc(window.collection(window.db, "matriculas"), data);
+                localStorage.setItem('ccml_enrollment_id', docRef.id);
+            }
+        } catch (e) { console.error("Erro ao salvar rascunho", e); }
+    };
+
     if (typeof initEnrollment !== 'function') {
         window.initEnrollment = function() {
             console.log("Inicializando sistema de matrícula...");
@@ -379,6 +492,11 @@ function loadEnrollmentFunctions() {
                 console.log("Plano selecionado:", plan);
                 window.customAlert(`Plano "${plan}" selecionado! Continue preenchendo o formulário.`, "Plano Selecionado");
             };
+            
+            // Tenta recuperar ao iniciar (Fallback)
+            if (document.getElementById('formMatricula')) {
+                window.recoverEnrollment();
+            }
         };
     }
 }
