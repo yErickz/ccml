@@ -2,7 +2,7 @@
 // Sistema robusto para evitar problemas com módulos ES6
 
 // 1. CONFIGURAÇÕES GLOBAIS
-window.APP_VERSION = "1.0.21";
+window.APP_VERSION = "1.1.2";
 window.DEV_MODE = false;
 window.currentUserRole = "professor";
 window.currentUserEmail = "";
@@ -145,6 +145,10 @@ function startApp() {
                 const versionEl = document.getElementById('appVersion');
                 if (versionEl) versionEl.innerText = `v${window.APP_VERSION || "1.0.20"}`;
             });
+        } else {
+            // Atualiza versão em rodapés estáticos (ex: matricula.html)
+            const versionEl = document.getElementById('appVersion');
+            if (versionEl) versionEl.innerText = `v${window.APP_VERSION}`;
         }
         
         // Carregar sidebar se necessário
