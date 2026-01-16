@@ -47,6 +47,12 @@ export function initEnrollment() {
         });
     }
 
+    // Listener para Taxa de Matrícula (Atualizar resumo)
+    const taxaCheck = document.getElementById('taxaMatricula');
+    if (taxaCheck) {
+        taxaCheck.addEventListener('change', updateSummary);
+    }
+
     // Validação Sábado/Noite
     const sabadoInput = document.querySelector('input[name="diasPref"][value="Sábado"]');
     const noiteInput = document.querySelector('input[name="turnosPref"][value="Noite"]');
@@ -139,6 +145,7 @@ async function handleEnrollment(e) {
         plano_escolhido: document.querySelector('input[name="plano"]:checked')?.value || "N/A",
         necessidades_especiais: document.getElementById('necessidades').value,
         autorizacao_imagem: document.getElementById('autorizacaoImagem').checked,
+        taxa_matricula: document.getElementById('taxaMatricula')?.checked || false,
         tags: [], // Limpa a tag de incompleto ao finalizar
         status: "completo",
         data_registro: new Date().toISOString()
@@ -295,6 +302,12 @@ function updateSummary() {
         if (planoEl.value === 'Musicalizacao') valor = "R$ 199,90";
         document.getElementById('resumoPlano').innerText = planoEl.parentElement.querySelector('.plan-title').innerText;
     }
+
+    const taxaCheck = document.getElementById('taxaMatricula');
+    if (taxaCheck && taxaCheck.checked) {
+        valor += " + Taxa (Materiais Inclusos)";
+    }
+
     document.getElementById('resumoValor').innerText = valor;
     resumoDiv.style.display = 'block';
 }

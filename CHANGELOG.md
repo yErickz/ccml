@@ -2,6 +2,12 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.1.2] - 2026-01-16 - "Taxa de Matrícula"
+### Adicionado
+- **Financeiro:** Opção de "Taxa de Matrícula" no formulário de inscrição, somando automaticamente ao valor inicial.
+- **Gestão:** Checkbox para controle de pagamento da taxa de matrícula no painel administrativo.
+- **UX:** Feedback visual no resumo financeiro indicando a inclusão de materiais didáticos.
+
 ## [1.1.1] - 2026-01-16 - "Recuperação Inteligente"
 ### Adicionado
 - **Matrícula:** Sistema de "Rascunho Automático" e recuperação de cadastro. Permite continuar matrículas incompletas ao reinserir o CPF.
